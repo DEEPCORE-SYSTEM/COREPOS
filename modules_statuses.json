@@ -1,0 +1,9 @@
+{
+    "Essentials": true,
+    "Connector": true,
+    "Manufacturing": true,
+    "ProductCatalogue": true,
+    "Project": true,
+    "Repair": true,
+    "Superadmin": true
+}

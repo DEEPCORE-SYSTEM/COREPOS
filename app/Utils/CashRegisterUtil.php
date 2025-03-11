@@ -2,9 +2,9 @@
 
 namespace App\Utils;
 
-use App\CashRegister;
-use App\CashRegisterTransaction;
-use App\Transaction;
+use App\Models\CashRegister;
+use App\Models\CashRegisterTransaction;
+use App\Models\Transaction;
 
 use DB;
 

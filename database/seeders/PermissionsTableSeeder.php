@@ -81,6 +81,12 @@ class PermissionsTableSeeder extends Seeder
 
             ['name' => 'access_all_locations'],
             ['name' => 'dashboard.data'],
+
+              // Adding permissions for ToDo
+            ['name' => 'todo.view'],
+            ['name' => 'todo.create'],
+            ['name' => 'todo.update'],
+            ['name' => 'todo.delete'],
         ];
 
         $insert_data = [];

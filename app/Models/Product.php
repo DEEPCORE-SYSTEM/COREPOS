@@ -56,7 +56,7 @@ class Product extends Model
 
     public function product_variations()
     {
-        return $this->hasMany(\App\ProductVariation::class);
+        return $this->hasMany(\App\Models\ProductVariation::class);
     }
     
     /**
@@ -64,7 +64,7 @@ class Product extends Model
      */
     public function brand()
     {
-        return $this->belongsTo(\App\Brands::class);
+        return $this->belongsTo(\App\Models\Brands::class);
     }
     
     /**
@@ -72,21 +72,21 @@ class Product extends Model
     */
     public function unit()
     {
-        return $this->belongsTo(\App\Unit::class);
+        return $this->belongsTo(\App\Models\Unit::class);
     }
     /**
      * Get category associated with the product.
      */
     public function category()
     {
-        return $this->belongsTo(\App\Category::class);
+        return $this->belongsTo(\App\Models\Category::class);
     }
     /**
      * Get sub-category associated with the product.
      */
     public function sub_category()
     {
-        return $this->belongsTo(\App\Category::class, 'sub_category_id', 'id');
+        return $this->belongsTo(\App\Models\Category::class, 'sub_category_id', 'id');
     }
     
     /**
@@ -94,7 +94,7 @@ class Product extends Model
      */
     public function product_tax()
     {
-        return $this->belongsTo(\App\TaxRate::class, 'tax', 'id');
+        return $this->belongsTo(\App\Models\TaxRate::class, 'tax', 'id');
     }
 
     /**
@@ -102,7 +102,7 @@ class Product extends Model
      */
     public function variations()
     {
-        return $this->hasMany(\App\Variation::class);
+        return $this->hasMany(\App\Models\Variation::class);
     }
 
     /**
@@ -110,7 +110,7 @@ class Product extends Model
      */
     public function modifier_products()
     {
-        return $this->belongsToMany(\App\Product::class, 'res_product_modifier_sets', 'modifier_set_id', 'product_id');
+        return $this->belongsToMany(\App\Models\Product::class, 'res_product_modifier_sets', 'modifier_set_id', 'product_id');
     }
 
     /**
@@ -118,7 +118,7 @@ class Product extends Model
      */
     public function modifier_sets()
     {
-        return $this->belongsToMany(\App\Product::class, 'res_product_modifier_sets', 'product_id', 'modifier_set_id');
+        return $this->belongsToMany(\App\Models\Product::class, 'res_product_modifier_sets', 'product_id', 'modifier_set_id');
     }
 
     /**
@@ -126,7 +126,7 @@ class Product extends Model
      */
     public function purchase_lines()
     {
-        return $this->hasMany(\App\PurchaseLine::class);
+        return $this->hasMany(\App\Models\PurchaseLine::class);
     }
 
     /**
@@ -175,7 +175,7 @@ class Product extends Model
 
     public function product_locations()
     {
-        return $this->belongsToMany(\App\BusinessLocation::class, 'product_locations', 'product_id', 'location_id');
+        return $this->belongsToMany(\App\Models\BusinessLocation::class, 'product_locations', 'product_id', 'location_id');
     }
 
     /**
@@ -198,11 +198,11 @@ class Product extends Model
      */
     public function warranty()
     {
-        return $this->belongsTo(\App\Warranty::class);
+        return $this->belongsTo(\App\Models\Warranty::class);
     }
 
     public function media()
     {
-        return $this->morphMany(\App\Media::class, 'model');
+        return $this->morphMany(\App\Models\Media::class, 'model');
     }
 }

@@ -30,7 +30,7 @@ class DocumentAndNote extends Model
     
     public function media()
     {
-        return $this->morphMany(\App\Media::class, 'model');
+        return $this->morphMany(\App\Models\Media::class, 'model');
     }
 
     /**
@@ -38,6 +38,6 @@ class DocumentAndNote extends Model
      */
     public function createdBy()
     {
-        return $this->belongsTo(\App\User::class, 'created_by');
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
     }
 }

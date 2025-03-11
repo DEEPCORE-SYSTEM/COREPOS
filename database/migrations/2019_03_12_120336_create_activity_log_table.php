@@ -20,9 +20,11 @@ class CreateActivityLogTable extends Migration
             $table->integer('causer_id')->nullable();
             $table->string('causer_type')->nullable();
             $table->text('properties')->nullable();
+            $table->uuid('batch_uuid')->nullable();
             $table->timestamps();
 
             $table->index('log_name');
+            $table->index(['batch_uuid']);
         });
     }
 

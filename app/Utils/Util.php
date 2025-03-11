@@ -2,22 +2,22 @@
 
 namespace App\Utils;
 
-use App\Business;
-use App\BusinessLocation;
-use App\Contact;
-use App\Product;
-use App\ReferenceCount;
-use App\Transaction;
-use App\TransactionSellLine;
-use App\Unit;
-use App\User;
-use App\VariationLocationDetails;
+use App\Models\Business;
+use App\Models\BusinessLocation;
+use App\Models\Contact;
+use App\Models\Product;
+use App\Models\ReferenceCount;
+use App\Models\Transaction;
+use App\Models\TransactionSellLine;
+use App\Models\Unit;
+use App\Models\User;
+use App\Models\VariationLocationDetails;
 use DB;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
-use App\System;
+use App\Models\System;
 use Config;
 
 class Util

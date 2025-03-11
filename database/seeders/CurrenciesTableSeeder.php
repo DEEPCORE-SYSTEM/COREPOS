@@ -15,7 +15,9 @@ class CurrenciesTableSeeder extends Seeder
     {
         $data = [
             [ "id" => "1", "country" => "Albania", "currency" => "Leke", "code" => "ALL", "symbol" => "Lek",
-        "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+            "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+
+
             [ "id" => "2", "country" => "America", "currency" => "Dollars", "code" => "USD", "symbol" => '$',
             "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
             [ "id" => "3", "country" => "Afghanistan", "currency" => "Afghanis", "code" => "AF", "symbol" => "؋",
@@ -286,13 +288,26 @@ class CurrenciesTableSeeder extends Seeder
         Currency::insert($data);
 
         Currency::insert([
-            ["country" => "Algerie", "currency" => "Algerian dinar", "code" => "DZD", "symbol" => "د.ج", "thousand_separator" => " ", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
-            [ "country" => "United Arab Emirates", "currency" => "United Arab Emirates dirham", "code" => "AED", "symbol" => "د.إ", "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
-            [ "country" => "Uganda", "currency" => "Uganda shillings", "code" => "UGX", "symbol" => "USh", "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
-            [ "country" => "Tanzania", "currency" => "Tanzanian shilling", "code" => "TZS", "symbol" => "TSh", "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
-            [ "country" => "Angola", "currency" => "Kwanza", "code" => "AOA", "symbol" => "Kz", "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
-            [ "country" => "Kuwait", "currency" => "Kuwaiti dinar", "code" => "KWD", "symbol" => "KD", "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
-            [ "country" => "Bahrain", "currency" => "Bahraini dinar", "code" => "BHD", "symbol" => "BD", "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ]
+            ["country" => "Algerie", "currency" => "Algerian dinar", "code" => "DZD", "symbol" => "د.ج", 
+            "thousand_separator" => " ", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+
+            [ "country" => "United Arab Emirates", "currency" => "United Arab Emirates dirham", "code" => "AED", "symbol" => "د.إ", 
+            "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+
+            [ "country" => "Uganda", "currency" => "Uganda shillings", "code" => "UGX", "symbol" => "USh", 
+            "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+
+            [ "country" => "Tanzania", "currency" => "Tanzanian shilling", "code" => "TZS", "symbol" => "TSh",
+             "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+
+            [ "country" => "Angola", "currency" => "Kwanza", "code" => "AOA", "symbol" => "Kz",
+             "thousand_separator" => ",",  "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+
+            [ "country" => "Kuwait", "currency" => "Kuwaiti dinar", "code" => "KWD", "symbol" => "KD",
+             "thousand_separator" => ",",  "decimal_separator" => ".", "created_at" => null , "updated_at" => null ],
+             
+            [ "country" => "Bahrain", "currency" => "Bahraini dinar", "code" => "BHD", "symbol" => "BD", 
+            "thousand_separator" => ",", "decimal_separator" => ".", "created_at" => null , "updated_at" => null ]
       ]);
     }
 }
