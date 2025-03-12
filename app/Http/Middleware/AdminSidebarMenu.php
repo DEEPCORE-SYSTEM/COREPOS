@@ -6,6 +6,7 @@ use App\Utils\ModuleUtil;
 use Closure;
 use App\Http\Controllers\HomeController;
 use Spatie\Menu\Laravel\Menu;
+use Illuminate\Support\Facades\View;
 
 class AdminSidebarMenu
 {
@@ -762,6 +763,8 @@ class AdminSidebarMenu
         //Add menus from modules
         $moduleUtil = new ModuleUtil;
         $moduleUtil->getModuleData('modifyAdminMenu');
+
+        View::share('AdminSidebarMenu', $menu);
 
         return $next($request);
     }

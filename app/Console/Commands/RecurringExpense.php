@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Utils\TransactionUtil;
 use App\Utils\NotificationUtil;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class RecurringExpense extends Command
 {
@@ -24,6 +26,20 @@ class RecurringExpense extends Command
      * @var string
      */
     protected $description = 'Creates recurring expenses if enabled';
+
+    /**
+     * The TransactionUtil instance.
+     *
+     * @var TransactionUtil
+     */
+    protected $transactionUtil;
+
+    /**
+     * The NotificationUtil instance.
+     *
+     * @var NotificationUtil
+     */
+    protected $notificationUtil;
 
     /**
      * Create a new command instance.

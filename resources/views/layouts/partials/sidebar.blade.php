@@ -9,8 +9,9 @@
 	</a>
 
     <!-- Sidebar Menu -->
-    
-
+    <nav class="sidebar">
+    {!! $AdminSidebarMenu->render() !!}
+  </nav>
     <!-- /.sidebar-menu -->
   </section>
   <!-- /.sidebar -->

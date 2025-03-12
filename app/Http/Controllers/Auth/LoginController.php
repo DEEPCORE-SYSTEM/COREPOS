@@ -7,6 +7,7 @@ use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -63,7 +64,7 @@ class LoginController extends Controller
         $this->businessUtil->activityLog(auth()->user(), 'logout');
 
         request()->session()->flush();
-        \Auth::logout();
+        Auth::logout();
         return redirect('/login');
     }
 

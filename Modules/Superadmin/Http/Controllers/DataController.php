@@ -109,27 +109,28 @@ class DataController extends Controller
      */
     public function modifyAdminMenu()
     {
+        $menu = Menu::new();
+    
         if (auth()->user()->can('superadmin')) {
-            Menu::modify(
-                'admin-sidebar-menu',
-                function ($menu) {
-                    $menu->url(action('\Modules\Superadmin\Http\Controllers\SuperadminController@index'), __('superadmin::lang.superadmin'), ['icon' => 'fa fas fa-users-cog', 'active' => request()->segment(1) == 'superadmin'])->order(1);
-                }
-            );       
+            $menu->add(
+                Menu::new()->url(
+                    action('\Modules\Superadmin\Http\Controllers\SuperadminController@index'),
+                    __('superadmin::lang.superadmin')
+                )->addParentClass('fa fas fa-users-cog')
+            );
         }
-
+    
         if (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access')) {
-            $menu = Menu::instance('admin-sidebar-menu');
-            $menu->whereTitle(__('business.settings'), function ($sub) {
-                $sub->url(
+            $menu->add(
+                Menu::new()->url(
                     action('\Modules\Superadmin\Http\Controllers\SubscriptionController@index'),
-                    __('superadmin::lang.subscription'),
-                    ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
-                );
-            });
+                    __('superadmin::lang.subscription')
+                )->addParentClass('fa fas fa-sync')
+            );
         }
+    
+        return $menu;
     }
-
     /**
      * Defines user permissions for the module.
      * @return array
