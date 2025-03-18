@@ -5,68 +5,106 @@
 @section('content')
 @include('essentials::layouts.nav_essentials')
 <section class="content">
-	@component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-		@can('essentials.assign_todos')
-			<div class="col-md-3">
-				<div class="form-group">
-					{!! Form::label('user_id_filter', __('essentials::lang.assigned_to') . ':') !!}
-					<div class="input-group">
-						<span class="input-group-addon">
-							<i class="fa fa-user"></i>
-						</span>
-						{!! Form::select('user_id_filter', $users, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all')]); !!}
-					</div>
-				</div>
-			</div>
-		@endcan
-		<div class="col-md-3">
-			<div class="form-group">
-				{!! Form::label('priority_filter', __('essentials::lang.priority') . ':') !!}
-				{!! Form::select('priority_filter', $priorities, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all')]); !!}
-			</div>
-		</div>
-		<div class="col-md-3">
-			<div class="form-group">
-				{!! Form::label('status_filter', __('sale.status') . ':') !!}
-				{!! Form::select('status_filter', $task_statuses, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all')]); !!}
-			</div>
-		</div>
-		<div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('date_range_filter', __('report.date_range') . ':') !!}
-                {!! Form::text('date_range_filter', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+    <!-- Filtros -->
+    <div class="box box-solid">
+        <div class="box-header">
+            <h3 class="box-title">@lang('report.filters')</h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                @can('essentials.assign_todos')
+                    <!-- Filtro por usuario asignado -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="user_id_filter">@lang('essentials::lang.assigned_to'):</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                <select name="user_id_filter" id="user_id_filter" class="form-control select2">
+                                    <option value="">@lang('messages.all')</option>
+                                    @foreach($users as $id => $user)
+                                        <option value="{{ $id }}">{{ $user }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                @endcan
+
+                <!-- Filtro por prioridad -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="priority_filter">@lang('essentials::lang.priority'):</label>
+                        <select name="priority_filter" id="priority_filter" class="form-control select2">
+                            <option value="">@lang('messages.all')</option>
+                            @foreach($priorities as $key => $priority)
+                                <option value="{{ $key }}">{{ $priority }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filtro por estado -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="status_filter">@lang('sale.status'):</label>
+                        <select name="status_filter" id="status_filter" class="form-control select2">
+                            <option value="">@lang('messages.all')</option>
+                            @foreach($task_statuses as $key => $status)
+                                <option value="{{ $key }}">{{ $status }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filtro por rango de fechas -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="date_range_filter">@lang('report.date_range'):</label>
+                        <input type="text" name="date_range_filter" id="date_range_filter" 
+                               class="form-control" placeholder="@lang('lang_v1.select_a_date_range')" readonly>
+                    </div>
+                </div>
             </div>
         </div>
-	@endcomponent
-	@component('components.widget', ['title' => __('essentials::lang.todo_list'), 'icon' => '<i class="ion ion-clipboard"></i>', 'class' => 'box-solid'])
-		@slot('tool')
-			<div class="box-tools">
-				<button class="btn btn-block btn-primary btn-modal" data-href="{{action('\Modules\Essentials\Http\Controllers\ToDoController@create')}}" 
-				data-container="#task_modal">
-					<i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
-				</button>
-			</div>
-		@endslot
-		<div class="table-responsive">
-			<table class="table table-bordered table-striped" id="task_table">
-				<thead>
-					<tr>
-						<th>@lang('lang_v1.added_on')</th>
-						<th> @lang('essentials::lang.task_id')</th>
-						<th class="col-md-2"> @lang('essentials::lang.task')</th>
-						<th> @lang('sale.status')</th>
-						<th> @lang('business.start_date')</th>
-						<th> @lang('essentials::lang.end_date')</th>
-						<th> @lang('essentials::lang.estimated_hours')</th>
-						<th> @lang('essentials::lang.assigned_by')</th>
-						<th> @lang('essentials::lang.assigned_to')</th>
-						<th> @lang('essentials::lang.action')</th>
-					</tr>
-				</thead>
-			</table>
-		</div>
-	@endcomponent
+    </div>
+
+    <!-- Lista de Tareas (To-Do) -->
+    <div class="box box-solid">
+        <div class="box-header">
+            <h3 class="box-title">
+                <i class="ion ion-clipboard"></i> @lang('essentials::lang.todo_list')
+            </h3>
+            <div class="box-tools">
+                <button class="btn btn-block btn-primary btn-modal" 
+                        data-href="{{ action('\Modules\Essentials\Http\Controllers\ToDoController@create') }}" 
+                        data-container="#task_modal">
+                    <i class="fa fa-plus"></i> @lang('messages.add')
+                </button>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="task_table">
+                    <thead>
+                        <tr>
+                            <th>@lang('lang_v1.added_on')</th>
+                            <th>@lang('essentials::lang.task_id')</th>
+                            <th class="col-md-2">@lang('essentials::lang.task')</th>
+                            <th>@lang('sale.status')</th>
+                            <th>@lang('business.start_date')</th>
+                            <th>@lang('essentials::lang.end_date')</th>
+                            <th>@lang('essentials::lang.estimated_hours')</th>
+                            <th>@lang('essentials::lang.assigned_by')</th>
+                            <th>@lang('essentials::lang.assigned_to')</th>
+                            <th>@lang('essentials::lang.action')</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
 </section>
+
 @include('essentials::todo.update_task_status_modal')
 @endsection
 

@@ -5,7 +5,7 @@ namespace App\Utils;
 use App\Models\Contact;
 use App\Utils\TransactionUtil;
 use App\Models\Transaction;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ContactUtil extends Util
 {

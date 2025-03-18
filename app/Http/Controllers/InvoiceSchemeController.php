@@ -6,6 +6,7 @@ use App\Models\InvoiceScheme;
 use App\Models\InvoiceLayout;
 use Illuminate\Http\Request;
 use Datatables;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceSchemeController extends Controller
 {
@@ -110,7 +111,7 @@ class InvoiceSchemeController extends Controller
                             'msg' => __("invoice.added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -176,7 +177,7 @@ class InvoiceSchemeController extends Controller
                             'msg' => __('invoice.updated_success')
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -212,7 +213,7 @@ class InvoiceSchemeController extends Controller
                                 ];
                 }
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -250,7 +251,7 @@ class InvoiceSchemeController extends Controller
                             'msg' => __("barcode.default_set_success")
                         ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

@@ -12,6 +12,7 @@ use App\Utils\Util;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Log;
 
 class BusinessLocationController extends Controller
 {
@@ -187,7 +188,7 @@ class BusinessLocationController extends Controller
                             'msg' => __("business.business_location_added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -285,7 +286,7 @@ class BusinessLocationController extends Controller
                             'msg' => __('business.business_location_updated_success')
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -362,7 +363,7 @@ class BusinessLocationController extends Controller
                             'msg' => $msg
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

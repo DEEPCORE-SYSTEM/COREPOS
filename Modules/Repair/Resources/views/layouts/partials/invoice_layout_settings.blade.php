@@ -53,133 +53,115 @@
 	
 @endphp
 
-	@component('components.widget', ['class' => 'box-solid', 'title' => __('repair::lang.repair_module_settings')])
-       <div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_repair_status]', 1, $default['show_repair_status'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_repair_status')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][repair_status_label]', __('repair::lang.repair_status_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][repair_status_label]', $default['repair_status_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.repair_status_label') ]); !!}
-			</div>
-		</div>
+@component('components.widget', ['class' => 'box-solid', 'title' => __('repair::lang.repair_module_settings')])
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="module_info[repair][show_repair_status]" value="1"
+                               class="input-icheck" 
+                               {{ $default['show_repair_status'] ? 'checked' : '' }}>
+                        @lang('repair::lang.show_repair_status')
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="repair_status_label">@lang('repair::lang.repair_status_label'):</label>
+                <input type="text" name="module_info[repair][repair_status_label]" 
+                       id="repair_status_label" class="form-control" 
+                       placeholder="@lang('repair::lang.repair_status_label')"
+                       value="{{ $default['repair_status_label'] }}">
+            </div>
+        </div>
 
-		<div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_repair_warranty]', 1, $default['show_repair_warranty'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_repair_warranty')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][repair_warranty_label]', __('repair::lang.repair_warranty_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][repair_warranty_label]', $default['repair_warranty_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.repair_warranty_label') ]); !!}
-			</div>
-		</div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="module_info[repair][show_repair_warranty]" value="1"
+                               class="input-icheck" 
+                               {{ $default['show_repair_warranty'] ? 'checked' : '' }}>
+                        @lang('repair::lang.show_repair_warranty')
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="repair_warranty_label">@lang('repair::lang.repair_warranty_label'):</label>
+                <input type="text" name="module_info[repair][repair_warranty_label]" 
+                       id="repair_warranty_label" class="form-control" 
+                       placeholder="@lang('repair::lang.repair_warranty_label')"
+                       value="{{ $default['repair_warranty_label'] }}">
+            </div>
+        </div>
 
-		<div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_brand]', 1, $default['show_brand'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_brand')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][brand_label]', __('repair::lang.brand_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][brand_label]', $default['brand_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.brand_label') ]); !!}
-			</div>
-		</div>
-		
-		<div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_device]', 1, $default['show_device'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_device')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][device_label]', __('repair::lang.device_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][device_label]', $default['device_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.device_label') ]); !!}
-			</div>
-		</div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="module_info[repair][show_brand]" value="1"
+                               class="input-icheck" 
+                               {{ $default['show_brand'] ? 'checked' : '' }}>
+                        @lang('repair::lang.show_brand')
+                    </label>
+                </div>
+            </div>
+        </div>
 
-		<div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_model]', 1, $default['show_model'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_model')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][model_no_label]', __('repair::lang.model_no_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][model_no_label]', $default['model_no_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.model_no_label') ]); !!}
-			</div>
-		</div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="brand_label">@lang('repair::lang.brand_label'):</label>
+                <input type="text" name="module_info[repair][brand_label]" 
+                       id="brand_label" class="form-control" 
+                       placeholder="@lang('repair::lang.brand_label')"
+                       value="{{ $default['brand_label'] }}">
+            </div>
+        </div>
 
-		<div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_serial_no]', 1, $default['show_serial_no'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_serial_no')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][serial_no_label]', __('repair::lang.serial_no_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][serial_no_label]', $default['serial_no_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.serial_no_label') ]); !!}
-			</div>
-		</div>
+        @php
+            $fields = [
+                'show_device' => 'show_device',
+                'device_label' => 'device_label',
+                'show_model' => 'show_model',
+                'model_no_label' => 'model_no_label',
+                'show_serial_no' => 'show_serial_no',
+                'serial_no_label' => 'serial_no_label',
+                'show_defects' => 'show_defects',
+                'defects_label' => 'defects_label',
+                'show_repair_checklist' => 'show_repair_checklist',
+                'repair_checklist_label' => 'repair_checklist_label'
+            ];
+        @endphp
 
-		<div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_defects]', 1, $default['show_defects'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_defects')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][defects_label]', __('repair::lang.defects_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][defects_label]', $default['defects_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.defects_label') ]); !!}
-			</div>
-		</div>
-		
-		<div class="col-sm-3">
-			<div class="form-group">
-				<div class="checkbox">
-					<label>
-						{!! Form::checkbox('module_info[repair][show_repair_checklist]', 1, $default['show_repair_checklist'], ['class' => 'input-icheck']); !!} @lang('repair::lang.show_repair_checklist')
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-3">
-			<div class="form-group">
-				{!! Form::label('module_info[repair][repair_checklist_label]', __('repair::lang.repair_checklist_label') . ':' ) !!}
-				{!! Form::text('module_info[repair][repair_checklist_label]', $default['repair_checklist_label'], ['class' => 'form-control', 'placeholder' => __('repair::lang.repair_checklist_label') ]); !!}
-			</div>
-		</div>
-    @endcomponent
+        @foreach($fields as $key => $label)
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @if(str_starts_with($key, 'show'))
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="module_info[repair][{{ $key }}]" value="1"
+                                       class="input-icheck" 
+                                       {{ $default[$key] ? 'checked' : '' }}>
+                                @lang("repair::lang.$label")
+                            </label>
+                        </div>
+                    @else
+                        <label for="{{ $key }}">@lang("repair::lang.$label"):</label>
+                        <input type="text" name="module_info[repair][{{ $key }}]" 
+                               id="{{ $key }}" class="form-control" 
+                               placeholder="@lang("repair::lang.$label")"
+                               value="{{ $default[$key] }}">
+                    @endif
+                </div>
+            </div>
+        @endforeach
+    </div>
+@endcomponent
+
 @endif

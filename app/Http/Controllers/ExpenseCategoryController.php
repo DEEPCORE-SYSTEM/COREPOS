@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Log;
 
 class ExpenseCategoryController extends Controller
 {
@@ -75,7 +76,7 @@ class ExpenseCategoryController extends Controller
                             'msg' => __("expense.added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -144,7 +145,7 @@ class ExpenseCategoryController extends Controller
                             'msg' => __("expense.updated_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -178,7 +179,7 @@ class ExpenseCategoryController extends Controller
                             'msg' => __("expense.deleted_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

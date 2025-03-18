@@ -1,16 +1,21 @@
 <?php
 
 namespace App\Exceptions;
-
-use App\Mail\ExceptionOccured;
      
 use Throwable;
 use Illuminate\Auth\AuthenticationException;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Mail;
-use Symfony\Component\Debug\Exception\FlattenException;
+
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
+
+use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
+use Exception;
+use App\Mail\ExceptionOccured; // Asegúrate de importar la clase del Mailable
+
+
 
 class Handler extends ExceptionHandler
 {
@@ -83,18 +88,22 @@ class Handler extends ExceptionHandler
     public function sendEmail(Throwable $e)
     {
         try {
-            $e = FlattenException::create($exception);
-
-            $handler = new SymfonyExceptionHandler();
-
-            $html = $handler->getHtml($e);
+            // Convertimos la excepción en un FlattenException
+            $e = FlattenException::createFromThrowable($e);
+    
+            // Usamos HtmlErrorRenderer en lugar de SymfonyExceptionHandler
+            $renderer = new HtmlErrorRenderer();
+            $html = $renderer->render($e)->getAsString();
+    
+            // Obtener el correo desde la configuración
             $email = config('mail.username');
-            
+    
+            // Enviar el correo si la configuración está definida
             if (!empty($email)) {
                 Mail::to($email)->send(new ExceptionOccured($html));
             }
         } catch (Exception $ex) {
-            dd($ex);
+            dd($ex); // Manejo de errores en caso de fallo al enviar el correo
         }
     }
 }

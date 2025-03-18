@@ -7,10 +7,12 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\TransactionPayment;
 use App\Utils\TransactionUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\BusinessLocation;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AccountReportsController extends Controller
 {
@@ -41,7 +43,7 @@ class AccountReportsController extends Controller
 
         $business_id = session()->get('user.business_id');
         if (request()->ajax()) {
-            $end_date = !empty(request()->input('end_date')) ? $this->transactionUtil->uf_date(request()->input('end_date')) : \Carbon::now()->format('Y-m-d');
+            $end_date = !empty(request()->input('end_date')) ? $this->transactionUtil->uf_date(request()->input('end_date')) : Carbon::now()->format('Y-m-d');
             $location_id = !empty(request()->input('location_id')) ? request()->input('location_id') : null;
 
             $purchase_details = $this->transactionUtil->getPurchaseTotals(
@@ -106,7 +108,7 @@ class AccountReportsController extends Controller
         $business_id = session()->get('user.business_id');
 
         if (request()->ajax()) {
-            $end_date = !empty(request()->input('end_date')) ? $this->transactionUtil->uf_date(request()->input('end_date')) : \Carbon::now()->format('Y-m-d');
+            $end_date = !empty(request()->input('end_date')) ? $this->transactionUtil->uf_date(request()->input('end_date')) : Carbon::now()->format('Y-m-d');
              $location_id = !empty(request()->input('location_id')) ? request()->input('location_id') : null;
 
             $purchase_details = $this->transactionUtil->getPurchaseTotals(
@@ -382,7 +384,7 @@ class AccountReportsController extends Controller
                             'msg' => __("account.account_linked_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
                 
             $output = ['success' => false,
                         'msg' => __("messages.something_went_wrong")

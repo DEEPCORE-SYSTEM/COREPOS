@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use App\Models\System;
 use Modules\Superadmin\Entities\Subscription;
 use Modules\Superadmin\Notifications\SendSubscriptionExpiryAlert;
+use Carbon\Carbon;
 
 class SubscriptionExpiryAlert extends Command
 {
@@ -46,7 +47,7 @@ class SubscriptionExpiryAlert extends Command
         $min_alert_days = System::where('key', 'package_expiry_alert_days')->value('value');
 
         //Get all subscription which will expire in $min_alert_days
-        $now = \Carbon::today()->toDateString();
+        $now = Carbon::today()->toDateString();
         $expiring_subscriptions = Subscription::approved()
                                 ->with(['business', 'business.owner'])
                                 ->whereRaw("DATEDIFF(end_date,'$now') = $min_alert_days")
@@ -57,7 +58,7 @@ class SubscriptionExpiryAlert extends Command
         foreach ($expiring_subscriptions as $subscription) {
 
             //Check if next subscription available
-            $next_sub_start_date = \Carbon::today()->addDays($next_alert_days)->toDateString();
+            $next_sub_start_date = Carbon::today()->addDays($next_alert_days)->toDateString();
             $next_subscription = Subscription::where('business_id', $subscription->business_id)
                                     ->whereDate('start_date', '=', $next_sub_start_date)
                                     ->approved()

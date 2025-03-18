@@ -6,6 +6,7 @@ use App\Models\InvoiceLayout;
 use App\Utils\Util;
 use Illuminate\Http\Request;
 use Validator;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceLayoutController extends Controller
 {
@@ -109,7 +110,7 @@ class InvoiceLayoutController extends Controller
                             'msg' => __("invoice.layout_added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => __("messages.something_went_wrong")
@@ -223,7 +224,7 @@ class InvoiceLayoutController extends Controller
                             'msg' => __("invoice.layout_updated_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => __("messages.something_went_wrong")

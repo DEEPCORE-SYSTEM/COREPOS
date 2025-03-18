@@ -1,27 +1,46 @@
+<!-- Modal para vincular cuenta con pago -->
 <div class="modal-dialog" role="document">
-  <div class="modal-content">
+    <div class="modal-content">
+        
+        <!-- Formulario para vincular la cuenta -->
+        <form action="{{ action('AccountReportsController@postLinkAccount') }}" method="POST" id="link_account_form">
+            @csrf <!-- Token de seguridad de Laravel -->
 
-    {!! Form::open(['url' => action('AccountReportsController@postLinkAccount'), 'method' => 'post', 'id' => 'link_account_form' ]) !!}
+            <div class="modal-header">
+                <!-- Botón para cerrar el modal -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    {{ __('account.link_account') }} - {{ __('account.payment_ref_no') }}: {{ $payment->payment_ref_no }}
+                </h4>
+            </div>
 
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'account.link_account' ) - @lang( 'account.payment_ref_no' ): - {{$payment->payment_ref_no}}</h4>
-    </div>
+            <div class="modal-body">
+                <!-- Campo oculto con el ID del pago -->
+                <input type="hidden" name="transaction_payment_id" value="{{ $payment->id }}">
 
-    <div class="modal-body">
-        <div class="form-group">
-            {!! Form::hidden('transaction_payment_id', $payment->id); !!}
-            {!! Form::label('account_id', __( 'account.account' ) .":") !!}
-            {!! Form::select('account_id', $accounts, $payment->account_id, ['class' => 'form-control', 'required']); !!}
-        </div>
-    </div>
+                <!-- Selección de cuenta -->
+                <div class="form-group">
+                    <label for="account_id">{{ __('account.account') }}:</label>
+                    <select name="account_id" id="account_id" class="form-control" required>
+                        @foreach($accounts as $id => $account)
+                            <option value="{{ $id }}" {{ $payment->account_id == $id ? 'selected' : '' }}>
+                                {{ $account }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
-    <div class="modal-footer">
-      <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
-      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-    </div>
+            <div class="modal-footer">
+                <!-- Botón para guardar -->
+                <button type="submit" class="btn btn-primary">{{ __('messages.save') }}</button>
+                <!-- Botón para cerrar -->
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('messages.close') }}</button>
+            </div>
 
-    {!! Form::close() !!}
+        </form> <!-- Fin del formulario -->
 
-  </div><!-- /.modal-content -->
+    </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

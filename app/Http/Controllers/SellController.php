@@ -20,13 +20,13 @@ use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use App\Models\Warranty;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Product;
 use App\Models\Media;
 use Spatie\Activitylog\Models\Activity;
-
+use Carbon\Carbon;
 class SellController extends Controller
 {
     /**
@@ -1429,7 +1429,7 @@ class SellController extends Controller
             }
             $duplicate_transaction_data['status'] = 'draft';
             $duplicate_transaction_data['payment_status'] = null;
-            $duplicate_transaction_data['transaction_date'] =  \Carbon::now();
+            $duplicate_transaction_data['transaction_date'] =  Carbon::now();
             $duplicate_transaction_data['created_by'] = $user_id;
             $duplicate_transaction_data['invoice_token'] = null;
 

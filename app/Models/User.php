@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use DB;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
 use Spatie\Permission\Traits\HasRoles;
 
 

@@ -4,81 +4,98 @@
 
 @section('content')
 @include('essentials::layouts.nav_essentials')
-<section class="content">
-	<h4>
-		@lang('essentials::lang.all_memos')
-		<small> @lang('essentials::lang.manage_memos')</small>
-	</h4>
-		<div class="box box-solid">
-			<div class="box-header">
-				<h4 class="box-title">@lang('essentials::lang.all_memos')</h4>
-			<div class="box-tools pull-right">
-				<button type="button" class="btn btn-sm btn-primary add_memo">
-					<i class="fa fa-plus"></i> 
-					@lang( 'messages.add' )
-				</button>
-			</div>
-			</div>
-			<div class="box-body">
-				<div class="row">
-					<div class="col-md-12">
-						{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\DocumentController@store'), 'id' => 'upload_document_form','files' => true, 'style' => 'display:none']) !!}
-						<div class="row">
-                            <div class="col-sm-12">
-	                            <div class="col-sm-6">
-	                                <div class="form-group">
-                                   		{!! Form::label('name', __('essentials::lang.heading') . ":*") !!}
 
-                                   		{!! Form::text('name', null, ['class' => 'form-control', 'required']) !!}
-	                                 </div>
-	                            </div>
-	                            <div class="clearfix"></div>
-	                            <div class="col-sm-6">
-	                                <div class="form-group">
-	                                    {!! Form::label('description', __('essentials::lang.description') . ":")!!}
-	                                    {!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => '4', 'cols' => '50']) !!}
-	                                 </div>
-	                            </div>
-	                            <div class="clearfix"></div>
-                        		<div class="col-sm-4">
-                                	<button type="submit" class="btn btn-primary btn-sm">
-                                		@lang('essentials::lang.submit')
-                                	</button>
-                                	&nbsp;
-									<button type="button" class="btn btn-danger btn-sm cancel_btn">
-										@lang('essentials::lang.cancel')
-									</button>
-                        		</div>
+<section class="content">
+    <h4>
+        @lang('essentials::lang.all_memos')
+        <small>@lang('essentials::lang.manage_memos')</small>
+    </h4>
+
+    <div class="box box-solid">
+        <div class="box-header">
+            <h4 class="box-title">@lang('essentials::lang.all_memos')</h4>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-sm btn-primary add_memo">
+                    <i class="fa fa-plus"></i> @lang('messages.add')
+                </button>
+            </div>
+        </div>
+
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Formulario para agregar un nuevo memo -->
+                    <form action="{{ action('\Modules\Essentials\Http\Controllers\DocumentController@store') }}" 
+                          method="POST" id="upload_document_form" enctype="multipart/form-data" style="display:none">
+                        @csrf
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <!-- Campo para el nombre del memo -->
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="name">@lang('essentials::lang.heading')*</label>
+                                        <input type="text" name="name" id="name" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="clearfix"></div>
+
+                                <!-- Campo para la descripción del memo -->
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="description">@lang('essentials::lang.description')</label>
+                                        <textarea name="description" id="description" class="form-control" rows="4"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="clearfix"></div>
+
+                                <!-- Botones de acción -->
+                                <div class="col-sm-4">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        @lang('essentials::lang.submit')
+                                    </button>
+                                    &nbsp;
+                                    <button type="button" class="btn btn-danger btn-sm cancel_btn">
+                                        @lang('essentials::lang.cancel')
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <br><hr>
-					{!! Form::close() !!}
-					</div>
 
-				</div>
-				<div class="row">
-					<div class="col-md-12">
-						<div class="table-responsive">
-					<table class="table table-bordered table-striped documents">
-						<thead>
-							<tr>
-								<th> @lang('essentials::lang.heading')</th>
-								<th> @lang('essentials::lang.description')</th>
-								<th> @lang('essentials::lang.created_at')</th>
-								<th> @lang('essentials::lang.action')</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- document share model -->
-	<div class="modal fade document" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
-	<!-- memos view model -->
-	<div class="modal fade memos" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
+                        <br><hr>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabla para mostrar todos los memos -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped documents">
+                            <thead>
+                                <tr>
+                                    <th>@lang('essentials::lang.heading')</th>
+                                    <th>@lang('essentials::lang.description')</th>
+                                    <th>@lang('essentials::lang.created_at')</th>
+                                    <th>@lang('essentials::lang.action')</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para compartir documentos -->
+<div class="modal fade document" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
+
+<!-- Modal para ver memos -->
+<div class="modal fade memos" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
+
 @endsection
 
 @section('javascript')

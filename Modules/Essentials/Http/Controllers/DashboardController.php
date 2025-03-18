@@ -11,6 +11,7 @@ use Modules\Essentials\Entities\EssentialsAttendance;
 use App\Models\User;
 use App\Models\Category;
 use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -54,7 +55,7 @@ class DashboardController extends Controller
 
         $today = new \Carbon('today');
 
-        $one_month_from_today = \Carbon::now()->addMonth();
+        $one_month_from_today = Carbon::now()->addMonth();
         $leaves = EssentialsLeave::where('business_id', $business_id)
                             ->where('status', 'approved')
                             ->whereDate('end_date', '>=', $today->format('Y-m-d'))
@@ -68,8 +69,8 @@ class DashboardController extends Controller
 
         $users_leaves = [];
         foreach ($leaves as $leave) {
-            $leave_start = \Carbon::parse($leave->start_date);
-            $leave_end = \Carbon::parse($leave->end_date);
+            $leave_start = Carbon::parse($leave->start_date);
+            $leave_end = Carbon::parse($leave->end_date);
 
             if ($today->gte($leave_start) && $today->lte($leave_end)) {
                 $todays_leaves[] = $leave;
@@ -106,8 +107,8 @@ class DashboardController extends Controller
         $upcoming_holidays = [];
 
         foreach ($holidays as $holiday) {
-            $holiday_start = \Carbon::parse($holiday->start_date);
-            $holiday_end = \Carbon::parse($holiday->end_date);
+            $holiday_start = Carbon::parse($holiday->start_date);
+            $holiday_end = Carbon::parse($holiday->end_date);
 
             if ($today->gte($holiday_start) && $today->lte($holiday_end)) {
                 $todays_holidays[] = $holiday;
@@ -119,7 +120,7 @@ class DashboardController extends Controller
         $todays_attendances = [];
         if ($is_admin) {
             $todays_attendances = EssentialsAttendance::where('business_id', $business_id)
-                                ->whereDate('clock_in_time', \Carbon::now()->format('Y-m-d'))
+                                ->whereDate('clock_in_time', Carbon::now()->format('Y-m-d'))
                                 ->with(['employee'])
                                 ->orderBy('clock_in_time', 'asc')
                                 ->get();

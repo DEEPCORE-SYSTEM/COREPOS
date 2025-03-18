@@ -1,84 +1,161 @@
+<!-- Configuración del sistema de puntos de recompensa -->
 <div class="pos-tab-content">
-<div class="row well">
-    <div class="col-sm-4">
-        <div class="form-group">
-            <div class="checkbox">
-                <label>
-                {!! Form::checkbox('enable_rp', 1, $business->enable_rp , 
-                [ 'class' => 'input-icheck', 'id' => 'enable_rp']); !!} {{ __( 'lang_v1.enable_rp' ) }}
-                </label>
+
+    <!-- Habilitar/Deshabilitar el sistema de puntos de recompensa -->
+    <div class="row well">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="enable_rp" value="1"
+                            {{ $business->enable_rp ? 'checked' : '' }} 
+                            class="input-icheck" id="enable_rp">
+                        {{ __('lang_v1.enable_rp') }}
+                    </label>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('rp_name', __('lang_v1.rp_name') . ':') !!}
-            {!! Form::text('rp_name', $business->rp_name, ['class' => 'form-control','placeholder' => __('lang_v1.rp_name')]); !!}
+
+        <!-- Nombre del sistema de puntos de recompensa -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="rp_name">{{ __('lang_v1.rp_name') }}:</label>
+                <input type="text" name="rp_name" id="rp_name"
+                    class="form-control" placeholder="{{ __('lang_v1.rp_name') }}"
+                    value="{{ $business->rp_name }}">
+            </div>
         </div>
     </div>
 
-    <div class="clearfix"></div>
-    <div class="col-sm-12">
-        <h4>@lang('lang_v1.earning_points_setting'):</h4>
-    </div>
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('amount_for_unit_rp', __('lang_v1.amount_for_unit_rp') . ':') !!} @show_tooltip(__('lang_v1.amount_for_unit_rp_tooltip'))
-            {!! Form::text('amount_for_unit_rp', @num_format($business->amount_for_unit_rp), ['class' => 'form-control input_number','placeholder' => __('lang_v1.amount_for_unit_rp')]); !!}
+    <!-- Configuración de acumulación de puntos -->
+    <div class="row well">
+        <div class="col-sm-12">
+            <h4>{{ __('lang_v1.earning_points_setting') }}:</h4>
         </div>
-    </div>
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('min_order_total_for_rp', __('lang_v1.min_order_total_for_rp') . ':') !!} @show_tooltip(__('lang_v1.min_order_total_for_rp_tooltip'))
-            {!! Form::text('min_order_total_for_rp', @num_format($business->min_order_total_for_rp), ['class' => 'form-control input_number','placeholder' => __('lang_v1.min_order_total_for_rp')]); !!}
+
+        <!-- Monto necesario para obtener un punto -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="amount_for_unit_rp">
+                    {{ __('lang_v1.amount_for_unit_rp') }}:
+                </label>
+                @show_tooltip(__('lang_v1.amount_for_unit_rp_tooltip'))
+                <input type="text" name="amount_for_unit_rp" id="amount_for_unit_rp"
+                    class="form-control input_number" placeholder="{{ __('lang_v1.amount_for_unit_rp') }}"
+                    value="{{ number_format($business->amount_for_unit_rp, 2) }}">
+            </div>
         </div>
-    </div>
-    
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('max_rp_per_order', __('lang_v1.max_rp_per_order') . ':') !!} @show_tooltip(__('lang_v1.max_rp_per_order_tooltip'))
-            {!! Form::number('max_rp_per_order', $business->max_rp_per_order, ['class' => 'form-control','placeholder' => __('lang_v1.max_rp_per_order')]); !!}
+
+        <!-- Pedido mínimo para acumular puntos -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="min_order_total_for_rp">
+                    {{ __('lang_v1.min_order_total_for_rp') }}:
+                </label>
+                @show_tooltip(__('lang_v1.min_order_total_for_rp_tooltip'))
+                <input type="text" name="min_order_total_for_rp" id="min_order_total_for_rp"
+                    class="form-control input_number" placeholder="{{ __('lang_v1.min_order_total_for_rp') }}"
+                    value="{{ number_format($business->min_order_total_for_rp, 2) }}">
+            </div>
         </div>
-    </div>
-   </div>
-   <div class="row well">
-    <div class="col-sm-12">
-        <h4>@lang('lang_v1.redeem_points_setting'):</h4>
-    </div>
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('redeem_amount_per_unit_rp', __('lang_v1.redeem_amount_per_unit_rp') . ':') !!} @show_tooltip(__('lang_v1.redeem_amount_per_unit_rp_tooltip'))
-            {!! Form::text('redeem_amount_per_unit_rp', @num_format($business->redeem_amount_per_unit_rp), ['class' => 'form-control input_number','placeholder' => __('lang_v1.redeem_amount_per_unit_rp')]); !!}
-        </div>
-    </div>
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('min_order_total_for_redeem', __('lang_v1.min_order_total_for_redeem') . ':') !!} @show_tooltip(__('lang_v1.min_order_total_for_redeem_tooltip'))
-            {!! Form::text('min_order_total_for_redeem', @num_format($business->min_order_total_for_redeem), ['class' => 'form-control input_number','placeholder' => __('lang_v1.min_order_total_for_redeem')]); !!}
-        </div>
-    </div>
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('min_redeem_point', __('lang_v1.min_redeem_point') . ':') !!} @show_tooltip(__('lang_v1.min_redeem_point_tooltip'))
-            {!! Form::number('min_redeem_point', $business->min_redeem_point, ['class' => 'form-control','placeholder' => __('lang_v1.min_redeem_point')]); !!}
-        </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="col-sm-4">
-        <div class="form-group">
-            {!! Form::label('max_redeem_point', __('lang_v1.max_redeem_point') . ':') !!} @show_tooltip(__('lang_v1.max_redeem_point_tooltip'))
-            {!! Form::number('max_redeem_point', $business->max_redeem_point, ['class' => 'form-control', 'placeholder' => __('lang_v1.max_redeem_point')]); !!}
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="form-group">
-            {!! Form::label('rp_expiry_period', __('lang_v1.rp_expiry_period') . ':') !!} @show_tooltip(__('lang_v1.rp_expiry_period_tooltip'))
-            <div class="input-group">
-                {!! Form::number('rp_expiry_period', $business->rp_expiry_period, ['class' => 'form-control','placeholder' => __('lang_v1.rp_expiry_period')]); !!}
-                <span class="input-group-addon">-</span>
-                {!! Form::select('rp_expiry_type', ['month' => __('lang_v1.month'), 'year' => __('lang_v1.year')], $business->rp_expiry_type, ['class' => 'form-control']); !!}
+
+        <!-- Máximo de puntos por pedido -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="max_rp_per_order">
+                    {{ __('lang_v1.max_rp_per_order') }}:
+                </label>
+                @show_tooltip(__('lang_v1.max_rp_per_order_tooltip'))
+                <input type="number" name="max_rp_per_order" id="max_rp_per_order"
+                    class="form-control" placeholder="{{ __('lang_v1.max_rp_per_order') }}"
+                    value="{{ $business->max_rp_per_order }}">
             </div>
         </div>
     </div>
+
+    <!-- Configuración de canje de puntos -->
+    <div class="row well">
+        <div class="col-sm-12">
+            <h4>{{ __('lang_v1.redeem_points_setting') }}:</h4>
+        </div>
+
+        <!-- Valor en dinero de cada punto -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="redeem_amount_per_unit_rp">
+                    {{ __('lang_v1.redeem_amount_per_unit_rp') }}:
+                </label>
+                @show_tooltip(__('lang_v1.redeem_amount_per_unit_rp_tooltip'))
+                <input type="text" name="redeem_amount_per_unit_rp" id="redeem_amount_per_unit_rp"
+                    class="form-control input_number" placeholder="{{ __('lang_v1.redeem_amount_per_unit_rp') }}"
+                    value="{{ number_format($business->redeem_amount_per_unit_rp, 2) }}">
+            </div>
+        </div>
+
+        <!-- Pedido mínimo para canjear puntos -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="min_order_total_for_redeem">
+                    {{ __('lang_v1.min_order_total_for_redeem') }}:
+                </label>
+                @show_tooltip(__('lang_v1.min_order_total_for_redeem_tooltip'))
+                <input type="text" name="min_order_total_for_redeem" id="min_order_total_for_redeem"
+                    class="form-control input_number" placeholder="{{ __('lang_v1.min_order_total_for_redeem') }}"
+                    value="{{ number_format($business->min_order_total_for_redeem, 2) }}">
+            </div>
+        </div>
+
+        <!-- Mínimo de puntos para canjear -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="min_redeem_point">
+                    {{ __('lang_v1.min_redeem_point') }}:
+                </label>
+                @show_tooltip(__('lang_v1.min_redeem_point_tooltip'))
+                <input type="number" name="min_redeem_point" id="min_redeem_point"
+                    class="form-control" placeholder="{{ __('lang_v1.min_redeem_point') }}"
+                    value="{{ $business->min_redeem_point }}">
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <!-- Máximo de puntos a canjear -->
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="max_redeem_point">
+                    {{ __('lang_v1.max_redeem_point') }}:
+                </label>
+                @show_tooltip(__('lang_v1.max_redeem_point_tooltip'))
+                <input type="number" name="max_redeem_point" id="max_redeem_point"
+                    class="form-control" placeholder="{{ __('lang_v1.max_redeem_point') }}"
+                    value="{{ $business->max_redeem_point }}">
+            </div>
+        </div>
+
+        <!-- Período de expiración de los puntos -->
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="rp_expiry_period">
+                    {{ __('lang_v1.rp_expiry_period') }}:
+                </label>
+                @show_tooltip(__('lang_v1.rp_expiry_period_tooltip'))
+                <div class="input-group">
+                    <input type="number" name="rp_expiry_period" id="rp_expiry_period"
+                        class="form-control" placeholder="{{ __('lang_v1.rp_expiry_period') }}"
+                        value="{{ $business->rp_expiry_period }}">
+                    <span class="input-group-addon">-</span>
+                    <select name="rp_expiry_type" class="form-control">
+                        <option value="month" {{ $business->rp_expiry_type == 'month' ? 'selected' : '' }}>
+                            {{ __('lang_v1.month') }}
+                        </option>
+                        <option value="year" {{ $business->rp_expiry_type == 'year' ? 'selected' : '' }}>
+                            {{ __('lang_v1.year') }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
+
 </div>

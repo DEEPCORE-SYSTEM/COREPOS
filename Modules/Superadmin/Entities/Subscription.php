@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Subscription extends Model
 {
@@ -74,7 +75,7 @@ class Subscription extends Model
      */
     public static function active_subscription($business_id)
     {
-        $date_today = \Carbon::today()->toDateString();
+        $date_today = Carbon::today()->toDateString();
         
         $subscription = Subscription::where('business_id', $business_id)
                             ->whereDate('start_date', '<=', $date_today)
@@ -94,7 +95,7 @@ class Subscription extends Model
      */
     public static function upcoming_subscriptions($business_id)
     {
-        $date_today = \Carbon::today();
+        $date_today = Carbon::today();
         
         $subscription = Subscription::where('business_id', $business_id)
                             ->whereDate('start_date', '>', $date_today)
@@ -123,7 +124,7 @@ class Subscription extends Model
 
     public static function end_date($business_id)
     {
-        $date_today = \Carbon::today();
+        $date_today = Carbon::today();
 
         $subscription = Subscription::where('business_id', $business_id)
                             ->approved()

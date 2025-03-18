@@ -11,6 +11,7 @@ use App\Models\NotificationTemplate;
 use App\Restaurant\Booking;
 
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Log;
 use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Http\Request;
@@ -199,7 +200,7 @@ class NotificationController extends Controller
                 $output['whatsapp_link'] = $whatsapp_link;
             }
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => $e->getMessage()

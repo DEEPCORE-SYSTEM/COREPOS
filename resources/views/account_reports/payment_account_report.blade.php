@@ -20,25 +20,37 @@
                   </a>
                 </h3>
               </div>
-              <div id="collapseFilter" class="panel-collapse active collapse in" aria-expanded="true">
-                <div class="box-body">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('account_id', __('account.account') . ':') !!}
-                            {!! Form::select('account_id', $accounts, null, ['class' => 'form-control select2']); !!}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('date_filter', __('report.date_range') . ':') !!}
-                            {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'date_filter', 'readonly']); !!}
+                <!-- Filtros desplegables -->
+                <div id="collapseFilter" class="panel-collapse collapse in active" aria-expanded="true">
+                    <div class="box-body">
+                        <div class="row">
+                            <!-- Filtro por cuenta -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="account_id">{{ __('account.account') }}:</label>
+                                    <select name="account_id" id="account_id" class="form-control select2">
+                                        @foreach($accounts as $id => $account)
+                                            <option value="{{ $id }}">{{ $account }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Filtro por rango de fechas -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="date_filter">{{ __('report.date_range') }}:</label>
+                                    <input type="text" name="date_range" id="date_filter" class="form-control" 
+                                        placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-              </div>
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="box">

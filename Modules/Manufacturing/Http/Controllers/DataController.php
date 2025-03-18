@@ -4,9 +4,9 @@ namespace Modules\Manufacturing\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
-use Menu;
+use Spatie\Menu\Laravel\Menu;
 
 class DataController extends Controller
 {
@@ -66,13 +66,12 @@ class DataController extends Controller
         $is_mfg_enabled = (boolean)$module_util->hasThePermissionInSubscription($business_id, 'manufacturing_module', 'superadmin_package');
 
         if ($is_mfg_enabled && (auth()->user()->can('manufacturing.access_recipe') || auth()->user()->can('manufacturing.access_production'))) {
-            Menu::modify('admin-sidebar-menu', function ($menu) {
+            Menu::new()->submenu('admin-sidebar-menu', function ($menu) {
                 $menu->url(
                         action('\Modules\Manufacturing\Http\Controllers\RecipeController@index'),
                         __('manufacturing::lang.manufacturing'),
                         ['icon' => 'fa fas fa-industry', 'style' => config('app.env') == 'demo' ? 'background-color: #ff851b;' : '', 'active' => request()->segment(1) == 'manufacturing']
-                    )
-                ->order(21);
+                    );
             });
         }
     }

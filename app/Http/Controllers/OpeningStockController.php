@@ -13,6 +13,8 @@ use App\Utils\TransactionUtil;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class OpeningStockController extends Controller
 {
@@ -159,7 +161,7 @@ class OpeningStockController extends Controller
 
                 //Get start date for financial year.
                 $transaction_date = request()->session()->get("financial_year.start");
-                $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+                $transaction_date = Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
 
                 DB::beginTransaction();
                 //$key is the location_id
@@ -335,7 +337,7 @@ class OpeningStockController extends Controller
                         ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => $e->getMessage()

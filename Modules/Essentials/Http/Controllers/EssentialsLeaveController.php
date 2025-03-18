@@ -4,7 +4,7 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\Models\User;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -14,6 +14,7 @@ use Modules\Essentials\Notifications\LeaveStatusNotification;
 use Modules\Essentials\Notifications\NewLeaveNotification;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class EssentialsLeaveController extends Controller
 {
@@ -121,8 +122,8 @@ class EssentialsLeaveController extends Controller
                     }
                 )
                 ->editColumn('start_date', function ($row) {
-                    $start_date = \Carbon::parse($row->start_date);
-                    $end_date = \Carbon::parse($row->end_date);
+                    $start_date = Carbon::parse($row->start_date);
+                    $end_date = Carbon::parse($row->end_date);
 
                     $diff = $start_date->diffInDays($end_date);
                     $diff += 1;
@@ -422,8 +423,8 @@ class EssentialsLeaveController extends Controller
             $status_summary[$key] = 0;
         }
         foreach ($leaves as $leave) {
-            $start_date = \Carbon::parse($leave->start_date);
-            $end_date = \Carbon::parse($leave->end_date);
+            $start_date = Carbon::parse($leave->start_date);
+            $end_date = Carbon::parse($leave->end_date);
             $diff = $start_date->diffInDays($end_date) + 1;
             
             $leaves_summary[$leave->essentials_leave_type_id][$leave->status] =

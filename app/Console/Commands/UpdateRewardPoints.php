@@ -11,6 +11,8 @@ use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class UpdateRewardPoints extends Command
 {
@@ -27,6 +29,27 @@ class UpdateRewardPoints extends Command
      * @var string
      */
     protected $description = 'Checks reward points expiry and updates customer reward points';
+
+    /**
+     * The TransactionUtil instance.
+     *
+     * @var TransactionUtil
+     */
+    protected $transactionUtil;
+
+    /**
+     * The ProductUtil instance.
+     *
+     * @var ProductUtil
+     */
+    protected $productUtil;
+
+    /**
+     * The NotificationUtil instance.
+     *
+     * @var NotificationUtil
+     */
+    protected $notificationUtil;
 
     /**
      * Create a new command instance.
@@ -61,7 +84,7 @@ class UpdateRewardPoints extends Command
                     continue;
                 }
 
-                $transaction_date_to_be_expired = \Carbon::now();
+                $transaction_date_to_be_expired = Carbon::now();
                 if ($business->rp_expiry_type == 'month') {
                     $transaction_date_to_be_expired = $transaction_date_to_be_expired->subMonths($business->rp_expiry_period);
                 } elseif ($business->rp_expiry_type == 'year') {
@@ -96,7 +119,7 @@ class UpdateRewardPoints extends Command
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             die($e->getMessage());
         }

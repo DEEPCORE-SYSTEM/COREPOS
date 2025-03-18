@@ -10,8 +10,16 @@
             <h3>@lang('contact.view_contact')</h3>
         </div>
         <div class="col-md-4 col-xs-12 mt-15 pull-right">
-            {!! Form::select('contact_id', $contact_dropdown, $contact->id , ['class' => 'form-control select2', 'id' => 'contact_id']); !!}
+    <!-- Dropdown para seleccionar un contacto -->
+            <select name="contact_id" id="contact_id" class="form-control select2">
+            @foreach($contact_dropdown as $id => $name)
+                <option value="{{ $id }}" {{ $id == $contact->id ? 'selected' : '' }}>
+                    {{ $name }}
+                </option>
+            @endforeach
+            </select>
         </div>
+
     </div>
     <div class="hide print_table_part">
         <style type="text/css">

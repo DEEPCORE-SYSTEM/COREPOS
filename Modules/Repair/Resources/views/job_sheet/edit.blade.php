@@ -27,87 +27,127 @@
             $product_cond = [];
         @endphp
     @endif
-    {!! Form::open(['url' => action('\Modules\Repair\Http\Controllers\JobSheetController@update', ['id' => $job_sheet->id]), 'method' => 'put', 'id' => 'edit_job_sheet_form', 'files' => true]) !!}
+
+
+    <form action="{{ action('\Modules\Repair\Http\Controllers\JobSheetController@update', ['id' => $job_sheet->id]) }}" 
+      method="POST" 
+      id="edit_job_sheet_form" 
+      enctype="multipart/form-data">
+    
+        @csrf  <!-- Token CSRF para seguridad -->
+        @method('PUT') <!-- Método PUT para actualización -->
+
         @includeIf('repair::job_sheet.partials.scurity_modal')
+    
         <div class="box box-solid">
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <input type="hidden" id="job_sheet_id" value="{{$job_sheet->id}}">
-                        <div class="form-group">
-                            {!! Form::label('contact_id', __('role.customer') .':*') !!}
-                            <div class="input-group">
-                                <input type="hidden" id="default_customer_id"
-                                value="{{ $job_sheet->customer->id }}" >
-                                <input type="hidden" id="default_customer_name" value="{{ $job_sheet->customer->name }}" >
-                                <input type="hidden" id="default_customer_balance" value="{{$job_sheet->customer->balance}}" >
+                        <!-- ID oculto del Job Sheet -->
+                        <input type="hidden" id="job_sheet_id" value="{{ $job_sheet->id }}">
 
-                                {!! Form::select('contact_id', 
-                                    [], null, ['class' => 'form-control mousetrap', 'id' => 'customer_id', 'placeholder' => 'Enter Customer name / phone', 'required', 'style' => 'width: 100%;']); !!}
+                        <!-- Selección de cliente -->
+                        <div class="form-group">
+                            <label for="customer_id">@lang('role.customer'):</label>
+                            <div class="input-group">
+                                <input type="hidden" id="default_customer_id" value="{{ $job_sheet->customer->id }}">
+                                <input type="hidden" id="default_customer_name" value="{{ $job_sheet->customer->name }}">
+                                <input type="hidden" id="default_customer_balance" value="{{ $job_sheet->customer->balance }}">
+
+                                <select name="contact_id" id="customer_id" class="form-control mousetrap" required style="width: 100%;">
+                                    <option value="">{{ __('Enter Customer name / phone') }}</option>
+                                </select>
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""  @if(!auth()->user()->can('customer.create')) disabled @endif><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
+                                    <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""
+                                        @if(!auth()->user()->can('customer.create')) disabled @endif>
+                                        <i class="fa fa-plus-circle text-primary fa-lg"></i>
+                                    </button>
                                 </span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Selección del tipo de servicio -->
                     <div class="col-md-6">
-                        {!! Form::label('service_type',  __('repair::lang.service_type').':*', ['style' => 'margin-left:20px;'])!!}
+                        <label>@lang('repair::lang.service_type'):</label>
                         <br>
                         <label class="radio-inline">
-                            {!! Form::radio('service_type', 'carry_in', ($job_sheet->service_type == 'carry_in') ? true : false, [ 'class' => 'input-icheck', 'required']); !!}
+                            <input type="radio" name="service_type" value="carry_in" class="input-icheck" required 
+                                {{ $job_sheet->service_type == 'carry_in' ? 'checked' : '' }}>
                             @lang('repair::lang.carry_in')
                         </label>
                         <label class="radio-inline">
-                            {!! Form::radio('service_type', 'pick_up', ($job_sheet->service_type == 'pick_up') ? true : false, [ 'class' => 'input-icheck']); !!}
+                            <input type="radio" name="service_type" value="pick_up" class="input-icheck" 
+                                {{ $job_sheet->service_type == 'pick_up' ? 'checked' : '' }}>
                             @lang('repair::lang.pick_up')
                         </label>
                         <label class="radio-inline radio_btns">
-                            {!! Form::radio('service_type', 'on_site', ($job_sheet->service_type == 'on_site') ? true : false, [ 'class' => 'input-icheck']); !!}
+                            <input type="radio" name="service_type" value="on_site" class="input-icheck" 
+                                {{ $job_sheet->service_type == 'on_site' ? 'checked' : '' }}>
                             @lang('repair::lang.on_site')
                         </label>
                     </div>
                 </div>
-                @if($job_sheet->service_type == 'pick_up' || $job_sheet->service_type == 'on_site')
-                    @php
-                        $avail_addr = true;
-                    @endphp
-                @else
-                    @php
-                        $avail_addr = false;
-                    @endphp
-                @endif
+
+                <!-- Dirección de recolección si aplica -->
+                @php $avail_addr = in_array($job_sheet->service_type, ['pick_up', 'on_site']); @endphp
                 <div class="row pick_up_onsite_addr" @if(!$avail_addr) style="display: none;" @endif>
                     <div class="col-md-6">
                         <div class="form-group">
-                            {!! Form::label('pick_up_on_site_addr', __('repair::lang.pick_up_on_site_addr') . ':') !!}
-                            {!! Form::textarea('pick_up_on_site_addr',$job_sheet->pick_up_on_site_addr, ['class' => 'form-control ', 'id' => 'pick_up_on_site_addr', 'placeholder' => __('repair::lang.pick_up_on_site_addr'), 'rows' => 3]); !!}
+                            <label for="pick_up_on_site_addr">@lang('repair::lang.pick_up_on_site_addr'):</label>
+                            <textarea name="pick_up_on_site_addr" id="pick_up_on_site_addr" class="form-control" rows="3">
+                                {{ $job_sheet->pick_up_on_site_addr }}
+                            </textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="box box-solid">
             <div class="box-body">
                 <div class="row">
+                    <!-- Selección de la marca -->
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('brand_id', __('product.brand') . ':') !!}
-                            {!! Form::select('brand_id', $brands, $job_sheet->brand_id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+                            <label for="brand_id">@lang('product.brand'):</label>
+                            <select name="brand_id" id="brand_id" class="form-control select2">
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($brands as $key => $brand)
+                                    <option value="{{ $key }}" {{ $job_sheet->brand_id == $key ? 'selected' : '' }}>{{ $brand }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
+
+                    <!-- Selección del tipo de dispositivo -->
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('device_id', __('repair::lang.device') . ':') !!}
-                            {!! Form::select('device_id', $devices, $job_sheet->device_id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+                            <label for="device_id">@lang('repair::lang.device'):</label>
+                            <select name="device_id" id="device_id" class="form-control select2">
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($devices as $key => $device)
+                                    <option value="{{ $key }}" {{ $job_sheet->device_id == $key ? 'selected' : '' }}>{{ $device }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
+
+                    <!-- Selección del modelo del dispositivo -->
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('device_model_id', __('repair::lang.device_model') . ':') !!}
-                            {!! Form::select('device_model_id', $device_models, $job_sheet->device_model_id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+                            <label for="device_model_id">@lang('repair::lang.device_model'):</label>
+                            <select name="device_model_id" id="device_model_id" class="form-control select2">
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($device_models as $key => $model)
+                                    <option value="{{ $key }}" {{ $job_sheet->device_model_id == $key ? 'selected' : '' }}>{{ $model }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
+
+                <!-- Lista de verificación antes de la reparación -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="box box-solid">
@@ -115,112 +155,138 @@
                                 <h5 class="box-title">
                                     @lang('repair::lang.pre_repair_checklist'):
                                     @show_tooltip(__('repair::lang.prechecklist_help_text'))
-                                    <small>
-                                        @lang('repair::lang.not_applicable_key') = @lang('repair::lang.not_applicable')
-                                    </small>
+                                    <small>@lang('repair::lang.not_applicable_key') = @lang('repair::lang.not_applicable')</small>
                                 </h5>
                             </div>
                             <div class="box-body">
-                                <div class="append_checklists"></div>  
+                                <div class="append_checklists"></div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Número de serie y código de seguridad -->
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            {!! Form::label('serial_no', __('repair::lang.serial_no') . ':*') !!}
-                            {!! Form::text('serial_no', $job_sheet->serial_no, ['class' => 'form-control', 'placeholder' => __('repair::lang.serial_no'), 'required']); !!}
+                            <label for="serial_no">@lang('repair::lang.serial_no'):</label>
+                            <input type="text" name="serial_no" id="serial_no" class="form-control" value="{{ $job_sheet->serial_no }}" required>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="form-group">
-                           {!! Form::label('security_pwd', __('repair::lang.repair_passcode') . ':') !!}
+                            <label for="security_pwd">@lang('repair::lang.repair_passcode'):</label>
                             <div class="input-group">
-                                {!! Form::text('security_pwd', $job_sheet->security_pwd, ['class' => 'form-control', 'placeholder' => __('lang_v1.password')]); !!}
+                                <input type="text" name="security_pwd" id="security_pwd" class="form-control" placeholder="@lang('lang_v1.password')" value="{{ $job_sheet->security_pwd }}">
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-primary btn-flat" data-toggle="modal" data-target="#security_pattern">
-                                        <i class="fas fa-lock"></i>
-                                        @lang('repair::lang.pattern_lock')
+                                        <i class="fas fa-lock"></i> @lang('repair::lang.pattern_lock')
                                     </button>
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Información adicional sobre el dispositivo -->
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('product_configuration', __('repair::lang.product_configuration') . ':') !!} <br>
-                            {!! Form::textarea('product_configuration', $job_sheet->product_configuration, ['class' => 'tags-look', 'rows' => 4]); !!}
+                            <label for="product_configuration">@lang('repair::lang.product_configuration'):</label>
+                            <textarea name="product_configuration" id="product_configuration" class="form-control tags-look" rows="4">{{ $job_sheet->product_configuration }}</textarea>
+                        </div>
+                    </div>
 
-                        </div>
-                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('defects', __('repair::lang.problem_reported_by_customer') . ':') !!} <br>
-                            {!! Form::textarea('defects', $job_sheet->defects, ['class' => 'tags-look', 'rows' => 4]); !!}
+                            <label for="defects">@lang('repair::lang.problem_reported_by_customer'):</label>
+                            <textarea name="defects" id="defects" class="form-control tags-look" rows="4">{{ $job_sheet->defects }}</textarea>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('product_condition', __('repair::lang.condition_of_product') . ':') !!} <br>
-                            {!! Form::textarea('product_condition', $job_sheet->product_condition, ['class' => 'tags-look', 'rows' => 4]); !!}
+                            <label for="product_condition">@lang('repair::lang.condition_of_product'):</label>
+                            <textarea name="product_condition" id="product_condition" class="form-control tags-look" rows="4">{{ $job_sheet->product_condition }}</textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
         <div class="box box-solid">
             <div class="box-body">
                 <div class="row">
-                    @if(in_array('service_staff' ,$enabled_modules))
+                    <!-- Asignar técnico de servicio si está habilitado -->
+                    @if(in_array('service_staff', $enabled_modules))
                         <div class="col-sm-4">
                             <div class="form-group">
-                                {!! Form::label('service_staff', __('repair::lang.assign_service_staff') . ':') !!}
-                                {!! Form::select('service_staff', $technecians, $job_sheet->service_staff, ['class' => 'form-control select2', 'placeholder' => __('restaurant.select_service_staff')]); !!}
+                                <label for="service_staff">@lang('repair::lang.assign_service_staff'):</label>
+                                <select name="service_staff" id="service_staff" class="form-control select2">
+                                    <option value="">{{ __('restaurant.select_service_staff') }}</option>
+                                    @foreach($technecians as $key => $technician)
+                                        <option value="{{ $key }}" {{ $job_sheet->service_staff == $key ? 'selected' : '' }}>
+                                            {{ $technician }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     @endif
+
+                    <!-- Comentario del técnico de servicio -->
                     <div class="col-md-12">
                         <div class="form-group">
-                            {!! Form::label('comment_by_ss', __('repair::lang.comment_by_ss') . ':') !!}
-                            {!! Form::textarea('comment_by_ss', $job_sheet->comment_by_ss, ['class' => 'form-control ', 'rows' => '3']); !!}
+                            <label for="comment_by_ss">@lang('repair::lang.comment_by_ss'):</label>
+                            <textarea name="comment_by_ss" id="comment_by_ss" class="form-control" rows="3">{{ $job_sheet->comment_by_ss }}</textarea>
                         </div>
                     </div>
+
+                    <!-- Costo estimado -->
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('estimated_cost', __('repair::lang.estimated_cost') . ':') !!}
-                            {!! Form::text('estimated_cost', !empty($job_sheet->estimated_cost) ? @num_format($job_sheet->estimated_cost) : null, ['class' => 'form-control input_number', 'placeholder' => __('repair::lang.estimated_cost')]); !!}
+                            <label for="estimated_cost">@lang('repair::lang.estimated_cost'):</label>
+                            <input type="text" name="estimated_cost" id="estimated_cost" class="form-control input_number" 
+                                placeholder="@lang('repair::lang.estimated_cost')" 
+                                value="{{ !empty($job_sheet->estimated_cost) ? @num_format($job_sheet->estimated_cost) : '' }}">
                         </div>
                     </div>
+
+                    <!-- Estado del servicio -->
                     <div class="col-sm-4">
                         <div class="form-group">
-                            <label for="status_id">{{__('sale.status') . ':*'}}</label>
-                            <select name="status_id" class="form-control status" id="status_id" required>
-                            </select>
+                            <label for="status_id">@lang('sale.status'):</label>
+                            <select name="status_id" id="status_id" class="form-control status" required></select>
                         </div>
                     </div>
+
+                    <!-- Fecha de entrega esperada -->
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('delivery_date', __('repair::lang.expected_delivery_date') . ':') !!}
+                            <label for="delivery_date">@lang('repair::lang.expected_delivery_date'):</label>
                             @show_tooltip(__('repair::lang.delivery_date_tooltip'))
                             <div class="input-group">
-                                <span class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </span>
-                                {!! Form::text('delivery_date', !empty($job_sheet->delivery_date)? @format_datetime($job_sheet->delivery_date) : null, ['class' => 'form-control', 'readonly']); !!}
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input type="text" name="delivery_date" id="delivery_date" class="form-control" readonly 
+                                    value="{{ !empty($job_sheet->delivery_date) ? @format_datetime($job_sheet->delivery_date) : '' }}">
                                 <span class="input-group-addon">
                                     <i class="fas fa-times-circle cursor-pointer clear_delivery_date"></i>
                                 </span>
                             </div>
                         </div>
                     </div>
+
                     <div class="clearfix"></div>
+
+                    <!-- Subir documentos -->
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('images', __('repair::lang.document') . ':') !!}
-                            {!! Form::file('images[]', ['id' => 'upload_job_sheet_image', 'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types'))), 'multiple']); !!}
+                            <label for="upload_job_sheet_image">@lang('repair::lang.document'):</label>
+                            <input type="file" name="images[]" id="upload_job_sheet_image" multiple 
+                                accept="{{ implode(',', array_keys(config('constants.document_upload_mimes_types'))) }}">
                             <small>
                                 <p class="help-block">
                                     @lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])
@@ -229,87 +295,62 @@
                             </small>
                         </div>
                     </div>
+
+                    <!-- Notificaciones -->
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>@lang('repair::lang.send_notification')</label> <br>
-                            <div class="checkbox-inline">
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" name="send_notification[]" value="sms">
-                                    @lang('repair::lang.sms')
-                                </label>
-                            </div>
-                            <div class="checkbox-inline">
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" name="send_notification[]" value="email">
-                                    @lang('business.email')
-                                </label>
-                            </div>
+                            <label class="checkbox-inline cursor-pointer">
+                                <input type="checkbox" name="send_notification[]" value="sms"> @lang('repair::lang.sms')
+                            </label>
+                            <label class="checkbox-inline cursor-pointer">
+                                <input type="checkbox" name="send_notification[]" value="email"> @lang('business.email')
+                            </label>
                         </div>
                     </div>
+
                     <div class="clearfix"></div>
                     <hr>
                     <div class="clearfix"></div>
-                    <div class="col-sm-4">
-                    <div class="form-group">
+
+                    <!-- Campos personalizados -->
+                    @for ($i = 1; $i <= 5; $i++)
                         @php
-                            $custom_field_1_label = !empty($repair_settings['job_sheet_custom_field_1']) ? $repair_settings['job_sheet_custom_field_1'] : __('lang_v1.custom_field', ['number' => 1])
+                            $custom_field_label = !empty($repair_settings["job_sheet_custom_field_$i"]) 
+                                ? $repair_settings["job_sheet_custom_field_$i"] 
+                                : __('lang_v1.custom_field', ['number' => $i]);
+                            $custom_field_value = "custom_field_$i";
                         @endphp
-                        {!! Form::label('custom_field_1', $custom_field_1_label . ':') !!}
-                        {!! Form::text('custom_field_1', $job_sheet->custom_field_1, ['class' => 'form-control']); !!}
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="custom_field_{{ $i }}">{{ $custom_field_label }}:</label>
+                                <input type="text" name="custom_field_{{ $i }}" id="custom_field_{{ $i }}" 
+                                    class="form-control" value="{{ $job_sheet->$custom_field_value }}">
+                            </div>
+                        </div>
+                    @endfor
+
+                    <!-- Botones de acción -->
+                    <div class="col-sm-12 text-right">
+                        <input type="hidden" name="submit_type" id="submit_type">
+                        <button type="submit" class="btn btn-success submit_button" value="save_and_add_parts">
+                            @lang('repair::lang.save_and_add_parts')
+                        </button>
+                        <button type="submit" class="btn btn-primary submit_button" value="submit">
+                            @lang('messages.save')
+                        </button>
+                        <button type="submit" class="btn btn-info submit_button" value="save_and_upload_docs">
+                            @lang('repair::lang.save_and_upload_docs')
+                        </button>
                     </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        @php
-                            $custom_field_2_label = !empty($repair_settings['job_sheet_custom_field_2']) ? $repair_settings['job_sheet_custom_field_2'] : __('lang_v1.custom_field', ['number' => 2])
-                        @endphp
-                        {!! Form::label('custom_field_2', $custom_field_2_label . ':') !!}
-                        {!! Form::text('custom_field_2', $job_sheet->custom_field_2, ['class' => 'form-control']); !!}
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        @php
-                            $custom_field_3_label = !empty($repair_settings['job_sheet_custom_field_3']) ? $repair_settings['job_sheet_custom_field_3'] : __('lang_v1.custom_field', ['number' => 3])
-                        @endphp
-                        {!! Form::label('custom_field_3', $custom_field_3_label . ':') !!}
-                        {!! Form::text('custom_field_3', $job_sheet->custom_field_3, ['class' => 'form-control']); !!}
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        @php
-                            $custom_field_4_label = !empty($repair_settings['job_sheet_custom_field_4']) ? $repair_settings['job_sheet_custom_field_4'] : __('lang_v1.custom_field', ['number' => 4])
-                        @endphp
-                        {!! Form::label('custom_field_4', $custom_field_4_label . ':') !!}
-                        {!! Form::text('custom_field_4', $job_sheet->custom_field_4, ['class' => 'form-control']); !!}
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        @php
-                            $custom_field_5_label = !empty($repair_settings['job_sheet_custom_field_5']) ? $repair_settings['job_sheet_custom_field_5'] : __('lang_v1.custom_field', ['number' => 5])
-                        @endphp
-                        {!! Form::label('custom_field_5', $custom_field_5_label . ':') !!}
-                        {!! Form::text('custom_field_5', $job_sheet->custom_field_5, ['class' => 'form-control']); !!}
-                    </div>
-                </div>
-                <div class="col-sm-12 text-right">
-                    <input type="hidden" name="submit_type" id="submit_type">
-                    <button type="submit" class="btn btn-success submit_button" value="save_and_add_parts">
-                    @lang('repair::lang.save_and_add_parts')
-                    </button>
-                    <button type="submit" class="btn btn-primary submit_button" value="submit">
-                        @lang('messages.save')
-                    </button>
-                    <button type="submit" class="btn btn-info submit_button" value="save_and_upload_docs">
-                        @lang('repair::lang.save_and_upload_docs')
-                    </button>
-                </div>
                 </div>
             </div>
         </div>
-    {!! Form::close() !!} <!-- /form close -->
+
+    </form> <!-- /form close -->
+
+
+
     <div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         @include('contact.create', ['quick_add' => true])
     </div>

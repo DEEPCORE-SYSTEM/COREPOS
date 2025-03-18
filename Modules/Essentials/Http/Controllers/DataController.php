@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
-use Menu;
+use Spatie\Menu\Laravel\Menu;
 use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\DocumentShare;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +15,7 @@ use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\Reminder;
-
+use Carbon\Carbon;
 class DataController extends Controller
 {
     /**
@@ -85,7 +85,7 @@ class DataController extends Controller
             'Modules\Essentials\Notifications\PayrollNotification') {
             $data = $notification->data;
 
-            $month = \Carbon::createFromFormat('m', $data['month'])->format('F');
+            $month = Carbon::createFromFormat('m', $data['month'])->format('F');
 
             $msg = '';
 
@@ -264,20 +264,18 @@ class DataController extends Controller
         $is_essentials_enabled = (boolean)$module_util->hasThePermissionInSubscription($business_id, 'essentials_module');
 
         if ($is_essentials_enabled) {
-            Menu::modify('admin-sidebar-menu', function ($menu) {
+            Menu::new()->submenu('admin-sidebar-menu', function ($menu) {
                 $menu->url(
                         action('\Modules\Essentials\Http\Controllers\DashboardController@hrmDashboard'),
                         __('essentials::lang.hrm'),
                         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'hrm', 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '']
-                    )
-                ->order(87);
+                    );
                     
                 $menu->url(
                     action('\Modules\Essentials\Http\Controllers\ToDoController@index'),
                     __('essentials::lang.essentials'),
                     ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
-                )
-                ->order(87);
+                );
             });
         }
     }

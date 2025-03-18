@@ -3,7 +3,7 @@
 namespace Modules\Project\Entities;
 
 use App\Models\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class ProjectMember extends Model

@@ -11,6 +11,7 @@ use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CombinedPurchaseReturnController extends Controller
 {
@@ -151,7 +152,7 @@ class CombinedPurchaseReturnController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
@@ -353,7 +354,7 @@ class CombinedPurchaseReturnController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')

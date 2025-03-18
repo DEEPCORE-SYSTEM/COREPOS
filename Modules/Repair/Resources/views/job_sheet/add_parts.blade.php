@@ -10,80 +10,98 @@
 
 <!-- Main content -->
 <section class="content">
-	@component('components.widget', ['class' => 'box-solid'])
-		<table class="table">
-			<tr>
-				<th>@lang('repair::lang.job_sheet_no'):</th>
-				<td>{{$job_sheet->job_sheet_no}}</td>
-				<th>@lang('receipt.date'):</th>
-				<td>{{@format_datetime($job_sheet->created_at)}}</td>
-			</tr>
-			<tr>
-				<th>
-					@lang('role.customer'):
-				</th>
-				<td>{{$job_sheet->customer->name}}</td>
-				<th>@lang('business.location'):</th>
-				<td>
-					{{optional($job_sheet->businessLocation)->name}}
-				</td>
-			</tr>
-		</table>
-	@endcomponent
-	{!! Form::open(['url' => action('\Modules\Repair\Http\Controllers\JobSheetController@saveParts', $job_sheet->id), 'method' => 'post' ]) !!}
-	@component('components.widget', ['class' => 'box-solid', 'title' => __('repair::lang.add_parts')])
-		<div class="row">
-			<div class="col-sm-8 col-sm-offset-2">
-				<div class="form-group">
-					<div class="input-group">
-						<span class="input-group-addon">
-							<i class="fa fa-search"></i>
-						</span>
-						{!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_job_sheet_parts', 'placeholder' => __('repair::lang.search_parts')]); !!}
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-10 col-sm-offset-1">
-				<div class="table-responsive">
-				<table class="table table-bordered table-striped table-condensed" 
-				id="job_sheet_parts_table">
-					<thead>
-						<tr>
-							<th class="col-sm-4 text-center">	
-								@lang('repair::lang.part')
-							</th>
-							<th class="col-sm-2 text-center">
-								@lang('sale.qty')
-							</th>
-							<th class="col-sm-2 text-center"><i class="fa fa-trash" aria-hidden="true"></i></th>
-						</tr>
-					</thead>
-					<tbody>
-						@if(!empty($parts))
-							@foreach($parts as $part)
-								@include('repair::job_sheet.partials.job_sheet_part_row', ['variation_name' => $part['variation_name'], 'unit' => $part['unit'], 'quantity' => $part['quantity'], 'variation_id' => $part['variation_id']])
-							@endforeach
-						@endif
-					</tbody>
-				</table>
-				</div>
-			</div>
-		</div>
-	@endcomponent
-	@if(!empty($status_update_data) && $status_update_data['job_sheet_id'] == $job_sheet->id)
-		@component('components.widget', ['class' => 'box-solid'])
-			@include('repair::job_sheet.partials.edit_status_form', ['status_update_data' => $status_update_data])
-		@endcomponent
-	@endif
-	<div class="row">
-		<div class="col-sm-12">
-			<button type="submit" class="btn btn-primary pull-right">@lang('messages.save')</button>
-		</div>
-	</div>
-	{!! Form::close() !!}
+    <!-- Información del Job Sheet -->
+    <div class="box box-solid">
+        <div class="box-body">
+            <table class="table">
+                <tr>
+                    <th>@lang('repair::lang.job_sheet_no'):</th>
+                    <td>{{ $job_sheet->job_sheet_no }}</td>
+                    <th>@lang('receipt.date'):</th>
+                    <td>{{ date('Y-m-d H:i:s', strtotime($job_sheet->created_at)) }}</td>
+                </tr>
+                <tr>
+                    <th>@lang('role.customer'):</th>
+                    <td>{{ $job_sheet->customer->name }}</td>
+                    <th>@lang('business.location'):</th>
+                    <td>{{ optional($job_sheet->businessLocation)->name }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Formulario para agregar partes -->
+    <form action="{{ url('repair/job-sheet/save-parts', $job_sheet->id) }}" method="POST">
+        @csrf
+
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">@lang('repair::lang.add_parts')</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <!-- Campo de búsqueda de partes -->
+                    <div class="col-sm-8 col-sm-offset-2">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                                <input type="text" name="search_product" id="search_job_sheet_parts" class="form-control" placeholder="@lang('repair::lang.search_parts')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de partes agregadas -->
+                <div class="row">
+                    <div class="col-sm-10 col-sm-offset-1">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-condensed" id="job_sheet_parts_table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-sm-4 text-center">@lang('repair::lang.part')</th>
+                                        <th class="col-sm-2 text-center">@lang('sale.qty')</th>
+                                        <th class="col-sm-2 text-center"><i class="fa fa-trash" aria-hidden="true"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($parts))
+                                        @foreach($parts as $part)
+                                            @include('repair::job_sheet.partials.job_sheet_part_row', [
+                                                'variation_name' => $part['variation_name'],
+                                                'unit' => $part['unit'],
+                                                'quantity' => $part['quantity'],
+                                                'variation_id' => $part['variation_id']
+                                            ])
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de actualización de estado (si aplica) -->
+        @if(!empty($status_update_data) && $status_update_data['job_sheet_id'] == $job_sheet->id)
+            <div class="box box-solid">
+                <div class="box-body">
+                    @include('repair::job_sheet.partials.edit_status_form', ['status_update_data' => $status_update_data])
+                </div>
+            </div>
+        @endif
+
+        <!-- Botón de guardar -->
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary pull-right">@lang('messages.save')</button>
+            </div>
+        </div>
+    </form>
 </section>
+
 @stop
 @section('javascript')
 <script type="text/javascript">

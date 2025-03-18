@@ -15,10 +15,17 @@
         <div class="col-sm-12">
             @component('components.filters', ['title' => __('report.filters')])
             <div class="col-md-3">
+                <!-- Campo de selección para la ubicación del negocio -->
                 <div class="form-group">
-                    {!! Form::label('trial_bal_location_id',  __('purchase.business_location') . ':') !!}
-                    {!! Form::select('trial_bal_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                    <label for="trial_bal_location_id">{{ __('purchase.business_location') }}:</label>
+                    <select name="trial_bal_location_id" id="trial_bal_location_id" class="form-control select2" style="width:100%;">
+                        <option value="">{{ __('messages.please_select') }}</option>
+                        @foreach($business_locations as $id => $location)
+                            <option value="{{ $id }}">{{ $location }}</option>
+                        @endforeach
+                    </select>
                 </div>
+
             </div>
             <div class="col-sm-3 col-xs-6">
                     <label for="end_date">@lang('messages.filter_by_date'):</label>

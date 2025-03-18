@@ -16,66 +16,104 @@
 
 <!-- Main content -->
 <section class="content no-print">
-    @component('components.filters', ['title' => __('report.filters')])
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('purchase_list_filter_location_id',  __('purchase.business_location') . ':') !!}
-                {!! Form::select('purchase_list_filter_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
+   
+    <!-- Filtros de búsqueda -->
+    <div class="box box-solid">
+        <div class="box-header with-border">
+            <h3 class="box-title">@lang('report.filters')</h3>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('purchase_list_filter_supplier_id',  __('purchase.supplier') . ':') !!}
-                {!! Form::select('purchase_list_filter_supplier_id', $suppliers, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('purchase_list_filter_status',  __('purchase.purchase_status') . ':') !!}
-                {!! Form::select('purchase_list_filter_status', $orderStatuses, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('purchase_list_filter_payment_status',  __('purchase.payment_status') . ':') !!}
-                {!! Form::select('purchase_list_filter_payment_status', ['paid' => __('lang_v1.paid'), 'due' => __('lang_v1.due'), 'partial' => __('lang_v1.partial'), 'overdue' => __('lang_v1.overdue')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('purchase_list_filter_date_range', __('report.date_range') . ':') !!}
-                {!! Form::text('purchase_list_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-            </div>
-        </div>
-    @endcomponent
-
-    @component('components.widget', ['class' => 'box-primary', 'title' => __('purchase.all_purchases')])
-        @can('purchase.create')
-            @slot('tool')
-                <div class="box-tools">
-                    <a class="btn btn-block btn-primary" href="{{action('PurchaseController@create')}}">
-                    <i class="fa fa-plus"></i> @lang('messages.add')</a>
+        <div class="box-body">
+            <div class="row">
+                <!-- Filtro por ubicación -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="purchase_list_filter_location_id">@lang('purchase.business_location'):</label>
+                        <select name="purchase_list_filter_location_id" id="purchase_list_filter_location_id" class="form-control select2" style="width: 100%;">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($business_locations as $key => $location)
+                                <option value="{{ $key }}">{{ $location }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            @endslot
-        @endcan
-        @include('purchase.partials.purchase_table')
-    @endcomponent
 
-    <div class="modal fade product_modal" tabindex="-1" role="dialog" 
-    	aria-labelledby="gridSystemModalLabel">
+                <!-- Filtro por proveedor -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="purchase_list_filter_supplier_id">@lang('purchase.supplier'):</label>
+                        <select name="purchase_list_filter_supplier_id" id="purchase_list_filter_supplier_id" class="form-control select2" style="width: 100%;">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($suppliers as $key => $supplier)
+                                <option value="{{ $key }}">{{ $supplier }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filtro por estado de la compra -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="purchase_list_filter_status">@lang('purchase.purchase_status'):</label>
+                        <select name="purchase_list_filter_status" id="purchase_list_filter_status" class="form-control select2" style="width: 100%;">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($orderStatuses as $key => $status)
+                                <option value="{{ $key }}">{{ $status }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filtro por estado de pago -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="purchase_list_filter_payment_status">@lang('purchase.payment_status'):</label>
+                        <select name="purchase_list_filter_payment_status" id="purchase_list_filter_payment_status" class="form-control select2" style="width: 100%;">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            <option value="paid">{{ __('lang_v1.paid') }}</option>
+                            <option value="due">{{ __('lang_v1.due') }}</option>
+                            <option value="partial">{{ __('lang_v1.partial') }}</option>
+                            <option value="overdue">{{ __('lang_v1.overdue') }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filtro por rango de fechas -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="purchase_list_filter_date_range">@lang('report.date_range'):</label>
+                        <input type="text" name="purchase_list_filter_date_range" id="purchase_list_filter_date_range" class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="modal fade payment_modal" tabindex="-1" role="dialog" 
-        aria-labelledby="gridSystemModalLabel">
+    <!-- Lista de todas las compras -->
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">@lang('purchase.all_purchases')</h3>
+            @can('purchase.create')
+                <div class="box-tools">
+                    <a class="btn btn-primary" href="{{ url('purchases/create') }}">
+                        <i class="fa fa-plus"></i> @lang('messages.add')
+                    </a>
+                </div>
+            @endcan
+        </div>
+        <div class="box-body">
+            @include('purchase.partials.purchase_table')
+        </div>
     </div>
 
-    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" 
-        aria-labelledby="gridSystemModalLabel">
-    </div>
+    <!-- Modales para productos, pagos y edición de pagos -->
+    <div class="modal fade product_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
+    <div class="modal fade payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
+    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 
+    <!-- Modal para actualizar el estado de la compra -->
     @include('purchase.partials.update_purchase_status_modal')
-
 </section>
+
 
 <section id="receipt_section" class="print_section"></section>
 

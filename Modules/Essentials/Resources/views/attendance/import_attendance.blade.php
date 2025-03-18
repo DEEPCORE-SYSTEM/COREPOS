@@ -1,22 +1,26 @@
 <div class="row">
     <div class="col-sm-12">
-        {!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\AttendanceController@importAttendance'), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
-            <div class="row">
-                <div class="col-sm-6">
+        
+    <form action="{{ action('\Modules\Essentials\Http\Controllers\AttendanceController@importAttendance') }}" 
+        method="POST" enctype="multipart/form-data">
+        @csrf
+
+        <div class="row">
+            <div class="col-sm-6">
                 <div class="col-sm-8">
                     <div class="form-group">
-                        {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
-                        {!! Form::file('attendance', ['accept'=> '.xls', 'required' => 'required']); !!}
-                      </div>
+                        <label for="attendance">@lang('product.file_to_import'):</label>
+                        <input type="file" name="attendance" id="attendance" accept=".xls" required>
+                    </div>
                 </div>
                 <div class="col-sm-4">
-                <br>
+                    <br>
                     <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
                 </div>
-                </div>
             </div>
+        </div>
+    </form>
 
-        {!! Form::close() !!}
         <br><br>
         <div class="row">
             <div class="col-sm-4">

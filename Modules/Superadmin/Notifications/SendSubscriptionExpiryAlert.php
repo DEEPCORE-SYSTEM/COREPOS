@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Carbon\Carbon;
 
 class SendSubscriptionExpiryAlert extends Notification
 {
@@ -23,7 +24,7 @@ class SendSubscriptionExpiryAlert extends Notification
     public function __construct($subscription)
     {
         $this->subscription = $subscription;
-        $this->days_left = \Carbon::now()->diffInDays($this->subscription->end_date) + 1;
+        $this->days_left = Carbon::now()->diffInDays($this->subscription->end_date) + 1;
     }
 
     /**

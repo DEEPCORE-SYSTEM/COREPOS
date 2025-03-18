@@ -13,83 +13,111 @@
 <!-- Main content -->
 <section class="content no-print">
     @component('components.filters', ['title' => __('report.filters'), 'closed' => false])
+        <!-- Filtro por Ubicación -->
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-                {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                <label for="location_id">@lang('purchase.business_location'):</label>
+                <select name="location_id" id="location_id" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('lang_v1.all') }}</option>
+                    @foreach($business_locations as $key => $location)
+                        <option value="{{ $key }}">{{ $location }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
+
+        <!-- Filtro por Cliente -->
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('contact_id',  __('role.customer') . ':') !!}
-                {!! Form::select('contact_id', $customers, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                <label for="contact_id">@lang('role.customer'):</label>
+                <select name="contact_id" id="contact_id" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('lang_v1.all') }}</option>
+                    @foreach($customers as $key => $customer)
+                        <option value="{{ $key }}">{{ $customer }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
-        @if(in_array('service_staff' ,$enabled_modules) && !$is_user_service_staff)
+
+        <!-- Filtro por Técnico (solo si está habilitado el módulo) -->
+        @if(in_array('service_staff', $enabled_modules) && !$is_user_service_staff)
             <div class="col-md-3">
                 <div class="form-group">
-                    {!! Form::label('technician',  __('repair::lang.technician') . ':') !!}
-                    {!! Form::select('technician', $service_staffs, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    <label for="technician">@lang('repair::lang.technician'):</label>
+                    <select name="technician" id="technician" class="form-control select2" style="width:100%">
+                        <option value="">{{ __('lang_v1.all') }}</option>
+                        @foreach($service_staffs as $key => $staff)
+                            <option value="{{ $key }}">{{ $staff }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         @endif
+
+        <!-- Filtro por Estado -->
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('status_id',  __('sale.status') . ':') !!}
-                {!! Form::select('status_id', $status_dropdown['statuses'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                <label for="status_id">@lang('sale.status'):</label>
+                <select name="status_id" id="status_id" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('lang_v1.all') }}</option>
+                    @foreach($status_dropdown['statuses'] as $key => $status)
+                        <option value="{{ $key }}">{{ $status }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
     @endcomponent
-	<div class="row">
+
+    <div class="row">
         <div class="col-md-12">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
+                    <!-- Pestaña de trabajos pendientes -->
                     <li class="active">
-                        <a href="#pending_job_sheet_tab" data-toggle="tab" aria-expanded="true">
+                        <a href="#pending_job_sheet_tab" data-toggle="tab">
                             <i class="fas fa-exclamation-circle text-orange"></i>
                             @lang('repair::lang.pending')
                             @show_tooltip(__('repair::lang.common_pending_status_tooltip'))
                         </a>
                     </li>
+
+                    <!-- Pestaña de trabajos completados -->
                     <li>
-                        <a href="#completed_job_sheet_tab" data-toggle="tab" aria-expanded="true">
+                        <a href="#completed_job_sheet_tab" data-toggle="tab">
                             <i class="fa fas fa-check-circle text-success"></i>
                             @lang('repair::lang.completed')
                             @show_tooltip(__('repair::lang.common_completed_status_tooltip'))
                         </a>
                     </li>
                 </ul>
+
                 <div class="tab-content">
+                    <!-- Tabla de trabajos pendientes -->
                     <div class="tab-pane active" id="pending_job_sheet_tab">
                         <div class="row">
                             <div class="col-md-12 mb-12">
-                                <a type="button" class="btn btn-sm btn-primary pull-right m-5" href="{{action('\Modules\Repair\Http\Controllers\JobSheetController@create')}}" id="add_job_sheet">
+                                <a class="btn btn-sm btn-primary pull-right m-5" 
+                                   href="{{ action('\Modules\Repair\Http\Controllers\JobSheetController@create') }}" 
+                                   id="add_job_sheet">
                                     <i class="fa fa-plus"></i> @lang('messages.add')
                                 </a>
                             </div>
                         </div>
+
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="pending_job_sheets_table">
                                 <thead>
                                     <tr>
                                         <th>@lang('messages.action')</th>
-                                        <th>
-                                            @lang('repair::lang.service_type')
-                                        </th>
-                                        <th>
-                                            @lang('repair::lang.expected_delivery_date')
-                                        </th>
-                                        <th>
-                                            @lang('repair::lang.job_sheet_no')
-                                        </th>
+                                        <th>@lang('repair::lang.service_type')</th>
+                                        <th>@lang('repair::lang.expected_delivery_date')</th>
+                                        <th>@lang('repair::lang.job_sheet_no')</th>
                                         <th>@lang('sale.invoice_no')</th>
                                         <th>@lang('sale.status')</th>
-                                        @if(in_array('service_staff' ,$enabled_modules))
+                                        @if(in_array('service_staff', $enabled_modules))
                                             <th>@lang('repair::lang.technician')</th>
                                         @endif
-                                        <th>
-                                            @lang('role.customer')
-                                        </th>
+                                        <th>@lang('role.customer')</th>
                                         <th>@lang('business.location')</th>
                                         <th>@lang('product.brand')</th>
                                         <th>@lang('repair::lang.device')</th>
@@ -103,36 +131,33 @@
                             </table>
                         </div>
                     </div>
+
+                    <!-- Tabla de trabajos completados -->
                     <div class="tab-pane" id="completed_job_sheet_tab">
                         <div class="row">
                             <div class="col-md-12 mb-12">
-                               <a type="button" class="btn btn-sm btn-primary pull-right m-5" href="{{action('\Modules\Repair\Http\Controllers\JobSheetController@create')}}" id="add_job_sheet">
+                                <a class="btn btn-sm btn-primary pull-right m-5" 
+                                   href="{{ action('\Modules\Repair\Http\Controllers\JobSheetController@create') }}" 
+                                   id="add_job_sheet">
                                     <i class="fa fa-plus"></i> @lang('messages.add')
                                 </a>
                             </div>
                         </div>
+
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="completed_job_sheets_table">
                                 <thead>
                                     <tr>
                                         <th>@lang('messages.action')</th>
-                                        <th>
-                                            @lang('repair::lang.service_type')
-                                        </th>
-                                        <th>
-                                            @lang('repair::lang.expected_delivery_date')
-                                        </th>
-                                        <th>
-                                            @lang('repair::lang.job_sheet_no')
-                                        </th>
+                                        <th>@lang('repair::lang.service_type')</th>
+                                        <th>@lang('repair::lang.expected_delivery_date')</th>
+                                        <th>@lang('repair::lang.job_sheet_no')</th>
                                         <th>@lang('sale.invoice_no')</th>
                                         <th>@lang('sale.status')</th>
-                                        @if(in_array('service_staff' ,$enabled_modules))
+                                        @if(in_array('service_staff', $enabled_modules))
                                             <th>@lang('repair::lang.technician')</th>
                                         @endif
-                                        <th>
-                                            @lang('role.customer')
-                                        </th>
+                                        <th>@lang('role.customer')</th>
                                         <th>@lang('business.location')</th>
                                         <th>@lang('product.brand')</th>
                                         <th>@lang('repair::lang.device')</th>
@@ -150,8 +175,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para actualización de estado -->
     <div class="modal fade" id="status_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 </section>
+
 <!-- /.content -->
 @stop
 @section('javascript')

@@ -16,6 +16,7 @@ use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Carbon\Carbon;
 
 class BusinessUtil extends Util
 {
@@ -404,9 +405,9 @@ class BusinessUtil extends Util
     public function editTransactionDateRange($business_id, $edit_transaction_period)
     {
         if (is_numeric($edit_transaction_period)) {
-            return ['start' => \Carbon::today()
+            return ['start' => Carbon::today()
                                 ->subDays($edit_transaction_period),
-                    'end' => \Carbon::today()
+                    'end' => Carbon::today()
                 ];
         } elseif ($edit_transaction_period == 'fy') {
             //Editing allowed for current financial year

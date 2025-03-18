@@ -1,42 +1,54 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
 
-    {!! Form::open(['url' => action('BrandController@update', [$brand->id]), 'method' => 'PUT', 'id' => 'brand_edit_form' ]) !!}
+    <!-- Formulario para editar una marca -->
+    <form action="{{ action('BrandController@update', [$brand->id]) }}" method="POST" id="brand_edit_form">
+        @csrf <!-- Token de seguridad CSRF -->
+        @method('PUT') <!-- Método PUT para actualizar -->
 
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'brand.edit_brand' )</h4>
-    </div>
+        <!-- Encabezado del modal -->
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">@lang('brand.edit_brand')</h4>
+        </div>
 
-    <div class="modal-body">
-      <div class="form-group">
-        {!! Form::label('name', __( 'brand.brand_name' ) . ':*') !!}
-          {!! Form::text('name', $brand->name, ['class' => 'form-control', 'required', 'placeholder' => __( 'brand.brand_name' )]); !!}
-      </div>
+        <!-- Cuerpo del modal -->
+        <div class="modal-body">
 
-      <div class="form-group">
-        {!! Form::label('description', __( 'brand.short_description' ) . ':') !!}
-          {!! Form::text('description', $brand->description, ['class' => 'form-control','placeholder' => __( 'brand.short_description' )]); !!}
-      </div>
+            <!-- Campo para el nombre de la marca -->
+            <div class="form-group">
+                <label for="name">@lang('brand.brand_name') *</label>
+                <input type="text" name="name" value="{{ $brand->name }}" class="form-control" required placeholder="@lang('brand.brand_name')">
+            </div>
 
-        @if($is_repair_installed)
-          <div class="form-group">
-             <label>
-                {!!Form::checkbox('use_for_repair', 1, $brand->use_for_repair, ['class' => 'input-icheck']) !!}
-                {{ __( 'repair::lang.use_for_repair' )}}
-            </label>
-            @show_tooltip(__('repair::lang.use_for_repair_help_text'))
-          </div>
-        @endif
+            <!-- Campo para la descripción de la marca -->
+            <div class="form-group">
+                <label for="description">@lang('brand.short_description')</label>
+                <input type="text" name="description" value="{{ $brand->description }}" class="form-control" placeholder="@lang('brand.short_description')">
+            </div>
 
-    </div>
+            <!-- Checkbox para marcar si la marca se usará en reparaciones -->
+            @if($is_repair_installed)
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="use_for_repair" value="1" class="input-icheck" {{ $brand->use_for_repair ? 'checked' : '' }}>
+                        @lang('repair::lang.use_for_repair')
+                    </label>
+                    <i class="fa fa-info-circle" data-toggle="tooltip" title="@lang('repair::lang.use_for_repair_help_text')"></i>
+                </div>
+            @endif
 
-    <div class="modal-footer">
-      <button type="submit" class="btn btn-primary">@lang( 'messages.update' )</button>
-      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-    </div>
+        </div> <!-- Fin del cuerpo del modal -->
 
-    {!! Form::close() !!}
+        <!-- Pie del modal con botones de acción -->
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+        </div>
 
-  </div><!-- /.modal-content -->
-</div><!-- /.modal-dialog -->
+    </form> <!-- Fin del formulario -->
+
+  </div> <!-- /.modal-content -->
+</div> <!-- /.modal-dialog -->

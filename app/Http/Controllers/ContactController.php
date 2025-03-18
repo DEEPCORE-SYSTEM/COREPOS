@@ -15,13 +15,14 @@ use App\Utils\ModuleUtil;
 use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
-use DB;
 use Excel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\TransactionPayment;
 use Spatie\Activitylog\Models\Activity;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
@@ -290,25 +291,25 @@ class ContactController extends Controller
         }
 
         if (!$is_admin && auth()->user()->can('customer_with_no_sell_one_month')) {
-            $from_transaction_date = \Carbon::now()->subDays(30)->format('Y-m-d');
+            $from_transaction_date = Carbon::now()->subDays(30)->format('Y-m-d');
             $query->havingRaw("max_transaction_date < '{$from_transaction_date}'")
                      ->orHavingRaw('transaction_date IS NULL');
         }
 
         if (!$is_admin && auth()->user()->can('customer_with_no_sell_three_month')) {
-            $from_transaction_date = \Carbon::now()->subMonths(3)->format('Y-m-d');
+            $from_transaction_date = Carbon::now()->subMonths(3)->format('Y-m-d');
             $query->havingRaw("max_transaction_date < '{$from_transaction_date}'")
                      ->orHavingRaw('transaction_date IS NULL');
         }
 
         if (!$is_admin && auth()->user()->can('customer_with_no_sell_six_month')) {
-            $from_transaction_date = \Carbon::now()->subMonths(6)->format('Y-m-d');
+            $from_transaction_date = Carbon::now()->subMonths(6)->format('Y-m-d');
             $query->havingRaw("max_transaction_date < '{$from_transaction_date}'")
                      ->orHavingRaw('transaction_date IS NULL');
         }
 
         if (!$is_admin && auth()->user()->can('customer_with_no_sell_one_year')) {
-            $from_transaction_date = \Carbon::now()->subYear()->format('Y-m-d');
+            $from_transaction_date = Carbon::now()->subYear()->format('Y-m-d');
             $query->havingRaw("max_transaction_date < '{$from_transaction_date}'")
                      ->orHavingRaw('transaction_date IS NULL');
         }
@@ -580,7 +581,7 @@ class ContactController extends Controller
             $this->contactUtil->activityLog($output['data'], 'added');
 
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' =>__("messages.something_went_wrong")
@@ -752,7 +753,7 @@ class ContactController extends Controller
                 $this->contactUtil->activityLog($output['data'], 'edited');
 
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -809,7 +810,7 @@ class ContactController extends Controller
                                 ];
                 }
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -1179,7 +1180,7 @@ class ContactController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => $e->getMessage()
@@ -1265,7 +1266,7 @@ class ContactController extends Controller
                 $customer = Contact::create($data);
             }
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             return $this->respondWentWrong($e);
         }
@@ -1333,7 +1334,7 @@ class ContactController extends Controller
 
             $output = ['success' => 1, 'msg' => __('lang_v1.notification_sent_successfully')];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => "File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage()

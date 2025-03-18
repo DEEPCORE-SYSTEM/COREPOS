@@ -7,12 +7,13 @@ use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Menu;
+use Spatie\Menu\Laravel\Menu;
 use Modules\Project\Entities\Project;
 use Modules\Project\Entities\ProjectTask;
 use Modules\Project\Entities\ProjectTransaction;
 use Modules\Project\Utils\ProjectUtil;
 use App\Models\TaxRate;
+
 
 class DataController extends Controller
 {
@@ -121,7 +122,8 @@ class DataController extends Controller
         $is_project_enabled = (boolean)$module_util->hasThePermissionInSubscription($business_id, 'project_module');
 
         if ($is_project_enabled) {
-            Menu::modify(
+          
+            Menu::new()->submenu(
                 'admin-sidebar-menu',
                 function ($menu) use ($is_admin) {
                     $menu->url(
@@ -129,8 +131,7 @@ class DataController extends Controller
                         __('project::lang.project'),
                         ['icon' => 'fa fa-project-diagram', 'active' => 
                         request()->segment(1) == 'project' || request()->get('type') == 'project', 'style' => config('app.env') == 'demo' ? 'background-color: #e4186d !important;' : '']
-                    )
-                    ->order(86);
+                    );
                 }
             );
         }

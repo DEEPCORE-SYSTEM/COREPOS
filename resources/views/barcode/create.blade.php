@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',  __('barcode.add_barcode_setting'))
+@section('title', __('barcode.add_barcode_setting'))
 
 @section('content')
 <style type="text/css">
@@ -18,173 +18,183 @@
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['url' => action('BarcodeController@store'), 'method' => 'post', 
-'id' => 'add_barcode_settings_form' ]) !!}
-	<div class="box box-solid">
-    <div class="box-body">
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('name', __('barcode.setting_name') . ':*') !!}
-              {!! Form::text('name', null, ['class' => 'form-control', 'required',
-              'placeholder' => __('barcode.setting_name')]); !!}
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('description', __('barcode.setting_description') ) !!}
-              {!! Form::textarea('description', null, ['class' => 'form-control',
-              'placeholder' => __('barcode.setting_description'), 'rows' => 3]); !!}
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <div class="form-group">
-            <div class="checkbox">
-              <label>
-                {!! Form::checkbox('is_continuous', 1, false, ['id' => 'is_continuous']); !!} @lang('barcode.is_continuous')</label>
-              </div>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="form-group">
-             {!! Form::label('top_margin', __('barcode.top_margin') . ' ('. __('barcode.in_in') . '):*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-              </span>
-              {!! Form::number('top_margin', 0, ['class' => 'form-control',
-              'placeholder' => __('barcode.top_margin'), 'min' => 0, 'step' => 0.00001, 'required']); !!}
+    <form action="{{ action('BarcodeController@store') }}" method="POST" id="add_barcode_settings_form">
+        @csrf
+        <div class="box box-solid">
+            <div class="box-body">
+                <div class="row">
+                    <!-- Nombre de la configuración -->
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="name">{{ __('barcode.setting_name') }}:*</label>
+                            <input type="text" name="name" class="form-control" required
+                                placeholder="{{ __('barcode.setting_name') }}">
+                        </div>
+                    </div>
+                    <!-- Descripción de la configuración -->
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="description">{{ __('barcode.setting_description') }}</label>
+                            <textarea name="description" class="form-control"
+                                placeholder="{{ __('barcode.setting_description') }}" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <!-- Opción para formato continuo -->
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="is_continuous" value="1" id="is_continuous">
+                                    {{ __('barcode.is_continuous') }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Márgenes -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="top_margin">{{ __('barcode.top_margin') }} ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-arrow-up"></span>
+                                </span>
+                                <input type="number" name="top_margin" class="form-control" min="0" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="left_margin">{{ __('barcode.left_margin') }}
+                                ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-arrow-left"></span>
+                                </span>
+                                <input type="number" name="left_margin" class="form-control" min="0" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <!-- Dimensiones del código de barras -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="width">{{ __('barcode.width') }} ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-text-width"></i></span>
+                                <input type="number" name="width" class="form-control" min="0.1" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="height">{{ __('barcode.height') }} ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-text-height"></i></span>
+                                <input type="number" name="height" class="form-control" min="0.1" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <!-- Dimensiones del papel -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="paper_width">{{ __('barcode.paper_width') }}
+                                ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-text-width"></i></span>
+                                <input type="number" name="paper_width" class="form-control" min="0.1" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 paper_height_div">
+                        <div class="form-group">
+                            <label for="paper_height">{{ __('barcode.paper_height') }}
+                                ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-text-height"></i></span>
+                                <input type="number" name="paper_height" class="form-control" min="0.1" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cantidad de etiquetas en una fila -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="stickers_in_one_row">{{ __('barcode.stickers_in_one_row') }}:*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-ellipsis-h"></i></span>
+                                <input type="number" name="stickers_in_one_row" class="form-control" min="1" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <!-- Distancia entre filas y columnas -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="row_distance">{{ __('barcode.row_distance') }}
+                                ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-resize-vertical"></span>
+                                </span>
+                                <input type="number" name="row_distance" class="form-control" min="0" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="col_distance">{{ __('barcode.col_distance') }}
+                                ({{ __('barcode.in_in') }}):*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-resize-horizontal"></span>
+                                </span>
+                                <input type="number" name="col_distance" class="form-control" min="0" step="0.00001"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <!-- Cantidad de etiquetas por hoja -->
+                    <div class="col-sm-6 stickers_per_sheet_div">
+                        <div class="form-group">
+                            <label for="stickers_in_one_sheet">{{ __('barcode.stickers_in_one_sheet') }}:*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-th"></i></span>
+                                <input type="number" name="stickers_in_one_sheet" class="form-control" min="1" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <!-- Opción para marcar como configuración predeterminada -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="is_default" value="1">
+                                    {{ __('barcode.set_as_default') }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botón para guardar -->
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary pull-right">@lang('messages.save')</button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('left_margin', __('barcode.left_margin') . ' ('. __('barcode.in_in') . '):*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-              </span>
-              {!! Form::number('left_margin', 0, ['class' => 'form-control',
-              'placeholder' => __('barcode.left_margin'), 'min' => 0, 'step' => 0.00001, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('width', __('barcode.width') . ' ('. __('barcode.in_in') . '):*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-text-width" aria-hidden="true"></i>
-              </span>
-              {!! Form::number('width', null, ['class' => 'form-control',
-              'placeholder' => __('barcode.width'), 'min' => 0.1, 'step' => 0.00001, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('height', __('barcode.height') . ' ('. __('barcode.in_in') . '):*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-text-height" aria-hidden="true"></i>
-              </span>
-              {!! Form::number('height', null, ['class' => 'form-control',
-              'placeholder' => __('barcode.height'), 'min' => 0.1, 'step' => 0.00001, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('paper_width', __('barcode.paper_width') . ' ('. __('barcode.in_in') . '):*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-text-width" aria-hidden="true"></i>
-              </span>
-              {!! Form::number('paper_width', null, ['class' => 'form-control',
-              'placeholder' => __('barcode.paper_width'), 'min' => 0.1, 'step' => 0.00001, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6 paper_height_div">
-          <div class="form-group">
-            {!! Form::label('paper_height', __('barcode.paper_height') . ' ('. __('barcode.in_in') . '):*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-text-height" aria-hidden="true"></i>
-              </span>
-              {!! Form::number('paper_height', null, ['class' => 'form-control',
-              'placeholder' => __('barcode.paper_height'), 'min' => 0.1, 'step' => 0.00001, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('stickers_in_one_row', __('barcode.stickers_in_one_row') . ':*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-              </span>
-              {!! Form::number('stickers_in_one_row', null, ['class' => 'form-control',
-              'placeholder' => __('barcode.stickers_in_one_row'), 'min' => 1, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('row_distance', __('barcode.row_distance') . ' ('. __('barcode.in_in') . '):*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-resize-vertical" aria-hidden="true"></span>
-              </span>
-              {!! Form::number('row_distance', 0, ['class' => 'form-control',
-              'placeholder' => __('barcode.row_distance'), 'min' => 0, 'step' => 0.00001, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('col_distance', __('barcode.col_distance') . ' ('. __('barcode.in_in') . '):*') !!}
-             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-resize-horizontal" aria-hidden="true"></span>
-              </span>
-              {!! Form::number('col_distance', 0, ['class' => 'form-control',
-              'placeholder' => __('barcode.col_distance'), 'min' => 0, 'step' => 0.00001, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-6 stickers_per_sheet_div">
-          <div class="form-group">
-            {!! Form::label('stickers_in_one_sheet', __('barcode.stickers_in_one_sheet') . ':*') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-th" aria-hidden="true"></i>
-              </span>
-              {!! Form::number('stickers_in_one_sheet', null, ['class' => 'form-control',
-              'placeholder' => __('barcode.stickers_in_one_sheet'), 'min' => 1, 'required']); !!}
-            </div>
-          </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            <div class="checkbox">
-              <label>
-                {!! Form::checkbox('is_default', 1); !!} @lang('barcode.set_as_default')</label>
-              </div>
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <button type="submit" class="btn btn-primary pull-right">@lang('messages.save')</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  {!! Form::close() !!}
+    </form>
 </section>
 <!-- /.content -->
 @endsection

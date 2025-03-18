@@ -2,156 +2,170 @@
 
 @section('title', __('essentials::lang.todo'))
 
+@extends('layouts.app')
+
 @section('content')
 <section class="content">
 	<div class="row">
 		<div class="col-md-12">
+			<!-- Tarjeta con información de la tarea -->
 			<div class="box box-primary">
 				<div class="box-header">
 					<h4 class="box-title">
 						<i class="ion ion-clipboard"></i>
-						<small><code>({{$todo->task_id}})</code></small> {{$todo->task}}
+						<small><code>({{ $todo->task_id }})</code></small> {{ $todo->task }}
 					</h4>
 				</div>
 				<div class="box-body">
 					<div class="row">
 						<div class="col-md-4">
-							<strong>{{__('business.start_date')}}: </strong> {{@format_date($todo->date)}}<br>
-							<strong>{{__('essentials::lang.end_date')}}: </strong> @if(!empty($todo->end_date)){{@format_date($todo->end_date)}}@endif<br>
-							<strong>{{__('essentials::lang.estimated_hours')}}: </strong> {{$todo->estimated_hours}}
+							<strong>{{ __('business.start_date') }}:</strong> {{ format_date($todo->date) }}<br>
+							<strong>{{ __('essentials::lang.end_date') }}:</strong> {{ $todo->end_date ? format_date($todo->end_date) : '' }}<br>
+							<strong>{{ __('essentials::lang.estimated_hours') }}:</strong> {{ $todo->estimated_hours }}
 						</div>
 						<div class="col-md-4">
-							<strong>{{__('essentials::lang.assigned_by')}}: </strong> {{optional($todo->assigned_by)->user_full_name}}<br>
-							<strong>{{__('essentials::lang.assigned_to')}}: </strong> {{implode(', ', $users)}}
+							<strong>{{ __('essentials::lang.assigned_by') }}:</strong> {{ optional($todo->assigned_by)->user_full_name }}<br>
+							<strong>{{ __('essentials::lang.assigned_to') }}:</strong> {{ implode(', ', $users) }}
 						</div>
 						<div class="col-md-4">
-							<strong>{{__('essentials::lang.priority')}}: </strong> {{$priorities[$todo->priority] ?? ''}}<br>
-							<strong>{{__('sale.status')}}: </strong> {{$task_statuses[$todo->status] ?? ''}}
+							<strong>{{ __('essentials::lang.priority') }}:</strong> {{ $priorities[$todo->priority] ?? '' }}<br>
+							<strong>{{ __('sale.status') }}:</strong> {{ $task_statuses[$todo->status] ?? '' }}
 						</div>
 						<div class="clearfix"></div>
 						<div class="col-md-12">
-							<br/>
-							<strong>{{__('lang_v1.description')}}: </strong> {!! $todo->description !!}
+							<br>
+							<strong>{{ __('lang_v1.description') }}:</strong> {!! $todo->description !!}
 						</div>
 					</div>
 				</div>
 			</div>
-		<div class="col-md-12">
-			<div class="nav-tabs-custom">
-			    <ul class="nav nav-tabs">
-			        <li class="active">
-			            <a href="#comments_tab" data-toggle="tab" aria-expanded="true">
-			                <i class="fa fa-comment"></i>
-							@lang('essentials::lang.comments') </a>
-			        </li>
-			        <li>
-			            <a href="#documents_tab" data-toggle="tab">
-			                <i class="fa fa-file"></i>
-						@lang('lang_v1.documents') </a>
-			        </li>
-			        <li>
-			            <a href="#activities_tab" data-toggle="tab">
-			                <i class="fa fa-pen-square"></i>
-						@lang('lang_v1.activities') </a>
-			        </li>
-			    </ul>
-			    <div class="tab-content">
-			    	<div class="tab-pane active" id="comments_tab">
-			    		<div class="row">
-							{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\ToDoController@addComment'), 'id' => 'task_comment_form', 'method' => 'post']) !!}
-							<div class="col-md-6">
-								<div class="form-group">
-									{!! Form::label('comment', __('essentials::lang.add_comment') . ':') !!}
-									{!! Form::textarea('comment', null, ['rows' => 3, 'class' => 'form-control', 'required']); !!}
-									{!! Form::hidden('task_id', $todo->id); !!}
-								</div>
-							</div>
-							<div class="col-md-12">
-								<button type="submit" class="btn btn-primary pull-right ladda-button add-comment-btn" data-style="expand-right">
-									<span class="ladda-label">
-										@lang('messages.add')
-									</span>
-								</button>
-							</div>
-							{!! Form::close() !!}
-							<div class="col-md-12">
-								<hr>
-								<div class="direct-chat-messages">
-									@foreach($todo->comments as $comment)
-										@include('essentials::todo.comment', 
-										['comment' => $comment])
-									@endforeach
-								</div>
-							</div>
-						</div>
-			    	</div>
 
-			    	<div class="tab-pane" id="documents_tab">
-			    		<div class="row">
-							{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\ToDoController@uploadDocument'), 'id' => 'task_upload_doc_form', 'method' => 'post', 'files' => true]) !!}
-							<div class="col-md-12">
-								<div class="form-group">
-									{!! Form::label('documents', __('lang_v1.upload_documents') . ':') !!}
-									{!! Form::file('documents[]', ['id' => 'documents', 'multiple', 'required']); !!}
-									{!! Form::hidden('task_id', $todo->id); !!}
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									{!! Form::label('description', __('lang_v1.description') . ':') !!}
-									{!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => 3]); !!}
-								</div>
-							</div>
-							<div class="col-md-12">
-								<button type="submit" class="btn btn-primary pull-right">@lang('essentials::lang.upload')</button>
-							</div>
-							{!! Form::close() !!}
-							<div class="col-md-12">
-								<hr>
-								<table class="table">
-									<thead>
-										<tr>
-											<th>@lang('lang_v1.documents')</th>
-											<th>@lang('lang_v1.description')</th>
-											<th>@lang('lang_v1.uploaded_by')</th>
-											<th>@lang('lang_v1.download')</th>
-										</tr>
-									</thead>
-									<tbody>
-										@foreach($todo->media as $media)
-											<tr>
-												<td>{{$media->display_name}}</td>
-												<td>{{$media->description}}</td>
-												<td>{{$media->uploaded_by_user->user_full_name ?? ''}}</td>
-												<td><a href="{{$media->display_url}}" download class="btn btn-success btn-xs">@lang('lang_v1.download')</a>
+			<!-- Sección de pestañas -->
+			<div class="col-md-12">
+				<div class="nav-tabs-custom">
+					<ul class="nav nav-tabs">
+						<li class="active">
+							<a href="#comments_tab" data-toggle="tab">
+								<i class="fa fa-comment"></i> @lang('essentials::lang.comments')
+							</a>
+						</li>
+						<li>
+							<a href="#documents_tab" data-toggle="tab">
+								<i class="fa fa-file"></i> @lang('lang_v1.documents')
+							</a>
+						</li>
+						<li>
+							<a href="#activities_tab" data-toggle="tab">
+								<i class="fa fa-pen-square"></i> @lang('lang_v1.activities')
+							</a>
+						</li>
+					</ul>
 
-												@if(in_array(auth()->user()->id, [$media->uploaded_by, $todo->created_by]))
-													<a href="{{action('\Modules\Essentials\Http\Controllers\ToDoController@deleteDocument', $media->id)}}" class="btn btn-danger btn-xs delete-document" data-media_id="{{$media->id}}"><i class="fa fa-trash"></i> @lang('messages.delete')</a>
-												@endif
-												</td>
-											</tr>
+					<div class="tab-content">
+						<!-- Comentarios -->
+						<div class="tab-pane active" id="comments_tab">
+							<div class="row">
+								<form action="{{ action('\Modules\Essentials\Http\Controllers\ToDoController@addComment') }}" method="post" id="task_comment_form">
+									@csrf
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="comment">@lang('essentials::lang.add_comment'):</label>
+											<textarea name="comment" rows="3" class="form-control" required></textarea>
+											<input type="hidden" name="task_id" value="{{ $todo->id }}">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<button type="submit" class="btn btn-primary pull-right">@lang('messages.add')</button>
+									</div>
+								</form>
+
+								<div class="col-md-12">
+									<hr>
+									<div class="direct-chat-messages">
+										@foreach ($todo->comments as $comment)
+											@include('essentials::todo.comment', ['comment' => $comment])
 										@endforeach
-									</tbody>
-								</table>
+									</div>
+								</div>
 							</div>
 						</div>
-			    	</div>
-			    	<div class="tab-pane" id="activities_tab">
-			    		<div class="row">
-			    			<div class="col-md-12">
-			    				@include('activity_log.activities', ['activity_type' => 'sell', 'statuses' => $task_statuses])
-			    			</div>
-			    		</div>
-			    	</div>
-			    </div>
+
+						<!-- Documentos -->
+						<div class="tab-pane" id="documents_tab">
+							<div class="row">
+								<form action="{{ action('\Modules\Essentials\Http\Controllers\ToDoController@uploadDocument') }}" method="post" id="task_upload_doc_form" enctype="multipart/form-data">
+									@csrf
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="documents">@lang('lang_v1.upload_documents'):</label>
+											<input type="file" name="documents[]" id="documents" multiple required>
+											<input type="hidden" name="task_id" value="{{ $todo->id }}">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="description">@lang('lang_v1.description'):</label>
+											<textarea name="description" class="form-control" rows="3"></textarea>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<button type="submit" class="btn btn-primary pull-right">@lang('essentials::lang.upload')</button>
+									</div>
+								</form>
+
+								<!-- Lista de documentos -->
+								<div class="col-md-12">
+									<hr>
+									<table class="table">
+										<thead>
+											<tr>
+												<th>@lang('lang_v1.documents')</th>
+												<th>@lang('lang_v1.description')</th>
+												<th>@lang('lang_v1.uploaded_by')</th>
+												<th>@lang('lang_v1.download')</th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach ($todo->media as $media)
+												<tr>
+													<td>{{ $media->display_name }}</td>
+													<td>{{ $media->description }}</td>
+													<td>{{ optional($media->uploaded_by_user)->user_full_name }}</td>
+													<td>
+														<a href="{{ $media->display_url }}" download class="btn btn-success btn-xs">@lang('lang_v1.download')</a>
+														@if (auth()->user()->id == $media->uploaded_by || auth()->user()->id == $todo->created_by)
+															<a href="{{ action('\Modules\Essentials\Http\Controllers\ToDoController@deleteDocument', $media->id) }}" class="btn btn-danger btn-xs">
+																<i class="fa fa-trash"></i> @lang('messages.delete')
+															</a>
+														@endif
+													</td>
+												</tr>
+											@endforeach
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						<!-- Actividades -->
+						<div class="tab-pane" id="activities_tab">
+							<div class="row">
+								<div class="col-md-12">
+									@include('activity_log.activities', ['activity_type' => 'sell', 'statuses' => $task_statuses])
+								</div>
+							</div>
+						</div>
+					</div>
+				</div> 
 			</div>
 		</div>
 	</div>
 </section>
-<div class="modal fade" id="task_modal" tabindex="-1" role="dialog" 
-    	aria-labelledby="gridSystemModalLabel">
-</div>
+
+<!-- Modal para agregar o editar tareas -->
+<div class="modal fade" id="task_modal" tabindex="-1" role="dialog"></div>
 @endsection
+
 
 @section('javascript')
 <script type="text/javascript">

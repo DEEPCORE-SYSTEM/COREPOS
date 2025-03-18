@@ -10,7 +10,7 @@ use App\Models\Variation;
 use Illuminate\Http\Request;
 
 use Yajra\DataTables\Facades\DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class VariationTemplateController extends Controller
 {

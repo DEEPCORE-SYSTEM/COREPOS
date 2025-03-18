@@ -44,23 +44,29 @@
                 <div class="box-body">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            {!! Form::label('transaction_date_range', __('report.date_range') . ':') !!}
+                            <label for="transaction_date_range">@lang('report.date_range'):</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                {!! Form::text('transaction_date_range', null, ['class' => 'form-control', 'readonly', 'placeholder' => __('report.date_range')]) !!}
+                                <input type="text" name="transaction_date_range" id="transaction_date_range" class="form-control" 
+                                    readonly placeholder="@lang('report.date_range')">
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
-                            {!! Form::label('transaction_type', __('account.transaction_type') . ':') !!}
+                            <label for="transaction_type">@lang('account.transaction_type'):</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fas fa-exchange-alt"></i></span>
-                                {!! Form::select('transaction_type', ['' => __('messages.all'),'debit' => __('account.debit'), 'credit' => __('account.credit')], '', ['class' => 'form-control']) !!}
+                                <select name="transaction_type" id="transaction_type" class="form-control">
+                                    <option value="">@lang('messages.all')</option>
+                                    <option value="debit">@lang('account.debit')</option>
+                                    <option value="credit">@lang('account.credit')</option>
+                                </select>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

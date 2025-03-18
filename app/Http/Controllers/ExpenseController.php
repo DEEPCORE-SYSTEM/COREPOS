@@ -12,12 +12,14 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use App\Models\Contact;
 use App\Utils\CashRegisterUtil;
+use Illuminate\Support\Facades\Log;
+
 
 class ExpenseController extends Controller
 {
@@ -364,7 +366,7 @@ class ExpenseController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
@@ -460,7 +462,7 @@ class ExpenseController extends Controller
                             'msg' => __('expense.expense_update_success')
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
@@ -502,7 +504,7 @@ class ExpenseController extends Controller
                             'msg' => __("expense.expense_delete_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

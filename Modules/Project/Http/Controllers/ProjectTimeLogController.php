@@ -13,6 +13,7 @@ use Modules\Project\Entities\ProjectTask;
 use Modules\Project\Entities\ProjectTimeLog;
 use Modules\Project\Utils\ProjectUtil;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class ProjectTimeLogController extends Controller
 {
@@ -113,8 +114,8 @@ class ProjectTimeLogController extends Controller
                     {{@format_datetime($end_datetime)}}
                 ')
                 ->editColumn('work_hour', function ($row) {
-                    $start_datetime = \Carbon::parse($row->start_datetime);
-                    $end_datetime = \Carbon::parse($row->end_datetime);
+                    $start_datetime = Carbon::parse($row->start_datetime);
+                    $end_datetime = Carbon::parse($row->end_datetime);
 
                     return $start_datetime->diffForHumans($end_datetime, true);
                 })

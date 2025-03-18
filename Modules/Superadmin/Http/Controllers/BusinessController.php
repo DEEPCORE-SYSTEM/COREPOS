@@ -17,6 +17,9 @@ use Modules\Superadmin\Notifications\PasswordUpdateNotification;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Superadmin\Entities\Package;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class BusinessController extends BaseController
 {
@@ -46,7 +49,7 @@ class BusinessController extends BaseController
         }
 
         if (request()->ajax()) {
-            $date_today = \Carbon::today();
+            $date_today = Carbon::today();
             $businesses = Business::leftjoin('subscriptions AS s', function($join) use ($date_today){
                                 $join->on('business.id', '=', 's.business_id')
                                     ->whereDate('s.start_date', '<=', $date_today)
@@ -84,14 +87,14 @@ class BusinessController extends BaseController
 
             $subscription_status = request()->subscription_status;
             if ($subscription_status == 30) {
-                $businesses->whereDate('s.end_date', '<=', \Carbon::today()->addDays(30));
+                $businesses->whereDate('s.end_date', '<=', Carbon::today()->addDays(30));
             } else if ($subscription_status == 7) {
-                $businesses->whereDate('s.end_date', '<=', \Carbon::today()->addDays(7));
+                $businesses->whereDate('s.end_date', '<=', Carbon::today()->addDays(7));
             } else if ($subscription_status == 3) {
-                $businesses->whereDate('s.end_date', '<=', \Carbon::today()->addDays(3));
+                $businesses->whereDate('s.end_date', '<=', Carbon::today()->addDays(3));
             } elseif ($subscription_status == 'expired') {
                 $businesses->where( function($q){
-                    $q->whereDate('s.end_date', '<', \Carbon::today())
+                    $q->whereDate('s.end_date', '<', Carbon::today())
                     ->orWhereNull('s.end_date');
                 });
             } else if ($subscription_status == 'subscribed') {
@@ -187,25 +190,25 @@ class BusinessController extends BaseController
     private function filterTransactionDate($query, $filter, $operator)
     {
         if ($filter == 'today') {
-            $today = \Carbon::today()->format('Y-m-d');
+            $today = Carbon::today()->format('Y-m-d');
             $query->whereRaw("(SELECT COUNT(id) FROM transactions as t WHERE t.business_id = business.id AND DATE(t.transaction_date) = '$today') $operator 0");
         } else if ($filter == 'yesterday') {
-            $yesterday = \Carbon::yesterday()->format('Y-m-d');
+            $yesterday = Carbon::yesterday()->format('Y-m-d');
             $query->whereRaw("(SELECT COUNT(id) FROM transactions as t WHERE t.business_id = business.id AND DATE(t.transaction_date) >= '$yesterday') $operator 0");
         } else if ($filter == 'this_week') {
-            $this_week = \Carbon::today()->subDays(7)->format('Y-m-d');
+            $this_week = Carbon::today()->subDays(7)->format('Y-m-d');
             $query->whereRaw("(SELECT COUNT(id) FROM transactions as t WHERE t.business_id = business.id AND DATE(t.transaction_date) >= '$this_week') $operator 0");
         } else if ($filter == 'this_month') {
-            $this_month = \Carbon::today()->firstOfMonth()->format('Y-m-d');
+            $this_month = Carbon::today()->firstOfMonth()->format('Y-m-d');
             $query->whereRaw("(SELECT COUNT(id) FROM transactions as t WHERE t.business_id = business.id AND DATE(t.transaction_date) >= '$this_month') $operator 0");
         } else if ($filter == 'last_month') {
-            $last_month = \Carbon::today()->subDays(30)->firstOfMonth()->format('Y-m-d');
+            $last_month = Carbon::today()->subDays(30)->firstOfMonth()->format('Y-m-d');
             $query->whereRaw("(SELECT COUNT(id) FROM transactions as t WHERE t.business_id = business.id AND DATE(t.transaction_date) >= '$last_month') $operator 0");
         } else if ($filter == 'this_year') {
-            $this_year = \Carbon::today()->firstOfYear()->format('Y-m-d');
+            $this_year = Carbon::today()->firstOfYear()->format('Y-m-d');
             $query->whereRaw("(SELECT COUNT(id) FROM transactions as t WHERE t.business_id = business.id AND DATE(t.transaction_date) >= '$this_year') $operator 0");
         } else if ($filter == 'last_year') {
-            $last_year = \Carbon::today()->subYear()->firstOfYear()->format('Y-m-d');
+            $last_year = Carbon::today()->subYear()->firstOfYear()->format('Y-m-d');
             $query->whereRaw("(SELECT COUNT(id) FROM transactions as t WHERE t.business_id = business.id AND DATE(t.transaction_date) >= '$last_year') $operator 0");
         }
 
@@ -326,7 +329,7 @@ class BusinessController extends BaseController
                 ->with('status', $output);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
@@ -417,7 +420,7 @@ class BusinessController extends BaseController
                 ->with('status', $output);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
@@ -523,7 +526,7 @@ class BusinessController extends BaseController
                         'msg' => __("superadmin::lang.password_updated_successfully")
                     ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => __("messages.something_went_wrong")

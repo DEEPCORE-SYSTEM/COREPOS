@@ -11,75 +11,87 @@
 
 <!-- Main content -->
 <section class="content">
+    {{-- Verifica si hay pagos no vinculados y muestra una alerta --}}
     @if(!empty($not_linked_payments))
         <div class="row">
             <div class="col-sm-12">
                 <div class="alert alert-danger">
                     <ul>
-                        @if(!empty($not_linked_payments))
-                            <li>{!! __('account.payments_not_linked_with_account', ['payments' => $not_linked_payments]) !!} <a href="{{action('AccountReportsController@paymentAccountReport')}}">@lang('account.view_details')</a></li>
-                        @endif
+                        <li>
+                            {{ __('account.payments_not_linked_with_account', ['payments' => $not_linked_payments]) }} 
+                            <a href="{{ url('account-reports/payment-account-report') }}">
+                                {{ __('account.view_details') }}
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
     @endif
+
+    {{-- Verifica si el usuario tiene permiso para acceder a cuentas --}}
     @can('account.access')
     <div class="row">
         <div class="col-sm-12">
             <div class="nav-tabs-custom">
+                {{-- Pestañas de navegación --}}
                 <ul class="nav nav-tabs">
                     <li class="active">
                         <a href="#other_accounts" data-toggle="tab">
-                            <i class="fa fa-book"></i> <strong>@lang('account.accounts')</strong>
+                            <i class="fa fa-book"></i> <strong>{{ __('account.accounts') }}</strong>
                         </a>
                     </li>
-                    {{--
-                    <li>
-                        <a href="#capital_accounts" data-toggle="tab">
-                            <i class="fa fa-book"></i> <strong>
-                            @lang('account.capital_accounts') </strong>
-                        </a>
-                    </li>
-                    --}}
+                    {{-- Pestaña de tipos de cuenta --}}
                     <li>
                         <a href="#account_types" data-toggle="tab">
-                            <i class="fa fa-list"></i> <strong>
-                            @lang('lang_v1.account_types') </strong>
+                            <i class="fa fa-list"></i> <strong>{{ __('lang_v1.account_types') }}</strong>
                         </a>
                     </li>
                 </ul>
+
+                {{-- Contenido de las pestañas --}}
                 <div class="tab-content">
+                    {{-- Sección de otras cuentas --}}
                     <div class="tab-pane active" id="other_accounts">
                         <div class="row">
                             <div class="col-md-12">
-                                @component('components.widget')
-                                    <div class="col-md-4">
-                                        {!! Form::select('account_status', ['active' => __('business.is_active'), 'closed' => __('account.closed')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'account_status']); !!}
+                                <div class="box box-solid">
+                                    <div class="box-body">
+                                        <div class="col-md-4">
+                                            {{-- Selector de estado de la cuenta --}}
+                                            <select class="form-control select2" id="account_status" style="width:100%">
+                                                <option value="active">{{ __('business.is_active') }}</option>
+                                                <option value="closed">{{ __('account.closed') }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            {{-- Botón para agregar nueva cuenta --}}
+                                            <button type="button" class="btn btn-primary btn-modal pull-right" 
+                                                data-container=".account_model"
+                                                data-href="{{ url('accounts/create') }}">
+                                                <i class="fa fa-plus"></i> {{ __('messages.add') }}
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-8">
-                                        <button type="button" class="btn btn-primary btn-modal pull-right" 
-                                            data-container=".account_model"
-                                            data-href="{{action('AccountController@create')}}">
-                                            <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
-                                    </div>
-                                @endcomponent
+                                </div>
                             </div>
+
+                            {{-- Tabla de cuentas --}}
                             <div class="col-sm-12">
-                            <br>
+                                <br>
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-striped" id="other_account_table">
                                         <thead>
                                             <tr>
-                                                <th>@lang( 'lang_v1.name' )</th>
-                                                <th>@lang( 'lang_v1.account_type' )</th>
-                                                <th>@lang( 'lang_v1.account_sub_type' )</th>
-                                                <th>@lang('account.account_number')</th>
-                                                <th>@lang( 'brand.note' )</th>
-                                                <th>@lang('lang_v1.balance')</th>
-                                                <th>@lang('lang_v1.account_details')</th>
-                                                <th>@lang('lang_v1.added_by')</th>
-                                                <th>@lang( 'messages.action' )</th>
+                                                <th>{{ __('lang_v1.name') }}</th>
+                                                <th>{{ __('lang_v1.account_type') }}</th>
+                                                <th>{{ __('lang_v1.account_sub_type') }}</th>
+                                                <th>{{ __('account.account_number') }}</th>
+                                                <th>{{ __('brand.note') }}</th>
+                                                <th>{{ __('lang_v1.balance') }}</th>
+                                                <th>{{ __('lang_v1.account_details') }}</th>
+                                                <th>{{ __('lang_v1.added_by') }}</th>
+                                                <th>{{ __('messages.action') }}</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -87,71 +99,74 @@
                             </div>
                         </div>
                     </div>
-                    {{--
-                    <div class="tab-pane" id="capital_accounts">
-                        <table class="table table-bordered table-striped" id="capital_account_table" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>@lang( 'lang_v1.name' )</th>
-                                    <th>@lang('account.account_number')</th>
-                                    <th>@lang( 'brand.note' )</th>
-                                    <th>@lang('lang_v1.balance')</th>
-                                    <th>@lang( 'messages.action' )</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    --}}
+
+                    {{-- Sección de tipos de cuenta --}}
                     <div class="tab-pane" id="account_types">
                         <div class="row">
                             <div class="col-md-12">
+                                {{-- Botón para agregar un nuevo tipo de cuenta --}}
                                 <button type="button" class="btn btn-primary btn-modal pull-right" 
-                                    data-href="{{action('AccountTypeController@create')}}"
+                                    data-href="{{ url('account-types/create') }}"
                                     data-container="#account_type_modal">
-                                    <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
+                                    <i class="fa fa-plus"></i> {{ __('messages.add') }}
+                                </button>
                             </div>
                         </div>
                         <br>
+
+                        {{-- Tabla de tipos de cuenta --}}
                         <div class="row">
                             <div class="col-md-12">
                                 <table class="table table-striped table-bordered" id="account_types_table" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>@lang( 'lang_v1.name' )</th>
-                                            <th>@lang( 'messages.action' )</th>
+                                            <th>{{ __('lang_v1.name') }}</th>
+                                            <th>{{ __('messages.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($account_types as $account_type)
-                                            <tr class="account_type_{{$account_type->id}}">
-                                                <th>{{$account_type->name}}</th>
+                                            <tr class="account_type_{{ $account_type->id }}">
+                                                <td>{{ $account_type->name }}</td>
                                                 <td>
-                                                    
-                                                    {!! Form::open(['url' => action('AccountTypeController@destroy', $account_type->id), 'method' => 'delete' ]) !!}
+                                                    {{-- Botón para editar --}}
                                                     <button type="button" class="btn btn-primary btn-modal btn-xs" 
-                                                    data-href="{{action('AccountTypeController@edit', $account_type->id)}}"
-                                                    data-container="#account_type_modal">
-                                                    <i class="fa fa-edit"></i> @lang( 'messages.edit' )</button>
+                                                        data-href="{{ url('account-types/' . $account_type->id . '/edit') }}"
+                                                        data-container="#account_type_modal">
+                                                        <i class="fa fa-edit"></i> {{ __('messages.edit') }}
+                                                    </button>
 
-                                                    <button type="button" class="btn btn-danger btn-xs delete_account_type" >
-                                                    <i class="fa fa-trash"></i> @lang( 'messages.delete' )</button>
-                                                    {!! Form::close() !!}
+                                                    {{-- Botón para eliminar --}}
+                                                    <form action="{{ url('account-types/' . $account_type->id) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-xs">
+                                                            <i class="fa fa-trash"></i> {{ __('messages.delete') }}
+                                                        </button>
+                                                    </form>
                                                 </td>
                                             </tr>
+
+                                            {{-- Subtipos de cuenta --}}
                                             @foreach($account_type->sub_types as $sub_type)
                                                 <tr>
-                                                    <td>&nbsp;&nbsp;-- {{$sub_type->name}}</td>
+                                                    <td>&nbsp;&nbsp;-- {{ $sub_type->name }}</td>
                                                     <td>
-                                                        
+                                                        {{-- Botón para editar subtipo --}}
+                                                        <button type="button" class="btn btn-primary btn-modal btn-xs" 
+                                                            data-href="{{ url('account-types/' . $sub_type->id . '/edit') }}"
+                                                            data-container="#account_type_modal">
+                                                            <i class="fa fa-edit"></i> {{ __('messages.edit') }}
+                                                        </button>
 
-                                                        {!! Form::open(['url' => action('AccountTypeController@destroy', $sub_type->id), 'method' => 'delete' ]) !!}
-                                                            <button type="button" class="btn btn-primary btn-modal btn-xs" 
-                                                        data-href="{{action('AccountTypeController@edit', $sub_type->id)}}"
-                                                        data-container="#account_type_modal">
-                                                        <i class="fa fa-edit"></i> @lang( 'messages.edit' )</button>
-                                                            <button type="button" class="btn btn-danger btn-xs delete_account_type" >
-                                                            <i class="fa fa-trash"></i> @lang( 'messages.delete' )</button>
-                                                            {!! Form::close() !!}
+                                                        {{-- Botón para eliminar subtipo --}}
+                                                        <form action="{{ url('account-types/' . $sub_type->id) }}" method="POST" style="display:inline;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-xs">
+                                                                <i class="fa fa-trash"></i> {{ __('messages.delete') }}
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -160,21 +175,19 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    </div> {{-- Fin de la pestaña de tipos de cuenta --}}
+                </div> {{-- Fin del contenido de las pestañas --}}
+            </div> {{-- Fin de nav-tabs-custom --}}
+        </div> {{-- Fin de col-sm-12 --}}
+    </div> {{-- Fin de row --}}
     @endcan
-    
-    <div class="modal fade account_model" tabindex="-1" role="dialog" 
-    	aria-labelledby="gridSystemModalLabel">
-    </div>
 
-    <div class="modal fade" tabindex="-1" role="dialog" 
-        aria-labelledby="gridSystemModalLabel" id="account_type_modal">
-    </div>
+    {{-- Modales --}}
+    <div class="modal fade account_model" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="account_type_modal"></div>
 </section>
+
 <!-- /.content -->
 
 @endsection

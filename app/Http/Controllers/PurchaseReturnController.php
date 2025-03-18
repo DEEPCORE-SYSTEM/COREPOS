@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\BusinessLocation;
 use Spatie\Activitylog\Models\Activity;
+use Carbon\Carbon;
 
 class PurchaseReturnController extends Controller
 {
@@ -294,7 +295,7 @@ class PurchaseReturnController extends Controller
                 $return_transaction_data['type'] = 'purchase_return';
                 $return_transaction_data['status'] = 'final';
                 $return_transaction_data['contact_id'] = $purchase->contact_id;
-                $return_transaction_data['transaction_date'] = \Carbon::now();
+                $return_transaction_data['transaction_date'] = Carbon::now();
                 $return_transaction_data['created_by'] = request()->session()->get('user.id');
                 $return_transaction_data['return_parent_id'] = $purchase->id;
 

@@ -13,9 +13,10 @@ use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use Datatables;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
+use Carbon\Carbon;
 
 class StockTransferController extends Controller
 {
@@ -97,7 +98,7 @@ class StockTransferController extends Controller
 
                     $html .= ' <a href="#" class="print-invoice btn btn-info btn-xs" data-href="' . action('StockTransferController@printInvoice', [$row->id]) . '"><i class="fa fa-print" aria-hidden="true"></i> '. __("messages.print") .'</a>';
 
-                    $date = \Carbon::parse($row->transaction_date)
+                    $date = Carbon::parse($row->transaction_date)
                         ->addDays($edit_days);
                     $today = today();
 

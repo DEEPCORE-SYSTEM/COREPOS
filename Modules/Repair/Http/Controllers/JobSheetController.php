@@ -17,7 +17,7 @@ use App\Utils\Util;
 use Modules\Repair\Entities\JobSheet;
 use App\Utils\CashRegisterUtil;
 use Yajra\DataTables\Facades\DataTables;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Utils\ModuleUtil;
 use App\CustomerGroup;
 use App\Utils\ContactUtil;

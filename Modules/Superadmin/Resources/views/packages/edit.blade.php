@@ -16,196 +16,184 @@
 
 <!-- Main content -->
 <section class="content">
-	{!! Form::open(['route' => ['packages.update', $packages->id], 'method' => 'put', 'id' => 'edit_package_form']) !!}
-	<div class="box box-solid">
-		<div class="box-body">
+    <form action="{{ route('packages.update', $packages->id) }}" method="POST" id="edit_package_form">
+        @csrf
+        @method('PUT')
 
-	    	<div class="row">
-				
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('name', __('lang_v1.name').':') !!}
-						{!! Form::text('name',$packages->name, ['class' => 'form-control', 'required']); !!}
-					</div>
-				</div>
+        <div class="box box-solid">
+            <div class="box-body">
+                <div class="row">
+                    
+                    {{-- Nombre del paquete --}}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="name">{{ __('lang_v1.name') }}:</label>
+                            <input type="text" name="name" id="name" class="form-control" value="{{ $packages->name }}" required>
+                        </div>
+                    </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('description', __('superadmin::lang.description').':') !!}
-						{!! Form::text('description', $packages->description, ['class' => 'form-control', 'required']); !!}
-					</div>
-				</div>
+                    {{-- Descripción --}}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="description">{{ __('superadmin::lang.description') }}:</label>
+                            <input type="text" name="description" id="description" class="form-control" value="{{ $packages->description }}" required>
+                        </div>
+                    </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('location_count', __('superadmin::lang.location_count').':') !!}
-						{!! Form::number('location_count', $packages->location_count, ['class' => 'form-control', 'required', 'min' => 0]); !!}
+                    {{-- Cantidad de ubicaciones --}}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="location_count">{{ __('superadmin::lang.location_count') }}:</label>
+                            <input type="number" name="location_count" id="location_count" class="form-control" value="{{ $packages->location_count }}" required min="0">
+                            <span class="help-block">@lang('superadmin::lang.infinite_help')</span>
+                        </div>
+                    </div>
 
-						<span class="help-block">
-							@lang('superadmin::lang.infinite_help')
-						</span>
-					</div>
-				</div>
+                    {{-- Cantidad de usuarios --}}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="user_count">{{ __('superadmin::lang.user_count') }}:</label>
+                            <input type="number" name="user_count" id="user_count" class="form-control" value="{{ $packages->user_count }}" required min="0">
+                            <span class="help-block">@lang('superadmin::lang.infinite_help')</span>
+                        </div>
+                    </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('user_count', __('superadmin::lang.user_count').':') !!}
-						{!! Form::number('user_count', $packages->user_count, ['class' => 'form-control', 'required', 'min' => 0]); !!}
+                    {{-- Intervalo --}}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="interval">{{ __('superadmin::lang.interval') }}:</label>
+                            <select name="interval" id="interval" class="form-control select2" required>
+                                <option value="" disabled selected>{{ __('messages.please_select') }}</option>
+                                @foreach($intervals as $key => $value)
+                                    <option value="{{ $key }}" {{ $packages->interval == $key ? 'selected' : '' }}>{{ $value }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
-						<span class="help-block">
-							@lang('superadmin::lang.infinite_help')
-						</span>
-					</div>
-				</div>
+                    {{-- Precio --}}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="price">{{ __('superadmin::lang.price') }}:</label>
+                            <input type="text" name="price" id="price" class="form-control input_number" value="{{ $packages->price }}" required>
+                        </div>
+                    </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('product_count', __('superadmin::lang.product_count').':') !!}
-						{!! Form::number('product_count', $packages->product_count, ['class' => 'form-control', 'required', 'min' => 0]); !!}
+                    {{-- Orden de clasificación --}}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="sort_order">{{ __('superadmin::lang.sort_order') }}:</label>
+                            <input type="number" name="sort_order" id="sort_order" class="form-control" value="{{ $packages->sort_order }}" required>
+                        </div>
+                    </div>
 
-						<span class="help-block">
-							@lang('superadmin::lang.infinite_help')
-						</span>
-					</div>
-				</div>
+                    <div class="clearfix"></div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('invoice_count', __('superadmin::lang.invoice_count').':') !!}
-						{!! Form::number('invoice_count', $packages->invoice_count, ['class' => 'form-control', 'required', 'min' => 0]); !!}
+                    {{-- Opciones de checkboxes --}}
+                    <div class="col-sm-6">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="is_private" value="1" class="input-icheck" {{ $packages->is_private ? 'checked' : '' }}>
+                                {{ __('superadmin::lang.private_superadmin_only') }}
+                            </label>
+                        </div>
+                    </div>
 
-						<span class="help-block">
-							@lang('superadmin::lang.infinite_help')
-						</span>
-					</div>
-				</div>
+                    <div class="col-sm-6">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="is_one_time" value="1" class="input-icheck" {{ $packages->is_one_time ? 'checked' : '' }}>
+                                {{ __('superadmin::lang.one_time_only_subscription') }}
+                            </label>
+                        </div>
+                    </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('interval', __('superadmin::lang.interval').':') !!}
+                    <div class="clearfix"></div>
 
-						{!! Form::select('interval', $intervals, $packages->interval, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
-					</div>
-				</div>
+                    {{-- Habilitar enlace personalizado --}}
+                    <div class="col-sm-4">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="enable_custom_link" id="enable_custom_link" value="1" class="input-icheck" {{ $packages->enable_custom_link ? 'checked' : '' }}>
+                                {{ __('superadmin::lang.enable_custom_subscription_link') }}
+                            </label>
+                        </div>
+                    </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('interval_count	', __('superadmin::lang.interval_count').':') !!}
-						{!! Form::number('interval_count', $packages->interval_count, ['class' => 'form-control', 'required']); !!}
-					</div>
-				</div>
+                    <div id="custom_link_div" class="{{ empty($packages->enable_custom_link) ? 'hide' : '' }}">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="custom_link">{{ __('superadmin::lang.custom_link') }}:</label>
+                                <input type="text" name="custom_link" id="custom_link" class="form-control" value="{{ $packages->custom_link }}">
+                            </div>
+                        </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('trial_days	', __('superadmin::lang.trial_days').':') !!}
-						{!! Form::number('trial_days', $packages->trial_days, ['class' => 'form-control', 'required', 'min' => 0]); !!}
-					</div>
-				</div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="custom_link_text">{{ __('superadmin::lang.custom_link_text') }}:</label>
+                                <input type="text" name="custom_link_text" id="custom_link_text" class="form-control" value="{{ $packages->custom_link_text }}">
+                            </div>
+                        </div>
+                    </div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('price', __('superadmin::lang.price').':') !!}
-						{!! Form::text('price', $packages->price, ['class' => 'form-control input_number', 'required']); !!}
-					</div>
-				</div>
+                    <div class="clearfix"></div>
 
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('sort_order	', __('superadmin::lang.sort_order').':') !!}
-						{!! Form::number('sort_order', $packages->sort_order, ['class' => 'form-control', 'required']); !!}
-					</div>
-				</div>
-				<div class="clearfix"></div>
-				<div class="col-sm-6">
-					<div class="checkbox">
-					<label>
-						{!! Form::checkbox('is_private', 1, $packages->is_private, ['class' => 'input-icheck']); !!}
-                        {{__('superadmin::lang.private_superadmin_only')}}
-					</label>
-					</div>
-				</div>
+                    {{-- Permisos personalizados --}}
+                    @foreach($permissions as $module => $module_permissions)
+                        @foreach($module_permissions as $permission)
+                            @php
+                                $value = isset($packages->custom_permissions[$permission['name']]) ? $packages->custom_permissions[$permission['name']] : false;
+                            @endphp
+                            <div class="col-sm-3">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="custom_permissions[{{ $permission['name'] }}]" value="1" class="input-icheck" {{ $value ? 'checked' : '' }}>
+                                        {{ $permission['label'] }}
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endforeach
 
-				<div class="col-sm-6">
-					<div class="checkbox">
-					<label>
-						{!! Form::checkbox('is_one_time', 1, $packages->is_one_time, ['class' => 'input-icheck']); !!}
-                        {{__('superadmin::lang.one_time_only_subscription')}}
-					</label>
-					</div>
-				</div>
-				<div class="clearfix"></div>
-				<div class="col-sm-4">
-					<div class="checkbox">
-					<label>
-						{!! Form::checkbox('enable_custom_link', 1, $packages->enable_custom_link, ['class' => 'input-icheck', 'id' => 'enable_custom_link']); !!}
-                        {{__('superadmin::lang.enable_custom_subscription_link')}}
-					</label>
-					</div>
-				</div>
-				<div id="custom_link_div" @if(empty($packages->enable_custom_link)) class="hide" @endif>
-					<div class="col-sm-4">
-						<div class="form-group">
-							{!! Form::label('custom_link', __('superadmin::lang.custom_link').':') !!}
-							{!! Form::text('custom_link', $packages->custom_link, ['class' => 'form-control']); !!}
-						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="form-group">
-							{!! Form::label('custom_link_text', __('superadmin::lang.custom_link_text').':') !!}
-							{!! Form::text('custom_link_text', $packages->custom_link_text, ['class' => 'form-control']); !!}
-						</div>
-					</div>
-				</div>
-				<div class="clearfix"></div>
+                    {{-- Activar paquete --}}
+                    <div class="col-sm-3">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="is_active" value="1" class="input-icheck" {{ $packages->is_active ? 'checked' : '' }}>
+                                {{ __('superadmin::lang.is_active') }}
+                            </label>
+                        </div>
+                    </div>
 
-				@foreach($permissions as $module => $module_permissions)
-					@foreach($module_permissions as $permission)
-					@php
-						$value = isset($packages->custom_permissions[$permission['name']]) ? $packages->custom_permissions[$permission['name']] : false;
-					@endphp
-					<div class="col-sm-3">
-						<div class="checkbox">
-						<label>
-							{!! Form::checkbox("custom_permissions[$permission[name]]", 1, $value, ['class' => 'input-icheck']); !!}
-	                        {{$permission['label']}}
-						</label>
-						</div>
-					</div>
-					@endforeach
-				@endforeach
+                    <div class="clearfix"></div>
 
-				<div class="col-sm-3 ">
+                    {{-- Actualizar suscripciones existentes --}}
+                    <div class="col-sm-4">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="update_subscriptions" value="1" class="input-icheck">
+                                {{ __('superadmin::lang.update_existing_subscriptions') }}
+                            </label>
+                            @show_tooltip(__('superadmin::lang.update_existing_subscriptions_tooltip'))
+                        </div>
+                    </div>
 
-					<div class="checkbox">
-					<label>
-                        {!! Form::checkbox('is_active', 1, $packages->is_active, ['class' => 'input-icheck']); !!}
-                        {{__('superadmin::lang.is_active')}}
-					</label>
-					</div>
-				</div>
-				<div class="clearfix"></div>
-				<div class="col-sm-4">
-					<div class="checkbox">
-					<label>
-                        {!! Form::checkbox('update_subscriptions', 1, false, ['class' => 'input-icheck']); !!}
-                        {{__('superadmin::lang.update_existing_subscriptions')}}
-					</label>
-					@show_tooltip(__('superadmin::lang.update_existing_subscriptions_tooltip'))
-					</div>
-				</div>
-			</div>
+                </div>
 
-			<div class="row">
-				<div class="col-sm-12">
-					<button type="submit" class="btn btn-primary pull-right btn-flat">@lang('messages.save')</button>
-				</div>
-			</div>
+                {{-- Botón de guardar --}}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary pull-right btn-flat">
+                            @lang('messages.save')
+                        </button>
+                    </div>
+                </div>
 
-		</div>
-	</div>
-
-	{!! Form::close() !!}
+            </div>
+        </div>
+    </form>
 </section>
+
 
 @endsection
 

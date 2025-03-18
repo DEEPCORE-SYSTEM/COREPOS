@@ -11,160 +11,175 @@
 <!-- Main content -->
 <section class="content">
 
-	{!! Form::open(['url' => action('\Modules\Manufacturing\Http\Controllers\ProductionController@update', [$production_purchase->id]), 'method' => 'put', 'id' => 'production_form', 'files' => true ]) !!}
-	@component('components.widget', ['class' => 'box-solid'])
-		<div class="row">
-			<div class="col-sm-3">
-				<div class="form-group">
-					{!! Form::label('ref_no', __('purchase.ref_no').':') !!}
-					{!! Form::text('ref_no', $production_purchase->ref_no, ['class' => 'form-control']); !!}
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<div class="form-group">
-					{!! Form::label('transaction_date', __('manufacturing::lang.mfg_date') . ':*') !!}
-					<div class="input-group">
-						<span class="input-group-addon">
-							<i class="fa fa-calendar"></i>
-						</span>
-						{!! Form::text('transaction_date', @format_datetime($production_purchase->transaction_date), ['class' => 'form-control', 'readonly', 'required']); !!}
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<div class="form-group">
-					{!! Form::label('location_id', __('purchase.business_location').':*') !!}
-					@show_tooltip(__('tooltip.purchase_location'))
-					{!! Form::select('location_id', $business_locations, $production_purchase->location_id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
-				</div>
-			</div>
-			@php
-				$purchase_line = $production_purchase->purchase_lines[0];
-			@endphp
-			<div class="col-sm-3">
-				<div class="form-group">
-					{!! Form::label('variation_id_shown', __('sale.product').':*') !!}
-					{!! Form::select('variation_id_shown', $recipe_dropdown, $purchase_line->variation_id, ['class' => 'form-control', 'placeholder' => __('messages.please_select'), 'required', 'disabled']); !!}
-					{!! Form::hidden('variation_id', $purchase_line->variation_id, ['id' => 'variation_id']); !!}
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<div class="form-group">
-					{!! Form::label('recipe_quantity', __('lang_v1.quantity').':*') !!}
-					<div class="@if(!empty($sub_units)) input_inline @else input-group @endif" id="recipe_quantity_input">
-						{!! Form::text('quantity', @num_format($quantity), ['class' => 'form-control input_number', 'id' => 'recipe_quantity', 'required', 'data-rule-notEmpty' => 'true', 'data-rule-notEqualToWastedQuantity' => 'true']); !!}
-						<span class="@if(empty($sub_units)) input-group-addon @endif" id="unit_html">
-							@if(!empty($sub_units))
-								<select name="sub_unit_id" class="form-control" id="sub_unit_id">
-								@foreach($sub_units as $key => $value)
-									<option 
-										value="{{$key}}" 
-										data-multiplier="{{$value['multiplier']}}" 
-										data-unit_name="{{$value['name']}}"
-										@if($key == $sub_unit_id)
-											@php
-												$unit_name = $value['name'];
-											@endphp
-											selected
-										@endif
-										>{{$value['name']}}</option>
-								@endforeach
-								</select>
-							@else
-								{{ $unit_name }}
-							@endif
-						</span>
-					</div>
-				</div>
-			</div>
-		</div>
-	@endcomponent
+    <!-- Formulario para actualizar la producción -->
+    <form action="{{ action('\Modules\Manufacturing\Http\Controllers\ProductionController@update', [$production_purchase->id]) }}" method="POST" id="production_form" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-	@component('components.widget', ['class' => 'box-solid', 'title' => __('manufacturing::lang.ingredients')])
-		<div class="row">
-			<div class="col-md-12">
-				<div id="enter_ingredients_table">
-					@include('manufacturing::recipe.ingredients_for_production')
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			@if(request()->session()->get('business.enable_lot_number') == 1)
-				<div class="col-sm-3">
-					<div class="form-group">
-						{!! Form::label('lot_number', __('lang_v1.lot_number').':') !!}
-						{!! Form::text('lot_number', $purchase_line->lot_number, ['class' => 'form-control']); !!}
-					</div>
-				</div>
-			@endif
-			@if(session('business.enable_product_expiry'))
-				<div class="col-sm-3">
-					<div class="form-group">
-						{!! Form::label('exp_date', __('product.exp_date').':*') !!}
-						<div class="input-group">
-							<span class="input-group-addon">
-								<i class="fa fa-calendar"></i>
-							</span>
-							{!! Form::text('exp_date', !empty($purchase_line->exp_date) ? @format_date($purchase_line->exp_date) : null, ['class' => 'form-control', 'readonly']); !!}
-						</div>
-					</div>
-				</div>
-			@endif
-			<div class="col-md-3">
-				<div class="form-group">
-					{!! Form::label('mfg_wasted_units', __('manufacturing::lang.waste_units').':') !!} @show_tooltip(__('manufacturing::lang.wastage_tooltip'))
-					<div class="input-group">
-						{!! Form::text('mfg_wasted_units', @num_format($production_purchase->mfg_wasted_units), ['class' => 'form-control input_number']); !!}
-						<span class="input-group-addon" id="wasted_units_text">{{$unit_name}}</span>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3">
-				<div class="form-group">
-					{!! Form::label('production_cost', __('manufacturing::lang.production_cost').':') !!} @show_tooltip(__('manufacturing::lang.production_cost_tooltip'))
-					<div class="input_inline">
-						{!! Form::text('production_cost', @num_format($production_purchase->mfg_production_cost), ['class' => 'form-control input_number']); !!}
-						<span>
-							{!! Form::select('mfg_production_cost_type',['fixed' => __('lang_v1.fixed'), 'percentage' => __('lang_v1.percentage'), 'per_unit' => __('manufacturing::lang.per_unit')], $production_purchase->mfg_production_cost_type, ['class' => 'form-control', 'id' => 'mfg_production_cost_type']); !!}	
-						</span>
-					</div>
-					<p><strong>
-						{{__('manufacturing::lang.total_production_cost')}}:
-					</strong>
-					<span id="total_production_cost" class="display_currency" data-currency_symbol="true">{{$total_production_cost}}</span></p>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-3 col-md-offset-9">
-				{!! Form::hidden('final_total', @num_format($production_purchase->final_total), ['id' => 'final_total']); !!}
-				<strong>
-					{{__('manufacturing::lang.total_cost')}}:
-				</strong>
-				<span id="final_total_text" class="display_currency" data-currency_symbol="true">{{ $production_purchase->final_total }}</span>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-3 col-md-offset-9">
-				<div class="form-group">
-					<br>
-					<div class="checkbox">
-						<label>
-						{!! Form::checkbox('finalize', 1, false, ['class' => 'input-icheck', 'id' => 'finalize']); !!} @lang('manufacturing::lang.finalize')
-						</label> @show_tooltip(__('manufacturing::lang.finalize_tooltip'))
-					</div>
-		        </div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<button type="submit" class="btn btn-primary pull-right">@lang('messages.submit')</button>
-			</div>
-		</div>
-	@endcomponent
+        @component('components.widget', ['class' => 'box-solid'])
+            <div class="row">
+                <!-- Campo de referencia de compra -->
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="ref_no">{{ __('purchase.ref_no') }}:</label>
+                        <input type="text" name="ref_no" id="ref_no" class="form-control" value="{{ $production_purchase->ref_no }}">
+                    </div>
+                </div>
 
-{!! Form::close() !!}
+                <!-- Fecha de producción -->
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="transaction_date">{{ __('manufacturing::lang.mfg_date') }}:*</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </span>
+                            <input type="text" name="transaction_date" id="transaction_date" class="form-control" value="{{ @format_datetime($production_purchase->transaction_date) }}" readonly required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ubicación de la producción -->
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="location_id">{{ __('purchase.business_location') }}:*</label>
+                        <select name="location_id" id="location_id" class="form-control select2" required>
+                            <option value="">{{ __('messages.please_select') }}</option>
+                            @foreach($business_locations as $key => $value)
+                                <option value="{{ $key }}" {{ $key == $production_purchase->location_id ? 'selected' : '' }}>{{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Producto a fabricar -->
+                @php
+                    $purchase_line = $production_purchase->purchase_lines[0];
+                @endphp
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>{{ __('sale.product') }}:*</label>
+                        <select class="form-control" disabled>
+                            @foreach($recipe_dropdown as $key => $value)
+                                <option value="{{ $key }}" {{ $key == $purchase_line->variation_id ? 'selected' : '' }}>{{ $value }}</option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="variation_id" value="{{ $purchase_line->variation_id }}">
+                    </div>
+                </div>
+
+                <!-- Cantidad a producir -->
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="recipe_quantity">{{ __('lang_v1.quantity') }}:*</label>
+                        <div class="input-group">
+                            <input type="text" name="quantity" id="recipe_quantity" class="form-control input_number" value="{{ @num_format($quantity) }}" required>
+                            <span class="input-group-addon">{{ $unit_name }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
+
+        @component('components.widget', ['class' => 'box-solid', 'title' => __('manufacturing::lang.ingredients')])
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="enter_ingredients_table">
+                        @include('manufacturing::recipe.ingredients_for_production')
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Número de lote -->
+                @if(request()->session()->get('business.enable_lot_number') == 1)
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="lot_number">{{ __('lang_v1.lot_number') }}:</label>
+                            <input type="text" name="lot_number" id="lot_number" class="form-control" value="{{ $purchase_line->lot_number }}">
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Fecha de expiración -->
+                @if(session('business.enable_product_expiry'))
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="exp_date">{{ __('product.exp_date') }}:*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                <input type="text" name="exp_date" id="exp_date" class="form-control" value="{{ !empty($purchase_line->exp_date) ? @format_date($purchase_line->exp_date) : '' }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Unidades desperdiciadas -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="mfg_wasted_units">{{ __('manufacturing::lang.waste_units') }}:</label>
+                        <div class="input-group">
+                            <input type="text" name="mfg_wasted_units" id="mfg_wasted_units" class="form-control input_number" value="{{ @num_format($production_purchase->mfg_wasted_units) }}">
+                            <span class="input-group-addon">{{ $unit_name }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Costo de producción -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="production_cost">{{ __('manufacturing::lang.production_cost') }}:</label>
+                        <div class="input_inline">
+                            <input type="text" name="production_cost" id="production_cost" class="form-control input_number" value="{{ @num_format($production_purchase->mfg_production_cost) }}">
+                            <select name="mfg_production_cost_type" class="form-control">
+                                <option value="fixed" {{ $production_purchase->mfg_production_cost_type == 'fixed' ? 'selected' : '' }}>{{ __('lang_v1.fixed') }}</option>
+                                <option value="percentage" {{ $production_purchase->mfg_production_cost_type == 'percentage' ? 'selected' : '' }}>{{ __('lang_v1.percentage') }}</option>
+                                <option value="per_unit" {{ $production_purchase->mfg_production_cost_type == 'per_unit' ? 'selected' : '' }}>{{ __('manufacturing::lang.per_unit') }}</option>
+                            </select>
+                        </div>
+                        <p>
+                            <strong>{{ __('manufacturing::lang.total_production_cost') }}:</strong>
+                            <span id="total_production_cost" class="display_currency" data-currency_symbol="true">{{ $total_production_cost }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Costo total -->
+            <div class="row">
+                <div class="col-md-3 col-md-offset-9">
+                    <input type="hidden" name="final_total" id="final_total" value="{{ @num_format($production_purchase->final_total) }}">
+                    <strong>{{ __('manufacturing::lang.total_cost') }}:</strong>
+                    <span id="final_total_text" class="display_currency" data-currency_symbol="true">{{ $production_purchase->final_total }}</span>
+                </div>
+            </div>
+
+            <!-- Checkbox para finalizar la producción -->
+            <div class="row">
+                <div class="col-md-3 col-md-offset-9">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="finalize" id="finalize" value="1"> {{ __('manufacturing::lang.finalize') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón de envío -->
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary pull-right">{{ __('messages.submit') }}</button>
+                </div>
+            </div>
+        @endcomponent
+
+    </form>
 </section>
+
 @endsection
 
 @section('javascript')

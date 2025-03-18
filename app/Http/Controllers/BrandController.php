@@ -6,6 +6,7 @@ use App\Models\Brands;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Log;
 
 class BrandController extends Controller
 {
@@ -112,7 +113,7 @@ class BrandController extends Controller
                             'msg' => __("brand.added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -188,7 +189,7 @@ class BrandController extends Controller
                             'msg' => __("brand.updated_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -222,7 +223,7 @@ class BrandController extends Controller
                             'msg' => __("brand.deleted_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -243,7 +244,7 @@ class BrandController extends Controller
             $brands = Brands::where('business_id', $api_settings->business_id)
                                 ->get();
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
         
             return $this->respondWentWrong($e);
         }

@@ -1,33 +1,53 @@
+<!-- Modal para cambiar el estado de la tarea -->
 <div class="modal-dialog" role="document">
-    {!! Form::open(['url' => action('\Modules\Project\Http\Controllers\TaskController@postTaskStatus', $project_task->id), 'id' => 'change_status', 'method' => 'put']) !!}
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title">
-                @lang("project::lang.change_status")
-            </h4>
-        </div>
-        <div class="modal-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        {!! Form::label('status', __('sale.status') .':*') !!}
-                        {!! Form::select('status', $statuses, $project_task->status, ['class' => 'form-control select2', 'required', 'style' => 'width: 100%;']); !!}
+    <form action="{{ action('\Modules\Project\Http\Controllers\TaskController@postTaskStatus', $project_task->id) }}" 
+          method="POST" 
+          id="change_status">
+        @csrf  <!-- Token de seguridad para formularios -->
+        @method('PUT')  <!-- Método HTTP PUT para actualizar -->
+
+        <div class="modal-content">
+            <!-- Encabezado del modal -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    {{ __("project::lang.change_status") }}  <!-- Título del modal -->
+                </h4>
+            </div>
+
+            <!-- Cuerpo del modal -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Selector de estado de la tarea -->
+                        <div class="form-group">
+                            <label for="status">{{ __('sale.status') }}:*</label>
+                            <select name="status" id="status" class="form-control select2" required style="width: 100%;">
+                                @foreach($statuses as $key => $value)
+                                    <option value="{{ $key }}" {{ $project_task->status == $key ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Campo oculto para el ID del proyecto -->
+                <input type="hidden" name="project_id" value="{{ $project_task->project_id }}">
             </div>
-            {!! Form::hidden('project_id', $project_task->project_id, ['class' => 'form-control']) !!}
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary btn-sm">
-                @lang('messages.update')
-            </button>
-             <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
-                @lang('messages.close')
-            </button>
-        </div>
-    </div><!-- /.modal-content -->
-     {!! Form::close() !!}
+
+            <!-- Pie del modal con botones de acción -->
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    {{ __('messages.update') }}  <!-- Botón para actualizar -->
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                    {{ __('messages.close') }}  <!-- Botón para cerrar el modal -->
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </form>
 </div><!-- /.modal-dialog -->

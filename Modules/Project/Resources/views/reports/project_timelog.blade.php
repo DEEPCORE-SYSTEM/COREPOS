@@ -12,26 +12,36 @@
 	    </h1>
 	</section>
 	<section class="content">
-	    @component('components.filters', ['title' => __('report.filters')])
+    	@component('components.filters', ['title' => __('report.filters')])
 			<div class="row">
-	            <div class="col-md-4">
-	                <div class="form-group">
-	                    {!! Form::label('project_timelog_report_project_id', __('project::lang.project') . ':') !!}
-	                    {!! Form::select('project_id[]', $projects, null, ['class' => 'form-control select2', 'id' => 'project_timelog_report_project_id', 'multiple', 'style' => 'width: 100%;']); !!}
-	                </div>    
-	            </div>
-	            <div class="col-md-4">
-	                <div class="form-group">
-	                    {!! Form::label('project_timelog_report_daterange', __('report.date_range') . ':') !!}
-	                    {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'project_timelog_report_daterange', 'readonly']); !!}
-	                </div>
-	            </div>
-	        </div>
-	    @endcomponent
-	    <div class="box box-solid">
-	    	<div class="box-body project_timelog_report"></div>
-	    </div>
+				<!-- Filtro: Proyecto -->
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="project_timelog_report_project_id">@lang('project::lang.project'):</label>
+						<select id="project_timelog_report_project_id" name="project_id[]" class="form-control select2" multiple style="width: 100%;">
+							@foreach($projects as $key => $project)
+								<option value="{{ $key }}">{{ $project }}</option>
+							@endforeach
+						</select>
+					</div>    
+				</div>
+
+				<!-- Filtro: Rango de fechas -->
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="project_timelog_report_daterange">@lang('report.date_range'):</label>
+						<input type="text" id="project_timelog_report_daterange" name="date_range" class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
+					</div>
+				</div>
+			</div>
+		@endcomponent
+
+			<!-- Contenedor para el reporte de registro de tiempo del proyecto -->
+			<div class="box box-solid">
+				<div class="box-body project_timelog_report"></div>
+			</div>
 	</section>
+
 @endsection
 @section('javascript')
 <script src="{{ asset('modules/project/js/project.js?v=' . $asset_v) }}"></script>

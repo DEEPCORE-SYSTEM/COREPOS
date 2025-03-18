@@ -1,16 +1,22 @@
 <div class="pos-tab-content active">
-	<div class="row">
-		<div class="col-xs-4">
+    <div class="row">
+        <!-- Prefijo para el número de referencia de permisos -->
+        <div class="col-xs-4">
             <div class="form-group">
-            	{!! Form::label('leave_ref_no_prefix',  __('essentials::lang.leave_ref_no_prefix') . ':') !!}
-            	{!! Form::text('leave_ref_no_prefix', !empty($settings['leave_ref_no_prefix']) ? $settings['leave_ref_no_prefix'] : null, ['class' => 'form-control','placeholder' => __('essentials::lang.leave_ref_no_prefix')]); !!}
+                <label for="leave_ref_no_prefix">@lang('essentials::lang.leave_ref_no_prefix'):</label>
+                <input type="text" name="leave_ref_no_prefix" id="leave_ref_no_prefix" 
+                       class="form-control" placeholder="@lang('essentials::lang.leave_ref_no_prefix')" 
+                       value="{{ $settings['leave_ref_no_prefix'] ?? '' }}">
             </div>
         </div>
+
+        <!-- Instrucciones para permisos -->
         <div class="col-xs-12">
             <div class="form-group">
-                {!! Form::label('leave_instructions',  __('essentials::lang.leave_instructions') . ':') !!}
-                {!! Form::textarea('leave_instructions', !empty($settings['leave_instructions']) ? $settings['leave_instructions'] : null, ['class' => 'form-control','placeholder' => __('essentials::lang.leave_instructions')]); !!}
+                <label for="leave_instructions">@lang('essentials::lang.leave_instructions'):</label>
+                <textarea name="leave_instructions" id="leave_instructions" class="form-control" 
+                          placeholder="@lang('essentials::lang.leave_instructions')">{{ $settings['leave_instructions'] ?? '' }}</textarea>
             </div>
         </div>
-	</div>
+    </div>
 </div>

@@ -2,13 +2,14 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\BusinessLocation;
+use App\Models\BusinessLocation;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsHoliday;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class EssentialsHolidayController extends Controller
 {
@@ -91,8 +92,8 @@ class EssentialsHolidayController extends Controller
                 )
                 ->editColumn('location', '{{$location ?? __("lang_v1.all")}}')
                 ->editColumn('start_date', function ($row) {
-                    $start_date = \Carbon::parse($row->start_date);
-                    $end_date = \Carbon::parse($row->end_date);
+                    $start_date = Carbon::parse($row->start_date);
+                    $end_date = Carbon::parse($row->end_date);
 
                     $diff = $start_date->diffInDays($end_date);
                     $diff += 1;

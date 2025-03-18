@@ -11,61 +11,80 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12">
-        @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-            @if(!empty($users))
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('user_id_filter', __('essentials::lang.employee') . ':') !!}
-                    {!! Form::select('user_id_filter', $users, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                @if(!empty($users))
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="user_id_filter">@lang('essentials::lang.employee'):</label>
+                            <select name="user_id_filter" id="user_id_filter" class="form-control select2" style="width:100%">
+                                <option value="">@lang('lang_v1.all')</option>
+                                @foreach($users as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="status_filter">@lang('sale.status'):</label>
+                        <select name="status_filter" id="status_filter" class="form-control select2" required style="width: 100%;">
+                            <option value="">@lang('lang_v1.all')</option>
+                            @foreach($leave_statuses as $key => $value)
+                                <option value="{{ $key }}">{{ $value['name'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-            @endif
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="status_filter">@lang( 'sale.status' ):</label>
-                    <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
-                        <option value="">@lang('lang_v1.all')</option>
-                        @foreach($leave_statuses as $key => $value)
-                            <option value="{{$key}}">{{$value['name']}}</option>
-                        @endforeach
-                    </select>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="leave_type_filter">@lang('essentials::lang.leave_type'):</label>
+                        <select name="leave_type_filter" id="leave_type_filter" class="form-control select2" style="width:100%">
+                            <option value="">@lang('lang_v1.all')</option>
+                            @foreach($leave_types as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('leave_type_filter', __('essentials::lang.leave_type') . ':') !!}
-                    {!! Form::select('leave_type_filter', $leave_types, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="leave_filter_date_range">@lang('report.date_range'):</label>
+                        <input type="text" name="leave_filter_date_range" id="leave_filter_date_range" class="form-control" readonly 
+                               placeholder="@lang('lang_v1.select_a_date_range')">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('leave_filter_date_range', __('report.date_range') . ':') !!}
-                    {!! Form::text('leave_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-                </div>
-            </div>
-        @endcomponent
+            @endcomponent
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
-            @component('components.widget', ['class' => 'box-solid', 'title' => __( 'essentials::lang.all_leaves' )])
+            @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.all_leaves')])
                 @slot('tool')
                     <div class="box-tools">
-                        <button type="button" class="btn btn-block btn-primary btn-modal" data-href="{{action('\Modules\Essentials\Http\Controllers\EssentialsLeaveController@create')}}" data-container="#add_leave_modal">
-                            <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
+                        <button type="button" class="btn btn-block btn-primary btn-modal" 
+                                data-href="{{ action('\Modules\Essentials\Http\Controllers\EssentialsLeaveController@create') }}" 
+                                data-container="#add_leave_modal">
+                            <i class="fa fa-plus"></i> @lang('messages.add')
+                        </button>
                     </div>
                 @endslot
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="leave_table">
                         <thead>
                             <tr>
-                                <th>@lang( 'purchase.ref_no' )</th>
-                                <th>@lang( 'essentials::lang.leave_type' )</th>
+                                <th>@lang('purchase.ref_no')</th>
+                                <th>@lang('essentials::lang.leave_type')</th>
                                 <th>@lang('essentials::lang.employee')</th>
-                                <th>@lang( 'lang_v1.date' )</th>
-                                <th>@lang( 'essentials::lang.reason' )</th>
-                                <th>@lang( 'sale.status' )</th>
-                                <th>@lang( 'messages.action' )</th>
+                                <th>@lang('lang_v1.date')</th>
+                                <th>@lang('essentials::lang.reason')</th>
+                                <th>@lang('sale.status')</th>
+                                <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
                     </table>
@@ -73,8 +92,10 @@
             @endcomponent
         </div>
     </div>
+
     <div class="row" id="user_leave_summary"></div>
 </section>
+
 <!-- /.content -->
 <div class="modal fade" id="add_leave_modal" tabindex="-1" role="dialog" 
         aria-labelledby="gridSystemModalLabel"></div>

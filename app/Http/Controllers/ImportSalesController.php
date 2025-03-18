@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Excel;
 use App\Models\BusinessLocation;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Utils\BusinessUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
@@ -15,8 +15,11 @@ use App\Models\TaxRate;
 use App\Models\Transaction;
 use App\Models\Contact;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\Log;
 use App\TypesOfService;
 use App\Models\Unit;
+use Carbon\Carbon;
+
 
 class ImportSalesController extends Controller
 {
@@ -194,7 +197,7 @@ class ImportSalesController extends Controller
                     ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => $e->getMessage()
@@ -219,7 +222,7 @@ class ImportSalesController extends Controller
     		$import_batch = $import_batch + 1;
     	}
 
-    	$now = \Carbon::now()->toDateTimeString();
+    	$now = Carbon::now()->toDateTimeString();
     	$row_index = 2;
     	foreach ($formated_data as $data) {
 
@@ -559,7 +562,7 @@ class ImportSalesController extends Controller
             $output = ['success' => 1, 'msg' => __('lang_v1.import_reverted_successfully') ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => trans("messages.something_went_wrong")

@@ -24,8 +24,9 @@ use App\Models\Business;
 use App\Models\Transaction;
 use App\Models\TransactionSellLine;
 use App\Models\TransactionPayment;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Connector\Transformers\SellResource;
+use Carbon\Carbon;
 
 /**
  * @group Sales management
@@ -35,6 +36,7 @@ use Modules\Connector\Transformers\SellResource;
  */
 class SellController extends ApiController
 {
+
     /**
      * All Utils instance.
      *
@@ -1234,7 +1236,7 @@ class SellController extends ApiController
             'contact_id' => $contact->id,
             'customer_group_id' => $customer_group_id,
             'transaction_date' => $this->__getValue('transaction_date', $data, 
-                                $transaction,  \Carbon::now()->toDateTimeString()),
+                                $transaction,  Carbon::now()->toDateTimeString()),
             'invoice_no' => $this->__getValue('invoice_no', $data, $transaction, null, 'invoice_no'),
             'status' => $this->__getValue('status', $data, $transaction, 'final'),
             'sub_status' => $this->__getValue('sub_status', $data, $transaction, null),

@@ -9,67 +9,93 @@
 <section class="content">
     <div class="row">
         <div class="col-md-7">
-    	@component('components.widget', ['class' => 'box-solid'])
-            <div class="form-group">
-                {!! Form::label('location_id', __('purchase.business_location').':') !!}
-                {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control', 'placeholder' => __('messages.please_select')]); !!}
-            </div>
-            <div class="form-group">
-                {!! Form::label('color', __('productcatalogue::lang.qr_code_color').':') !!}
-                {!! Form::text('color', '#000000', ['class' => 'form-control']); !!}
-            </div>
-            <div class="form-group">
-                {!! Form::label('title', __('productcatalogue::lang.title').':') !!}
-                {!! Form::text('title', $business->name, ['class' => 'form-control']); !!}
-            </div>
-            <div class="form-group">
-                {!! Form::label('subtitle', __('productcatalogue::lang.subtitle').':') !!}
-                {!! Form::text('subtitle', __('productcatalogue::lang.product_catalogue'), ['class' => 'form-control']); !!}
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        {!! Form::checkbox('add_logo', 1, true, ['id' => 'show_logo', 'class' => 'input-icheck']); !!} @lang('productcatalogue::lang.show_business_logo_on_qrcode')
-                    </label>
+            <!-- Formulario para generar el QR -->
+            <div class="box box-solid">
+                <div class="box-body">
+                    <!-- Selección de ubicación -->
+                    <div class="form-group">
+                        <label for="location_id">@lang('purchase.business_location'):</label>
+                        <select name="location_id" id="location_id" class="form-control">
+                            <option value="">@lang('messages.please_select')</option>
+                            @foreach($business_locations as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Selección de color del QR -->
+                    <div class="form-group">
+                        <label for="color">@lang('productcatalogue::lang.qr_code_color'):</label>
+                        <input type="text" name="color" id="color" class="form-control" value="#000000">
+                    </div>
+
+                    <!-- Título del QR -->
+                    <div class="form-group">
+                        <label for="title">@lang('productcatalogue::lang.title'):</label>
+                        <input type="text" name="title" id="title" class="form-control" value="{{ $business->name }}">
+                    </div>
+
+                    <!-- Subtítulo del QR -->
+                    <div class="form-group">
+                        <label for="subtitle">@lang('productcatalogue::lang.subtitle'):</label>
+                        <input type="text" name="subtitle" id="subtitle" class="form-control" value="@lang('productcatalogue::lang.product_catalogue')">
+                    </div>
+
+                    <!-- Opción para mostrar el logo -->
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="add_logo" id="show_logo" class="input-icheck" checked>
+                                @lang('productcatalogue::lang.show_business_logo_on_qrcode')
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Botón para generar el QR -->
+                    <button type="button" class="btn btn-primary" id="generate_qr">
+                        @lang('productcatalogue::lang.generate_qr')
+                    </button>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" id="generate_qr">@lang( 'productcatalogue::lang.generate_qr' )</button>
-        @endcomponent
-        @component('components.widget', ['class' => 'box-solid'])
-            <div class="row">
-                <div class="col-md-12">
+
+            <!-- Instrucciones de uso -->
+            <div class="box box-solid">
+                <div class="box-body">
                     <strong>@lang('lang_v1.instruction'):</strong>
                     <table class="table table-striped">
                         <tr>
                             <td>1</td>
-                            <td>@lang( 'productcatalogue::lang.catalogue_instruction_1' )</td>
+                            <td>@lang('productcatalogue::lang.catalogue_instruction_1')</td>
                         </tr>
                         <tr>
                             <td>2</td>
-                            <td>@lang( 'productcatalogue::lang.catalogue_instruction_2' )</td>
+                            <td>@lang('productcatalogue::lang.catalogue_instruction_2')</td>
                         </tr>
                         <tr>
                             <td>3</td>
-                            <td>@lang( 'productcatalogue::lang.catalogue_instruction_3' )</td>
+                            <td>@lang('productcatalogue::lang.catalogue_instruction_3')</td>
                         </tr>
                     </table>
                 </div>
             </div>
-        @endcomponent
         </div>
-        <div class="col-md-5">
-            @component('components.widget', ['class' => 'box-solid'])
 
-                <div class="text-center">
+        <!-- Sección para mostrar el QR generado -->
+        <div class="col-md-5">
+            <div class="box box-solid">
+                <div class="box-body text-center">
                     <div id="qrcode"></div>
                     <span id="catalogue_link"></span>
                     <br>
-                    <a href="#" class="btn btn-success hide" id="download_image" target="_blank" download="qrcode.png">@lang( 'productcatalogue::lang.download_image' )</a>
+                    <a href="#" class="btn btn-success hide" id="download_image" target="_blank" download="qrcode.png">
+                        @lang('productcatalogue::lang.download_image')
+                    </a>
                 </div>
-            @endcomponent
+            </div>
         </div>
     </div>
 </section>
+
 @stop
 @section('javascript')
 <script src="{{ asset('modules/productcatalogue/plugins/easy.qrcode.min.js') }}"></script>

@@ -7,6 +7,7 @@ use App\Utils\Util;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\SellingPriceGroup;
+use Illuminate\Support\Facades\Log;
 
 class CustomerGroupController extends Controller
 {
@@ -103,7 +104,7 @@ class CustomerGroupController extends Controller
                             'msg' => __("lang_v1.success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -165,7 +166,7 @@ class CustomerGroupController extends Controller
                             'msg' => __("lang_v1.success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -199,7 +200,7 @@ class CustomerGroupController extends Controller
                             'msg' => __("lang_v1.success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

@@ -62,6 +62,7 @@ use Razorpay\Api\Api;
 use App\Models\TransactionPayment;
 use Stripe\Charge;
 use Stripe\Stripe;
+use Carbon\Carbon;
 
 class SellPosController extends Controller
 {
@@ -355,7 +356,7 @@ class SellPosController extends Controller
                 DB::beginTransaction();
 
                 if (empty($request->input('transaction_date'))) {
-                    $input['transaction_date'] =  \Carbon::now();
+                    $input['transaction_date'] =  Carbon::now();
                 } else {
                     $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
                 }
@@ -1901,7 +1902,7 @@ class SellPosController extends Controller
                 $payment_ref_no = $this->transactionUtil->generateReferenceNumber('sell_payment', $ref_count, $transaction->business_id);
 
                 $data = [
-                    'paid_on' => \Carbon::now()->toDateTimeString(),
+                    'paid_on' => Carbon::now()->toDateTimeString(),
                     'transaction_id' => $transaction->id,
                     'amount' => $total_payable,
                     'payment_for' => $transaction->contact_id,
@@ -2072,16 +2073,16 @@ class SellPosController extends Controller
                 })
                 ->addColumn('upcoming_invoice', function ($row) {
                     if (empty($row->recur_stopped_on)) {
-                        $last_generated = !empty(count($row->subscription_invoices)) ? \Carbon::parse($row->subscription_invoices->max('transaction_date')) : \Carbon::parse($row->transaction_date);
+                        $last_generated = !empty(count($row->subscription_invoices)) ? Carbon::parse($row->subscription_invoices->max('transaction_date')) : Carbon::parse($row->transaction_date);
                         $last_generated_string = $last_generated->format('Y-m-d');
-                        $last_generated = \Carbon::parse($last_generated_string);
+                        $last_generated = Carbon::parse($last_generated_string);
 
                         if ($row->recur_interval_type == 'days') {
                             $upcoming_invoice = $last_generated->addDays($row->recur_interval);
                         } elseif ($row->recur_interval_type == 'months') {
                             if (!empty($row->subscription_repeat_on)) {
                                 $last_generated_string = $last_generated->format('Y-m');
-                                $last_generated = \Carbon::parse($last_generated_string . '-' . $row->subscription_repeat_on);
+                                $last_generated = Carbon::parse($last_generated_string . '-' . $row->subscription_repeat_on);
                             }
 
                             $upcoming_invoice = $last_generated->addMonths($row->recur_interval);
@@ -2119,7 +2120,7 @@ class SellPosController extends Controller
                             ->findorfail($id);
 
             if (empty($transaction->recur_stopped_on)) {
-                $transaction->recur_stopped_on = \Carbon::now();
+                $transaction->recur_stopped_on = Carbon::now();
             } else {
                 $transaction->recur_stopped_on = null;
             }
@@ -2229,7 +2230,7 @@ class SellPosController extends Controller
                 'status' => 'final',
                 'payment_status' => 'due',
                 'additional_notes' => '',
-                'transaction_date' => \Carbon::now(),
+                'transaction_date' => Carbon::now(),
                 'customer_group_id' => $customer->customer_group_id,
                 'tax_rate_id' => null,
                 'sale_note' => null,
@@ -2468,7 +2469,7 @@ class SellPosController extends Controller
             $invoice_no = $this->transactionUtil->getInvoiceNumber($business_id, 'final', $transaction->location_id);
 
             $transaction->invoice_no = $invoice_no;
-            $transaction->transaction_date = \Carbon::now();
+            $transaction->transaction_date = Carbon::now();
             $transaction->status = 'final';
             $transaction->sub_status = null;
             $transaction->is_quotation = 0;

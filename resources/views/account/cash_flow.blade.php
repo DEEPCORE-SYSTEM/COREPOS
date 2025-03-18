@@ -15,36 +15,51 @@
         <div class="col-sm-12">
             <div class="box box-solid">
                 <div class="box-header">
-                    <h3 class="box-title"> <i class="fa fa-filter" aria-hidden="true"></i> @lang('report.filters'):</h3>
+                    <h3 class="box-title">
+                        <i class="fa fa-filter" aria-hidden="true"></i> @lang('report.filters'):
+                    </h3>
                 </div>
                 <div class="box-body">
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('account_id', __('account.account') . ':') !!}
-                            {!! Form::select('account_id', $accounts, '', ['class' => 'form-control', 'placeholder' => __('messages.all')]) !!}
+                            <label for="account_id">@lang('account.account'):</label>
+                            <select name="account_id" id="account_id" class="form-control">
+                                <option value="">@lang('messages.all')</option>
+                                @foreach($accounts as $key => $account)
+                                    <option value="{{ $key }}">{{ $account }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('cash_flow_location_id',  __('purchase.business_location') . ':') !!}
-                            {!! Form::select('cash_flow_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                            <label for="cash_flow_location_id">@lang('purchase.business_location'):</label>
+                            <select name="cash_flow_location_id" id="cash_flow_location_id" class="form-control select2" style="width:100%">
+                                @foreach($business_locations as $key => $location)
+                                    <option value="{{ $key }}">{{ $location }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('transaction_date_range', __('report.date_range') . ':') !!}
+                            <label for="transaction_date_range">@lang('report.date_range'):</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                {!! Form::text('transaction_date_range', null, ['class' => 'form-control', 'readonly', 'placeholder' => __('report.date_range')]) !!}
+                                <input type="text" name="transaction_date_range" id="transaction_date_range" class="form-control" readonly placeholder="@lang('report.date_range')">
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">
-                            {!! Form::label('transaction_type', __('account.transaction_type') . ':') !!}
+                            <label for="transaction_type">@lang('account.transaction_type'):</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fas fa-exchange-alt"></i></span>
-                                {!! Form::select('transaction_type', ['' => __('messages.all'),'debit' => __('account.debit'), 'credit' => __('account.credit')], '', ['class' => 'form-control']) !!}
+                                <select name="transaction_type" id="transaction_type" class="form-control">
+                                    <option value="">@lang('messages.all')</option>
+                                    <option value="debit">@lang('account.debit')</option>
+                                    <option value="credit">@lang('account.credit')</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -52,37 +67,35 @@
             </div>
         </div>
     </div>
+    
     <div class="row">
         <div class="col-sm-12">
-        	<div class="box">
+            <div class="box">
                 <div class="box-body">
                     @can('account.access')
                         <div class="table-responsive">
-                    	<table class="table table-bordered table-striped" id="cash_flow_table">
-                    		<thead>
-                    			<tr>
-                                    <th>@lang( 'messages.date' )</th>
-                                    <th>@lang( 'account.account' )</th>
-                                    <th>@lang( 'lang_v1.description' )</th>
-                    				<th>@lang('account.credit')</th>
-                                    <th>@lang('account.debit')</th>
-                    				<th>@lang( 'lang_v1.balance' )</th>
-                    			</tr>
-                    		</thead>
-                    	</table>
+                            <table class="table table-bordered table-striped" id="cash_flow_table">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('messages.date')</th>
+                                        <th>@lang('account.account')</th>
+                                        <th>@lang('lang_v1.description')</th>
+                                        <th>@lang('account.credit')</th>
+                                        <th>@lang('account.debit')</th>
+                                        <th>@lang('lang_v1.balance')</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
                     @endcan
                 </div>
             </div>
         </div>
     </div>
-    
 
-    <div class="modal fade account_model" tabindex="-1" role="dialog" 
-    	aria-labelledby="gridSystemModalLabel">
-    </div>
-
+    <div class="modal fade account_model" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 </section>
+
 <!-- /.content -->
 
 @endsection

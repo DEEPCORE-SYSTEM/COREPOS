@@ -12,61 +12,81 @@
 <!-- Main content -->
 <section class="content">
 
-	{!! Form::open(['url' => action('\Modules\Superadmin\Http\Controllers\PageController@store'), 'method' => 'post', 'id' => 'add_page_form']) !!}
+    <!-- Formulario para crear una nueva página -->
+    <form action="{{ action('\Modules\Superadmin\Http\Controllers\PageController@store') }}" method="POST" id="add_page_form">
+        @csrf <!-- Token de seguridad para formularios en Laravel -->
 
-	<div class="box box-solid">
-		<div class="box-body">
-			<div class="row">
-				<div class="col-sm-3">
-					<div class="form-group">
-						{!! Form::label('title', __('superadmin::lang.page_title').':') !!}
-						{!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => __('superadmin::lang.page_title')]); !!}
-					</div>
-				</div>
-				<div class="col-sm-3">
-					<div class="form-group">
-						{!! Form::label('slug', __('superadmin::lang.slug').':') !!}
-						{!! Form::text('slug', null, ['class' => 'form-control', 'placeholder' => __('superadmin::lang.slug'), 'required']); !!}
-					</div>
-				</div>
-				<div class="col-sm-3">
-					<div class="form-group">
-						{!! Form::label('menu_order', __('superadmin::lang.menu_order').':') !!} @show_tooltip(__('superadmin::lang.menu_order_tooltip'))
-						{!! Form::number('menu_order', 0, ['class' => 'form-control', 'placeholder' => __('superadmin::lang.menu_order')]); !!}
-					</div>
-				</div>
-				<div class="col-sm-3">
-					<div class="checkbox">
-					<label>
-						{!! Form::checkbox('is_shown', 1, true, ['class' => 'input-icheck']); !!}
-                        {{__('superadmin::lang.is_visible')}}
-					</label>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+        <!-- Primera caja: Información básica de la página -->
+        <div class="box box-solid">
+            <div class="box-body">
+                <div class="row">
 
-	<div class="box box-solid">
-		<div class="box-body">
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="form-group">
-						{!! Form::label('content', __('superadmin::lang.page_content').':') !!}
-						{!! Form::textarea('content', null, ['class' => 'form-control', 'placeholder' => __('superadmin::lang.page_content')]); !!}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                    <!-- Campo para el título de la página -->
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="title">@lang('superadmin::lang.page_title'):</label>
+                            <input type="text" name="title" class="form-control" placeholder="@lang('superadmin::lang.page_title')" required>
+                        </div>
+                    </div>
 
-	<div class="row">
-		<div class="col-sm-12">
-			<button type="submit" class="btn btn-primary pull-right btn-flat">@lang('messages.save')</button>
-		</div>
-	</div>
+                    <!-- Campo para el slug (URL amigable) -->
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="slug">@lang('superadmin::lang.slug'):</label>
+                            <input type="text" name="slug" class="form-control" placeholder="@lang('superadmin::lang.slug')" required>
+                        </div>
+                    </div>
 
-	{!! Form::close() !!}
+                    <!-- Campo para el orden en el menú -->
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="menu_order">
+                                @lang('superadmin::lang.menu_order'):
+                                <i class="fa fa-info-circle" data-toggle="tooltip" title="@lang('superadmin::lang.menu_order_tooltip')"></i>
+                            </label>
+                            <input type="number" name="menu_order" class="form-control" placeholder="@lang('superadmin::lang.menu_order')" value="0">
+                        </div>
+                    </div>
+
+                    <!-- Checkbox para definir si la página es visible -->
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="is_shown" value="1" class="input-icheck" checked>
+                                    @lang('superadmin::lang.is_visible')
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- Fin de la fila -->
+            </div>
+        </div> <!-- Fin de la primera caja -->
+
+        <!-- Segunda caja: Contenido de la página -->
+        <div class="box box-solid">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="content">@lang('superadmin::lang.page_content'):</label>
+                            <textarea name="content" class="form-control" placeholder="@lang('superadmin::lang.page_content')" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Fin de la segunda caja -->
+
+        <!-- Botón para guardar la página -->
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary pull-right btn-flat">@lang('messages.save')</button>
+            </div>
+        </div>
+
+    </form> <!-- Fin del formulario -->
+
 </section>
 
 @endsection

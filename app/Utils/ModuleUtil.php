@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-use \Module;
+use Nwidart\Modules\Facades\Module;
 use App\Models\Account;
 use App\Models\BusinessLocation;
 use App\Models\Product;
@@ -10,6 +10,7 @@ use App\Models\System;
 use App\Models\Transaction;
 use App\Models\User;
 use Composer\Semver\Comparator;
+use Modules\Ecommerce\Entities\EcomApiSetting;
 
 class ModuleUtil extends Util
 {

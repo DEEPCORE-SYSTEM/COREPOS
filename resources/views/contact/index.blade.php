@@ -20,51 +20,59 @@
 <section class="content">
     @component('components.filters', ['title' => __('report.filters'), 'class' => 'hide'])
     @if($type == 'customer')
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>
-                    {!! Form::checkbox('has_sell_due', 1, false, ['class' => 'input-icheck', 'id' => 'has_sell_due']); !!} <strong>@lang('lang_v1.sell_due')</strong>
-                </label>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="has_sell_due" value="1" class="input-icheck" id="has_sell_due"> 
+                        <strong>@lang('lang_v1.sell_due')</strong>
+                    </label>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>
-                    {!! Form::checkbox('has_sell_return', 1, false, ['class' => 'input-icheck', 'id' => 'has_sell_return']); !!} <strong>@lang('lang_v1.sell_return')</strong>
-                </label>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="has_sell_return" value="1" class="input-icheck" id="has_sell_return"> 
+                        <strong>@lang('lang_v1.sell_return')</strong>
+                    </label>
+                </div>
             </div>
-        </div>
-    @elseif($type == 'supplier')
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>
-                    {!! Form::checkbox('has_purchase_due', 1, false, ['class' => 'input-icheck', 'id' => 'has_purchase_due']); !!} <strong>@lang('report.purchase_due')</strong>
-                </label>
+            @elseif($type == 'supplier')
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="has_purchase_due" value="1" class="input-icheck" id="has_purchase_due"> 
+                            <strong>@lang('report.purchase_due')</strong>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="has_purchase_return" value="1" class="input-icheck" id="has_purchase_return"> 
+                            <strong>@lang('lang_v1.purchase_return')</strong>
+                        </label>
+                    </div>
+                </div>
+            @endif
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="has_advance_balance" value="1" class="input-icheck" id="has_advance_balance"> 
+                        <strong>@lang('lang_v1.advance_balance')</strong>
+                    </label>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>
-                    {!! Form::checkbox('has_purchase_return', 1, false, ['class' => 'input-icheck', 'id' => 'has_purchase_return']); !!} <strong>@lang('lang_v1.purchase_return')</strong>
-                </label>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="has_opening_balance" value="1" class="input-icheck" id="has_opening_balance"> 
+                        <strong>@lang('lang_v1.opening_balance')</strong>
+                    </label>
+                </div>
             </div>
-        </div>
-    @endif
-    <div class="col-md-3">
-        <div class="form-group">
-            <label>
-                {!! Form::checkbox('has_advance_balance', 1, false, ['class' => 'input-icheck', 'id' => 'has_advance_balance']); !!} <strong>@lang('lang_v1.advance_balance')</strong>
-            </label>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="form-group">
-            <label>
-                {!! Form::checkbox('has_opening_balance', 1, false, ['class' => 'input-icheck', 'id' => 'has_opening_balance']); !!} <strong>@lang('lang_v1.opening_balance')</strong>
-            </label>
-        </div>
-    </div>
+
     @endcomponent
+    
     <input type="hidden" value="{{$type}}" id="contact_type">
     @component('components.widget', ['class' => 'box-primary', 'title' => __( 'contact.all_your_contact', ['contacts' => __('lang_v1.'.$type.'s') ])])
         @if(auth()->user()->can('supplier.create') || auth()->user()->can('customer.create') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own'))

@@ -5,69 +5,73 @@
 @section('content')
 @include('essentials::layouts.nav_essentials')
 	<section class="content">
-	<h4>
-		@lang('essentials::lang.all_documents')
-		<small> @lang('essentials::lang.manage_document')</small>
-	</h4>
+		<h4>
+			@lang('essentials::lang.all_documents')
+			<small> @lang('essentials::lang.manage_document')</small>
+		</h4>
 		<div class="box box-solid">
 			<div class="box-header">
 				<h4 class="box-title">@lang('essentials::lang.all_documents')</h4>
-			<div class="box-tools pull-right">
-				<button type="button" class="btn btn-sm btn-primary add_doc">
-					<i class="fa fa-plus"></i> 
-					@lang( 'messages.add' )
-				</button>
-			</div>
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-sm btn-primary add_doc">
+						<i class="fa fa-plus"></i> 
+						@lang('messages.add')
+					</button>
+				</div>
 			</div>
 			<div class="box-body">
 				<div class="row">
 					<div class="col-md-12">
-						{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\DocumentController@store'), 'id' => 'upload_document_form','files' => true, 'style' => 'display:none']) !!}
-						<div class="row">
-                            <div class="col-sm-12">
-	                            <div class="col-sm-6">
-	                                <div class="form-group">
-                                   		{!! Form::label('name', __('essentials::lang.document') . ":*") !!}
+						<form action="{{ action('\Modules\Essentials\Http\Controllers\DocumentController@store') }}" 
+							method="POST" id="upload_document_form" enctype="multipart/form-data" style="display:none">
+							@csrf
 
-                                   		{!! Form::file('name', ['required', 'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types')))]) !!}
-                                   		<p class="help-block">
-                        					@includeIf('components.document_help_text')
-                        				</p>
-	                                 </div>
-	                            </div>
-	                            <div class="clearfix"></div>
-	                            <div class="col-sm-6">
-	                                <div class="form-group">
-	                                    {!! Form::label('description', __('essentials::lang.description') . ":")!!}
-	                                    {!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => '4', 'cols' => '50']) !!}
-	                                 </div>
-	                            </div>
-	                            <div class="clearfix"></div>
-                        		<div class="col-sm-4">
-                                	<button type="submit" class="btn btn-primary btn-sm">
-                                		@lang('essentials::lang.submit')
-                                	</button>
-                                	&nbsp;
-									<button type="button" class="btn btn-danger btn-sm cancel_btn">
-										@lang('essentials::lang.cancel')
-									</button>
-                        		</div>
-                            </div>
-                        </div>
-                        <br><hr>
-					{!! Form::close() !!}
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label for="name">@lang('essentials::lang.document')*:</label>
+											<input type="file" name="name" id="name" required 
+												accept="{{ implode(',', array_keys(config('constants.document_upload_mimes_types'))) }}">
+											<p class="help-block">
+												@includeIf('components.document_help_text')
+											</p>
+										</div>
+									</div>
+									<div class="clearfix"></div>
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label for="description">@lang('essentials::lang.description'):</label>
+											<textarea name="description" id="description" class="form-control" rows="4" cols="50"></textarea>
+										</div>
+									</div>
+									<div class="clearfix"></div>
+									<div class="col-sm-4">
+										<button type="submit" class="btn btn-primary btn-sm">
+											@lang('essentials::lang.submit')
+										</button>
+										&nbsp;
+										<button type="button" class="btn btn-danger btn-sm cancel_btn">
+											@lang('essentials::lang.cancel')
+										</button>
+									</div>
+								</div>
+							</div>
+							<br><hr>
+						</form>
 					</div>
 				</div>
+
 				<div class="row">
 					<div class="col-md-12">
 						<div class="table-responsive">
 							<table class="table table-bordered table-striped documents">
 								<thead>
 									<tr>
-										<th> @lang('essentials::lang.name')</th>
-										<th> @lang('essentials::lang.description')</th>
-										<th> @lang('essentials::lang.uploaded_date')</th>
-										<th> @lang('essentials::lang.action')</th>
+										<th>@lang('essentials::lang.name')</th>
+										<th>@lang('essentials::lang.description')</th>
+										<th>@lang('essentials::lang.uploaded_date')</th>
+										<th>@lang('essentials::lang.action')</th>
 									</tr>
 								</thead>
 							</table>
@@ -77,6 +81,7 @@
 			</div>
 		</div>
 	</section>
+
 	<!-- document share model -->
 	<div class="modal fade document" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
 @endsection

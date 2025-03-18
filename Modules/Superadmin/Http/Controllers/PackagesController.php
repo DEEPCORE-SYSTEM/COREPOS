@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Modules\Superadmin\Entities\Package;
 
 use Modules\Superadmin\Entities\Subscription;
+use Carbon\Carbon;
 
 class PackagesController extends BaseController
 {
@@ -194,7 +195,7 @@ class PackagesController extends BaseController
 
                 //Update subscription package details
                 $subscriptions = Subscription::where('package_id', $package->id)
-                                            ->whereDate('end_date', '>=', \Carbon::now())
+                                            ->whereDate('end_date', '>=', Carbon::now())
                                             ->update(['package_details' => json_encode($package_details)]);
             }
 

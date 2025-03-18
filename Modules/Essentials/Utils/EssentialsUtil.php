@@ -2,12 +2,13 @@
 namespace Modules\Essentials\Utils;
 
 use App\Utils\Util;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsAttendance;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\Shift;
 use Illuminate\Support\Facades\View;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 
 class EssentialsUtil extends Util
@@ -93,13 +94,13 @@ class EssentialsUtil extends Util
     public function checkUserShift($user_id, $settings, $clock_in_time = null)
     {
         $shift_id = null;
-        $shift_date = !empty($clock_in_time) ? \Carbon::parse($clock_in_time) : \Carbon::now();
+        $shift_date = !empty($clock_in_time) ? Carbon::parse($clock_in_time) : Carbon::now();
         $shift_datetime = $shift_date->format('Y-m-d');
         $day_string = strtolower($shift_date->format('l'));
         $grace_before_checkin = !empty($settings['grace_before_checkin']) ? (int) $settings['grace_before_checkin'] : 0;
         $grace_after_checkin = !empty($settings['grace_after_checkin']) ? (int) $settings['grace_after_checkin'] : 0;
-        $clock_in_start =  !empty($clock_in_time) ? \Carbon::parse($clock_in_time)->subMinutes($grace_before_checkin) : \Carbon::now()->subMinutes($grace_before_checkin);
-        $clock_in_end = !empty($clock_in_time) ? \Carbon::parse($clock_in_time)->addMinutes($grace_after_checkin) : \Carbon::now()->addMinutes($grace_after_checkin);
+        $clock_in_start =  !empty($clock_in_time) ? Carbon::parse($clock_in_time)->subMinutes($grace_before_checkin) : Carbon::now()->subMinutes($grace_before_checkin);
+        $clock_in_end = !empty($clock_in_time) ? Carbon::parse($clock_in_time)->addMinutes($grace_after_checkin) : Carbon::now()->addMinutes($grace_after_checkin);
 
         $user_shifts = EssentialsUserShift::join('essentials_shifts as s', 's.id', '=', 'essentials_user_shifts.essentials_shift_id')
                     ->where('user_id', $user_id)
@@ -119,7 +120,7 @@ class EssentialsUtil extends Util
             }
 
             //Check allocated shift time
-            if ((!empty($shift->start_time) && \Carbon::parse($shift->start_time)->between($clock_in_start, $clock_in_end)) || $shift->type == 'flexible_shift') {
+            if ((!empty($shift->start_time) && Carbon::parse($shift->start_time)->between($clock_in_start, $clock_in_end)) || $shift->type == 'flexible_shift') {
                 return $shift->essentials_shift_id;
             }
         }
@@ -139,11 +140,11 @@ class EssentialsUtil extends Util
 
         $grace_before_checkout = !empty($settings['grace_before_checkout']) ? (int) $settings['grace_before_checkout'] : 0;
         $grace_after_checkout = !empty($settings['grace_after_checkout']) ? (int) $settings['grace_after_checkout'] : 0;
-        $clock_out_start =  empty($clock_out_time) ? \Carbon::now()->subMinutes($grace_before_checkout) : \Carbon::parse($clock_out_time)->subMinutes($grace_before_checkout);
+        $clock_out_start =  empty($clock_out_time) ? Carbon::now()->subMinutes($grace_before_checkout) : Carbon::parse($clock_out_time)->subMinutes($grace_before_checkout);
 
-        $clock_out_end = empty($clock_out_time) ? \Carbon::now()->addMinutes($grace_after_checkout) : \Carbon::parse($clock_out_time)->addMinutes($grace_after_checkout);
+        $clock_out_end = empty($clock_out_time) ? Carbon::now()->addMinutes($grace_after_checkout) : Carbon::parse($clock_out_time)->addMinutes($grace_after_checkout);
 
-        if ((\Carbon::parse($shift->end_time)->between($clock_out_start, $clock_out_end)) || $shift->type == 'flexible_shift') {
+        if ((Carbon::parse($shift->end_time)->between($clock_out_start, $clock_out_end)) || $shift->type == 'flexible_shift') {
             return true;
         } else {
             return false;
@@ -247,8 +248,8 @@ class EssentialsUtil extends Util
                                     'essentials_user_shifts.essentials_shift_id')
                                     ->where('user_id', $user_id)
                                     ->where('s.business_id', $business_id)
-                                    ->whereDate('start_date', '<=', \Carbon::today())
-                                    ->whereDate('end_date', '>=', \Carbon::today())
+                                    ->whereDate('start_date', '<=', Carbon::today())
+                                    ->whereDate('end_date', '>=', Carbon::today())
                                     ->select('essentials_user_shifts.start_date', 'essentials_user_shifts.end_date',
                                         's.name', 's.type', 's.start_time', 's.end_time', 's.holidays')
                                     ->get();

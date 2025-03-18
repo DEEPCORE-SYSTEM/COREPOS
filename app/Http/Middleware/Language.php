@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 
 use Config;
-use App;
+use Illuminate\Support\Facades\App;
 
 class Language
 {

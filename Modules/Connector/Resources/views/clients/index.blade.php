@@ -34,15 +34,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                	@foreach($clients as $client)
-                		<tr>
-                			<td>{{$client->id}}</td>
-                			<td>{{$client->name}}</td>
-                			<td>{{$client->secret}}</td>
-                			<td>{!! Form::open(['url' => action('\Modules\Connector\Http\Controllers\ClientController@destroy', [$client->id]), 'method' => 'delete', 'id' => 'create_client_form' ]) !!}<button type="submit" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i> @lang( 'messages.delete' )</button>{!! Form::close() !!}</td>
-                		</tr>
-                	@endforeach
+                  @foreach($clients as $client)
+                    <tr>
+                      <td>{{ $client->id }}</td>
+                      <td>{{ $client->name }}</td>
+                      <td>{{ $client->secret }}</td>
+                      <td>
+                        <form action="{{ action('\Modules\Connector\Http\Controllers\ClientController@destroy', [$client->id]) }}" method="POST" id="create_client_form">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-danger btn-xs">
+                            <i class="fas fa-trash"></i> @lang('messages.delete')
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  @endforeach
                 </tbody>
+
             </table>
         </div>
     @endcomponent
@@ -62,30 +71,31 @@
 <div class="modal fade" id="create_client_modal" tabindex="-1" role="dialog">
 <div class="modal-dialog" role="document">
   <div class="modal-content">
+    <form action="{{ action('\Modules\Connector\Http\Controllers\ClientController@store') }}" method="POST" id="create_client_form">
+      @csrf
 
-    {!! Form::open(['url' => action('\Modules\Connector\Http\Controllers\ClientController@store'), 'method' => 'post', 'id' => 'create_client_form' ]) !!}
-
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'connector::lang.create_client' )</h4>
-    </div>
-
-    <div class="modal-body">
-      <div class="form-group">
-        {!! Form::label('name', __( 'user.name' ) . ':*') !!}
-          {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'user.name' ) ]); !!}
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">@lang('connector::lang.create_client')</h4>
       </div>
-    </div>
 
-    <div class="modal-footer">
-      <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
-      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-    </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="name">@lang('user.name'):</label>
+          <input type="text" name="name" id="name" class="form-control" required placeholder="@lang('user.name')">
+        </div>
+      </div>
 
-    {!! Form::close() !!}
-
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+      </div>
+    </form>
   </div><!-- /.modal-content -->
-</div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal-dialog -->
 </div>
 @stop
 @section('javascript')

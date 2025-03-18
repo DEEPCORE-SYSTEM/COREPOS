@@ -12,8 +12,10 @@
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['url' => action('BusinessController@postBusinessSettings'), 'method' => 'post', 'id' => 'bussiness_edit_form',
-           'files' => true ]) !!}
+<!-- Formulario para actualizar la configuración del negocio -->
+<form action="{{ action('BusinessController@postBusinessSettings') }}" method="POST" id="bussiness_edit_form" enctype="multipart/form-data">
+    @csrf
+    <!-- Contenido del formulario aquí -->
     <div class="row">
         <div class="col-xs-12">
        <!--  <pos-tab-container> -->
@@ -89,7 +91,7 @@
             <button class="btn btn-danger pull-right" type="submit">@lang('business.update_settings')</button>
         </div>
     </div>
-{!! Form::close() !!}
+</form>
 </section>
 <!-- /.content -->
 @stop

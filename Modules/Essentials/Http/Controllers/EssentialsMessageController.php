@@ -2,7 +2,7 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\BusinessLocation;
+use App\Models\BusinessLocation;
 use App\Models\User;
 use App\Utils\ModuleUtil;
 
@@ -14,6 +14,7 @@ use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsMessage;
 
 use Modules\Essentials\Notifications\NewMessageNotification;
+use Carbon\Carbon;
 
 class EssentialsMessageController extends Controller
 {
@@ -107,7 +108,7 @@ class EssentialsMessageController extends Controller
                     $message = EssentialsMessage::create($input);
 
                     //Check if min 10min passed from last message to the same user
-                    $database_notification = empty($last_message) || $last_message->created_at->diffInMinutes(\Carbon::now()) > 10;
+                    $database_notification = empty($last_message) || $last_message->created_at->diffInMinutes(Carbon::now()) > 10;
                     $this->__notify($message, $database_notification);
 
                     $output['html'] = view('essentials::messages.message_div', compact('message'))->render();

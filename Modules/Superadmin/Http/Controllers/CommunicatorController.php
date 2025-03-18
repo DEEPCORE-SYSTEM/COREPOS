@@ -5,13 +5,14 @@ namespace Modules\Superadmin\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-use App\Business;
+use App\Models\Business;
 use App\Models\User;
 
 use Modules\Superadmin\Notifications\SuperadminCommunicator;
 use Modules\Superadmin\Entities\SuperadminCommunicatorLog;
 
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Notification;
 
 class CommunicatorController extends BaseController
 {
@@ -61,7 +62,7 @@ class CommunicatorController extends BaseController
                         ->get();
 
         //Send notifications
-        \Notification::send($business_owners, new SuperadminCommunicator($input));
+        Notification::send($business_owners, new SuperadminCommunicator($input));
 
         //Create Log
         SuperadminCommunicatorLog::create([

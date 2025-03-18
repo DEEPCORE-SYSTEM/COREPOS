@@ -134,41 +134,67 @@
                         @else
                             ''
                         @endif" id="project_task">
+
                         <div class="row">
+                            <!-- Filtro: Asignado a -->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    {!! Form::label('assigned_to_filter', __('project::lang.assigned_to') . ':') !!}
+                                    <label for="assigned_to_filter">@lang('project::lang.assigned_to'):</label>
                                     <div class="input-group">
                                         <span class="input-group-addon">
                                             <i class="fa fa-user"></i>
                                         </span>
-                                        {!! Form::select('assigned_to_filter', $project_members, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all'), 'style' => 'width: 100%;']); !!}
+                                        <select id="assigned_to_filter" name="assigned_to_filter" class="form-control select2" style="width: 100%;">
+                                            <option value="">{{ __('messages.all') }}</option>
+                                            @foreach($project_members as $key => $member)
+                                                <option value="{{ $key }}">{{ $member }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3 status_filter
-                                @if(isset($project->settings['task_view']) &&
-                                $project->settings['task_view'] == 'kanban')
-                                    hide
-                                @endif">
+
+                            <!-- Filtro: Estado (oculto en vista Kanban) -->
+                            <div class="col-md-3 status_filter {{ isset($project->settings['task_view']) && $project->settings['task_view'] == 'kanban' ? 'hide' : '' }}">
                                 <div class="form-group">
-                                    {!! Form::label('status_filter', __('sale.status') . ':') !!}
-                                    {!! Form::select('status_filter', $statuses, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all'), 'style' => 'width: 100%;']); !!}
+                                    <label for="status_filter">@lang('sale.status'):</label>
+                                    <select id="status_filter" name="status_filter" class="form-control select2" style="width: 100%;">
+                                        <option value="">{{ __('messages.all') }}</option>
+                                        @foreach($statuses as $key => $status)
+                                            <option value="{{ $key }}">{{ $status }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
+
+                            <!-- Filtro: Prioridad -->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    {!! Form::label('priority_filter', __('project::lang.priority') .':') !!}
-                                    {!! Form::select('priority_filter', $priorities, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all'), 'style' => 'width: 100%;']); !!}
+                                    <label for="priority_filter">@lang('project::lang.priority'):</label>
+                                    <select id="priority_filter" name="priority_filter" class="form-control select2" style="width: 100%;">
+                                        <option value="">{{ __('messages.all') }}</option>
+                                        @foreach($priorities as $key => $priority)
+                                            <option value="{{ $key }}">{{ $priority }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
+
+                            <!-- Filtro: Fecha de vencimiento -->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    {!! Form::label('due_date_filter', __('project::lang.due_date') . ':') !!}
-                                    {!! Form::select('due_date_filter', $due_dates, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all'), 'style' => 'width: 100%;']); !!}
+                                    <label for="due_date_filter">@lang('project::lang.due_date'):</label>
+                                    <select id="due_date_filter" name="due_date_filter" class="form-control select2" style="width: 100%;">
+                                        <option value="">{{ __('messages.all') }}</option>
+                                        @foreach($due_dates as $key => $date)
+                                            <option value="{{ $key }}">{{ $date }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
+
+
                         @includeIf('project::task.index')
                     </div>
 

@@ -22,34 +22,55 @@
 <!-- Main content -->
 <section class="content">
 <div class="row">
-    <div class="col-md-12 form_col" style="display: none;">
-        @component('components.widget')
-            {!! Form::open(['url' => action('\App\Http\Controllers\Install\ModulesController@uploadModule'), 'id' => 'upload_module_form','files' => true, 'style' => 'display:none']) !!}
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            {!! Form::label('module', __('lang_v1.upload_module') . ":*") !!}
-
-                            {!! Form::file('module', ['required', 'accept' => 'application/zip']) !!}
-                            <p class="help-block">
-                                @lang("lang_v1.pls_upload_valid_zip_file")
-                            </p>
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="col-sm-4">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            @lang('lang_v1.upload')
-                        </button>
-                        &nbsp;
-                        <button type="button" class="btn btn-danger btn-sm cancel_upload_btn">
-                            @lang('messages.cancel')
-                        </button>
-                    </div>
+<!-- Contenedor principal oculto por defecto -->
+<div class="col-md-12 form_col" style="display: none;">
+    <!-- Componente de widget -->
+    @include('components.widget')
+    
+    <!-- Formulario para subir módulos -->
+    <form action="{{ action('\\App\\Http\\Controllers\\Install\\ModulesController@uploadModule') }}" 
+          method="POST" 
+          id="upload_module_form" 
+          enctype="multipart/form-data" 
+          style="display:none">
+        
+        @csrf <!-- Token de seguridad CSRF -->
+        
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <!-- Etiqueta para el campo de carga del módulo -->
+                    <label for="module">{{ __('lang_v1.upload_module') }}:*</label>
+                    
+                    <!-- Campo de carga de archivo ZIP -->
+                    <input type="file" name="module" id="module" required accept="application/zip">
+                    
+                    <!-- Mensaje de ayuda -->
+                    <p class="help-block">
+                        {{ __('lang_v1.pls_upload_valid_zip_file') }}
+                    </p>
                 </div>
-            {!! Form::close() !!}
-        @endcomponent()
-    </div>
+            </div>
+            
+            <div class="clearfix"></div>
+            
+            <div class="col-sm-4">
+                <!-- Botón para enviar el formulario -->
+                <button type="submit" class="btn btn-primary btn-sm">
+                    {{ __('lang_v1.upload') }}
+                </button>
+                
+                &nbsp;
+                
+                <!-- Botón para cancelar la carga -->
+                <button type="button" class="btn btn-danger btn-sm cancel_upload_btn">
+                    {{ __('messages.cancel') }}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
     <div class="col-md-12">
     @component('components.widget')
         <table class="table">

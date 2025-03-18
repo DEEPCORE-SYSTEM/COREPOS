@@ -4,7 +4,7 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\Models\User;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,7 +14,7 @@ use Modules\Essentials\Entities\EssentialsAttendance;
 use Modules\Essentials\Entities\Shift;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Yajra\DataTables\Facades\DataTables;
-
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
@@ -92,11 +92,11 @@ class AttendanceController extends Controller
                         '
                     )
                     ->editColumn('work_duration', function ($row) {
-                        $clock_in = \Carbon::parse($row->clock_in_time);
+                        $clock_in = Carbon::parse($row->clock_in_time);
                         if (!empty($row->clock_out_time)) {
-                            $clock_out = \Carbon::parse($row->clock_out_time);
+                            $clock_out = Carbon::parse($row->clock_out_time);
                         } else {
-                            $clock_out = \Carbon::now();
+                            $clock_out = Carbon::now();
                         }
 
                         $html = $clock_in->diffForHumans($clock_out, true, true, 2);
@@ -350,7 +350,7 @@ class AttendanceController extends Controller
                 $data = [
                     'business_id' => $business_id,
                     'user_id' => auth()->user()->id,
-                    'clock_in_time' => \Carbon::now(),
+                    'clock_in_time' => Carbon::now(),
                     'clock_in_note' => $request->input('clock_in_note'),
                     'ip_address' => $this->moduleUtil->getUserIpAddr(),
                     'clock_in_location' => $request->input('clock_in_out_location')
@@ -363,7 +363,7 @@ class AttendanceController extends Controller
                 $data = [
                     'business_id' => $business_id,
                     'user_id' => auth()->user()->id,
-                    'clock_out_time' => \Carbon::now(),
+                    'clock_out_time' => Carbon::now(),
                     'clock_out_note' => $request->input('clock_out_note'),
                     'clock_out_location' => $request->input('clock_in_out_location')
                 ];
@@ -478,14 +478,14 @@ class AttendanceController extends Controller
                                 ->with(['shift', 'shift.user_shifts', 'shift.user_shifts.user', 'employee'])
                                 ->get();
         $attendance_by_shift = [];
-        $date_obj = \Carbon::parse($date);
+        $date_obj = Carbon::parse($date);
         foreach ($attendance_data as $data) {
             if (empty($attendance_by_shift[$data->essentials_shift_id])) {
                 //Calculate total users in the shift
                 $total_users = 0;
                 $all_users = [];
                 foreach ($data->shift->user_shifts as $user_shift) {
-                    if (!empty($user_shift->start_date) && !empty($user_shift->end_date) && $date_obj->between(\Carbon::parse($user_shift->start_date), \Carbon::parse($user_shift->end_date))) {
+                    if (!empty($user_shift->start_date) && !empty($user_shift->end_date) && $date_obj->between(Carbon::parse($user_shift->start_date), Carbon::parse($user_shift->end_date))) {
                         $total_users ++;
                         $all_users[] = $user_shift->user->user_full_name;
                     }
@@ -688,7 +688,7 @@ class AttendanceController extends Controller
         $shifts = Shift::join('essentials_user_shifts as eus', 'eus.essentials_shift_id', '=', 'essentials_shifts.id')
                     ->where('essentials_shifts.business_id', $business_id)
                     ->where('eus.user_id', $user_id)
-                    ->where('eus.start_date', '<=', \Carbon::now()->format('Y-m-d'))
+                    ->where('eus.start_date', '<=', Carbon::now()->format('Y-m-d'))
                     ->pluck('essentials_shifts.name', 'essentials_shifts.id');
 
         return view('essentials::attendance.attendance_row')->with(compact('attendance', 'shifts', 'user'));

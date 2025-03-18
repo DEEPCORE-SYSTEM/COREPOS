@@ -1,30 +1,48 @@
 <div class="modal-dialog" role="document">
     <div class="modal-content">
 
-        {!! Form::open(['url' => action('\Modules\Manufacturing\Http\Controllers\RecipeController@addIngredients'), 'method' => 'get', 'id' => 'choose_product_form']) !!}
-
+        {{-- Formulario para elegir producto y copiar receta --}}
+        <form action="{{ action('\Modules\Manufacturing\Http\Controllers\RecipeController@addIngredients') }}" method="GET" id="choose_product_form">
+            @csrf
+            
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">@lang( 'manufacturing::lang.choose_product' )</h4>
+                {{-- Botón para cerrar el modal --}}
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{-- Título del modal --}}
+                <h4 class="modal-title">@lang('manufacturing::lang.choose_product')</h4>
             </div>
 
             <div class="modal-body">
+                {{-- Selección de producto --}}
                 <div class="form-group">
-                    {!! Form::label('variation_id', __('manufacturing::lang.choose_product').':') !!}
-                    {!! Form::select('variation_id', [], null, ['class' => 'form-control', 'id' => 'variation_id', 'placeholder' => __('messages.please_select'), 'required', 'style' => 'width: 100%;']); !!}
+                    <label for="variation_id">@lang('manufacturing::lang.choose_product'):</label>
+                    <select name="variation_id" id="variation_id" class="form-control" required style="width: 100%;">
+                        <option value="">@lang('messages.please_select')</option>
+                        {{-- Opciones de productos se llenarán dinámicamente --}}
+                    </select>
                 </div>
+
+                {{-- Copiar receta de otro producto --}}
                 <div class="form-group" id="recipe_selection">
-                    {!! Form::label('copy_recipe_id', __('manufacturing::lang.copy_from_recipe').':') !!}
-                    {!! Form::select('copy_recipe_id', $recipes, null, ['class' => 'form-control', 'placeholder' => __('lang_v1.none'), 'style' => 'width: 100%;']); !!}
+                    <label for="copy_recipe_id">@lang('manufacturing::lang.copy_from_recipe'):</label>
+                    <select name="copy_recipe_id" id="copy_recipe_id" class="form-control" style="width: 100%;">
+                        <option value="">@lang('lang_v1.none')</option>
+                        @foreach($recipes as $id => $recipe)
+                            <option value="{{ $id }}">{{ $recipe }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-                <button type="submit" class="btn btn-primary">@lang( 'manufacturing::lang.continue' )</button>
+                {{-- Botón para cerrar el modal --}}
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                {{-- Botón para continuar con la selección --}}
+                <button type="submit" class="btn btn-primary">@lang('manufacturing::lang.continue')</button>
             </div>
-
-        {!! Form::close() !!}
+        </form>
 
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

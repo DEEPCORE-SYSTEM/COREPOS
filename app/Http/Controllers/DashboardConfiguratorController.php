@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DashboardConfiguration;
+use Illuminate\Support\Facades\Log;
 
 class DashboardConfiguratorController extends Controller
 {    
@@ -98,7 +99,7 @@ class DashboardConfiguratorController extends Controller
                         'msg' => __("lang_v1.success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
         
             $output = ['success' => false,
                         'msg' => __("messages.something_went_wrong")

@@ -5,14 +5,15 @@ namespace Modules\Essentials\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Notifications\PayrollNotification;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Yajra\DataTables\Facades\DataTables;
-use App\Category;
+use App\Models\Category;
+use Carbon\Carbon;
 
 class PayrollController extends Controller
 {
@@ -127,7 +128,7 @@ class PayrollController extends Controller
                     }
                 )
                 ->addColumn('transaction_date', function ($row) {
-                    $transaction_date = \Carbon::parse($row->transaction_date);
+                    $transaction_date = Carbon::parse($row->transaction_date);
                     
                     return $transaction_date->format('F Y');
                 })
@@ -188,7 +189,7 @@ class PayrollController extends Controller
 
         if (empty($payroll)) {
             $start_date = $transaction_date;
-            $end_date = \Carbon::parse($start_date)->lastOfMonth();
+            $end_date = Carbon::parse($start_date)->lastOfMonth();
             $month_name = $end_date->format('F');
             $total_work_duration = $this->essentialsUtil->getTotalWorkDuration('hour', $employee_id, $business_id, $start_date, $end_date->format('Y-m-d'));
 
@@ -339,7 +340,7 @@ class PayrollController extends Controller
         $payroll = Transaction::where('business_id', $business_id)
                                 ->with(['transaction_for', 'payment_lines'])
                                 ->findOrFail($id);
-        $transaction_date = \Carbon::parse($payroll->transaction_date);
+        $transaction_date = Carbon::parse($payroll->transaction_date);
 
         $month_name = $transaction_date->format('F');
         $year = $transaction_date->format('Y');
@@ -369,7 +370,7 @@ class PayrollController extends Controller
                                 ->where('type', 'payroll')
                                 ->findOrFail($id);
 
-        $transaction_date = \Carbon::parse($payroll->transaction_date);
+        $transaction_date = Carbon::parse($payroll->transaction_date);
         $month_name = $transaction_date->format('F');
         $year = $transaction_date->format('Y');
         $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];

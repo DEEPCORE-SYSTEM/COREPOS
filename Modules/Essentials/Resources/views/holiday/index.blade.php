@@ -11,44 +11,53 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12">
-        @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-
-                    {!! Form::select('location_id', $locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all') ]); !!}
+            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="location_id">@lang('purchase.business_location'):</label>
+                        <select name="location_id" id="location_id" class="form-control select2" style="width:100%">
+                            <option value="">@lang('lang_v1.all')</option>
+                            @foreach($locations as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('holiday_filter_date_range', __('report.date_range') . ':') !!}
-                    {!! Form::text('holiday_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="holiday_filter_date_range">@lang('report.date_range'):</label>
+                        <input type="text" name="holiday_filter_date_range" id="holiday_filter_date_range" 
+                               class="form-control" readonly placeholder="@lang('lang_v1.select_a_date_range')">
+                    </div>
                 </div>
-            </div>
-        @endcomponent
+            @endcomponent
         </div>
     </div>
+    
     <div class="row">
         <div class="col-md-12">
-            @component('components.widget', ['class' => 'box-solid', 'title' => __( 'essentials::lang.all_holidays' )])
+            @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.all_holidays')])
                 @if($is_admin)
-                @slot('tool')
-                    <div class="box-tools">
-                        <button type="button" class="btn btn-block btn-primary btn-modal" data-href="{{action('\Modules\Essentials\Http\Controllers\EssentialsHolidayController@create')}}" data-container="#add_holiday_modal">
-                            <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
-                    </div>
-                @endslot
+                    @slot('tool')
+                        <div class="box-tools">
+                            <button type="button" class="btn btn-block btn-primary btn-modal" 
+                                    data-href="{{ action('\Modules\Essentials\Http\Controllers\EssentialsHolidayController@create') }}" 
+                                    data-container="#add_holiday_modal">
+                                <i class="fa fa-plus"></i> @lang('messages.add')
+                            </button>
+                        </div>
+                    @endslot
                 @endif
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="holidays_table">
                         <thead>
                             <tr>
-                                <th>@lang( 'lang_v1.name' )</th>
-                                <th>@lang( 'lang_v1.date' )</th>
-                                <th>@lang( 'business.business_location' )</th>
-                                <th>@lang( 'brand.note' )</th>
+                                <th>@lang('lang_v1.name')</th>
+                                <th>@lang('lang_v1.date')</th>
+                                <th>@lang('business.business_location')</th>
+                                <th>@lang('brand.note')</th>
                                 @if($is_admin)
-                                    <th>@lang( 'messages.action' )</th>
+                                    <th>@lang('messages.action')</th>
                                 @endif
                             </tr>
                         </thead>
@@ -58,6 +67,7 @@
         </div>
     </div>
 </section>
+
 <!-- /.content -->
 <div class="modal fade" id="add_holiday_modal" tabindex="-1" role="dialog" 
         aria-labelledby="gridSystemModalLabel"></div>

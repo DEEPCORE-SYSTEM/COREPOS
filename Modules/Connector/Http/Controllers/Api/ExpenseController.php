@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Utils\TransactionUtil;
 use Modules\Connector\Transformers\ExpenseResource;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\Transaction;
 
 /**

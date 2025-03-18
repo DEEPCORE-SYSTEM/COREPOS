@@ -11,6 +11,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use App\Models\Contact;
 use App\Models\User;
+use Carbon\Carbon;
 
 /**
  * @group CRM
@@ -60,7 +61,7 @@ class CallLogsController extends ApiController
             $business_id = $user->business_id;
             $call_log_data = [];
 
-            $now = \Carbon::now()->toDateTimeString();
+            $now = Carbon::now()->toDateTimeString();
             foreach ($call_logs as $call_log) {
 
                 $number = $call_log['mobile_number'];
@@ -95,8 +96,8 @@ class CallLogsController extends ApiController
                     }
                 }
 
-                $start_time = !empty($call_log['start_time']) ? \Carbon::parse($call_log['start_time']) : null;
-                $end_time = !empty($call_log['end_time']) ? \Carbon::parse($call_log['end_time']) : null;
+                $start_time = !empty($call_log['start_time']) ? Carbon::parse($call_log['start_time']) : null;
+                $end_time = !empty($call_log['end_time']) ? Carbon::parse($call_log['end_time']) : null;
 
                 if (empty($start_time) && !empty($end_time)) {
                     $start_time = $end_time->subSeconds($data['duration']);

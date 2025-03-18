@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Utils\Util;
-use DB;
-use App\BusinessLocation;
+use Illuminate\Support\Facades\DB;
+use App\Models\BusinessLocation;
 
 class Account extends Model
 {

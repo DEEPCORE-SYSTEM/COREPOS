@@ -2,10 +2,10 @@
 
 namespace Modules\Repair\Http\Controllers;
 
-use App\Barcode;
-use App\Brands;
-use App\Business;
-use App\Category;
+use App\Models\Barcode;
+use App\Models\Brands;
+use App\Models\Business;
+use App\Models\Category;
 use App\Utils\ModuleUtil;
 use App\Models\Variation;
 use Illuminate\Http\Request;

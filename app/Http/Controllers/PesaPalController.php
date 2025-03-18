@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PesaPalController extends Controller
 {
@@ -10,7 +11,7 @@ class PesaPalController extends Controller
     public function pesaPalPaymentConfirmation($transaction_id, $status, $payment_method, $merchant_reference)
     {
         $class = new \Modules\Superadmin\Http\Controllers\PesaPalController();
-        \Log::emergency("transaction_id:" . $transaction_id. "status:" . $status. "payment_method:" . $payment_method);
+        Log::emergency("transaction_id:" . $transaction_id. "status:" . $status. "payment_method:" . $payment_method);
 
         $class->pesaPalPaymentConfirmation($transaction_id, $status, $payment_method, $merchant_reference);
     }

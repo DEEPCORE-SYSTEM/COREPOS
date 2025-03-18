@@ -51,31 +51,40 @@
 			@endif
 		</div>
 	@endcomponent
+
 	@component('components.widget', ['class' => 'box-solid'])
-		{!! Form::open(['action' => '\Modules\Repair\Http\Controllers\JobSheetController@postUploadDocs', 'id' => 'job_sheet_doc_upload', 'method' => 'post']) !!}
-			<input type="hidden" name="job_sheet_id" value="{{$job_sheet->id}}">
-			<div class="row">
-		        <div class="col-md-12">
-		            <div class="form-group">
-		                <label for="fileupload">
-		                    @lang('repair::lang.document'):
-		                </label>
-		                <div class="dropzone" id="imageUpload"></div>
-		                <small>
-                            <p class="help-block">
-                                @lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])
-                                @includeIf('components.document_help_text')
-                            </p>
-                        </small>
-		            </div>
-		            <input type="hidden" id="images" name="images" value="">
-		        </div>
-		    </div>
-		    <button type="submit" class="btn btn-block btn-primary pull-right">
-                @lang('messages.save')
-            </button>
-	    {!! Form::close() !!}
-   	@endcomponent
+    <form action="{{ action('\Modules\Repair\Http\Controllers\JobSheetController@postUploadDocs') }}" 
+          method="POST" 
+          id="job_sheet_doc_upload">
+        
+        @csrf <!-- Token CSRF obligatorio para seguridad -->
+        
+        <input type="hidden" name="job_sheet_id" value="{{ $job_sheet->id }}">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="fileupload">@lang('repair::lang.document'):</label>
+                    <div class="dropzone" id="imageUpload"></div>
+                    <small>
+                        <p class="help-block">
+                            @lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])
+                            @includeIf('components.document_help_text')
+                        </p>
+                    </small>
+                </div>
+                <input type="hidden" id="images" name="images" value="">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-block btn-primary pull-right">
+            @lang('messages.save')
+        </button>
+    </form>
+@endcomponent
+
+
+
    	@php
    		$accepted_files = implode(',', array_keys(config('constants.document_upload_mimes_types')));
    	@endphp

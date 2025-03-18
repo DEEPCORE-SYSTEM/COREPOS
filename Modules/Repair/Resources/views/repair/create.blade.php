@@ -16,23 +16,36 @@
 <section class="content no-print">
 @if(is_null($default_location))
 <div class="row">
-	<div class="col-sm-3">
-		<div class="form-group">
-			<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fa fa-map-marker"></i>
-				</span>
-			{!! Form::select('select_location_id', $business_locations, null, ['class' => 'form-control input-sm', 
-			'placeholder' => __('lang_v1.select_location'),
-			'id' => 'select_location_id', 
-			'required', 'autofocus'], $bl_attributes); !!}
-			<span class="input-group-addon">
-					@show_tooltip(__('tooltip.sale_location'))
-				</span> 
-			</div>
-		</div>
-	</div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="input-group">
+                <!-- Icono de ubicación dentro del input -->
+                <span class="input-group-addon">
+                    <i class="fa fa-map-marker"></i>
+                </span>
+
+                <!-- Select de ubicaciones -->
+                <select class="form-control input-sm" 
+                        id="select_location_id" 
+                        name="select_location_id" 
+                        required autofocus>
+                    <option value="">{{ __('lang_v1.select_location') }}</option>
+                    @foreach ($business_locations as $key => $location)
+                        <option value="{{ $key }}" @selected(old('select_location_id') == $key)>
+                            {{ $location }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Tooltip de ayuda -->
+                <span class="input-group-addon">
+                    @show_tooltip(__('tooltip.sale_location'))
+                </span>
+            </div>
+        </div>
+    </div>
 </div>
+
 @endif
 <input type="hidden" id="item_addition_method" value="{{$business_details->item_addition_method}}">
 
@@ -43,57 +56,89 @@
     <input type="hidden" id="reward_point_enabled">
 @endif
 
-	{!! Form::open(['url' => action('SellPosController@store'), 'method' => 'post', 'id' => 'add_sell_form', 'files' => true ]) !!}
-	{!! Form::hidden('status', 'final'); !!}
-	{!! Form::hidden('sub_type', 'repair'); !!}
-	{!! Form::hidden('has_module_data', true); !!}
+<!-- Formulario para almacenar ventas -->
+<form action="{{ action('SellPosController@store') }}" 
+      method="POST" 
+      id="add_sell_form" 
+      enctype="multipart/form-data">
+
+    @csrf <!-- Token de seguridad para evitar ataques CSRF -->
+
+    <!-- Campos ocultos para enviar información adicional -->
+    <input type="hidden" name="status" value="final">
+    <input type="hidden" name="sub_type" value="repair">
+    <input type="hidden" name="has_module_data" value="true">
+
 	<div class="row">
 		<div class="col-md-12 col-sm-12">
 			@component('components.widget')
-				{!! Form::hidden('location_id', $default_location, ['id' => 'location_id', 'data-receipt_printer_type' => isset($bl_attributes[$default_location]['data-receipt_printer_type']) ? $bl_attributes[$default_location]['data-receipt_printer_type'] : 'browser']); !!}
-				
+			<input type="hidden" name="location_id" id="location_id" 
+				value="{{ $default_location }}" 
+				data-receipt_printer_type="{{ $bl_attributes[$default_location]['data-receipt_printer_type'] ?? 'browser' }}">
+
 				<div class="clearfix"></div>
+
 				<div class="col-sm-4">
 					<div class="form-group">
-						{!! Form::label('contact_id', __('contact.customer') . ':*') !!}
+						<!-- Etiqueta para seleccionar cliente -->
+						<label for="contact_id">{{ __('contact.customer') }}:*</label>
 						<div class="input-group">
 							<span class="input-group-addon">
 								<i class="fa fa-user"></i>
 							</span>
-							<input type="hidden" id="default_customer_id" 
-							value="{{ $walk_in_customer['id']}}" >
-							<input type="hidden" id="default_customer_name" 
-							value="{{ $walk_in_customer['name']}}" >
-							{!! Form::select('contact_id', 
-								[], null, ['class' => 'form-control mousetrap', 'id' => 'customer_id', 'placeholder' => 'Enter Customer name / phone', 'required']); !!}
+
+							<!-- Campos ocultos para el cliente por defecto -->
+							<input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] }}">
+							<input type="hidden" id="default_customer_name" value="{{ $walk_in_customer['name'] }}">
+
+							<!-- Select para elegir cliente -->
+							<select name="contact_id" id="customer_id" class="form-control mousetrap" required>
+								<option value="">{{ __('Enter Customer name / phone') }}</option>
+							</select>
+
+							<!-- Botón para agregar nuevo cliente -->
 							<span class="input-group-btn">
-								<button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
+								<button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name="">
+									<i class="fa fa-plus-circle text-primary fa-lg"></i>
+								</button>
 							</span>
 						</div>
 					</div>
 				</div>
+
 				<div class="col-sm-4">
 					<div class="form-group">
-						{!! Form::label('transaction_date', __('repair::lang.repair_added_on') . ':*') !!}
+						<!-- Etiqueta para la fecha de transacción -->
+						<label for="transaction_date">{{ __('repair::lang.repair_added_on') }}:*</label>
 						<div class="input-group">
 							<span class="input-group-addon">
 								<i class="fa fa-calendar"></i>
 							</span>
-							{!! Form::text('transaction_date', $default_datetime, ['class' => 'form-control', 'readonly', 'required']); !!}
+
+							<!-- Campo de texto para la fecha de transacción (solo lectura) -->
+							<input type="text" name="transaction_date" id="transaction_date" class="form-control" value="{{ $default_datetime }}" readonly required>
 						</div>
 					</div>
 				</div>
+
+
 				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('repair_completed_on', __('repair::lang.repair_completed_on') . ':*') !!}
-						<div class="input-group">
-							<span class="input-group-addon">
-								<i class="fa fa-calendar"></i>
-							</span>
-							{!! Form::text('repair_completed_on', $default_datetime, ['class' => 'form-control', 'readonly', 'required']); !!}
-						</div>
-					</div>
-				</div>
+    <div class="form-group">
+        <!-- Etiqueta para la fecha de finalización de la reparación -->
+        <label for="repair_completed_on">{{ __('repair::lang.repair_completed_on') }}:*</label>
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+            </span>
+
+            <!-- Campo de texto para la fecha de finalización de la reparación (solo lectura) -->
+            <input type="text" name="repair_completed_on" id="repair_completed_on" 
+                   class="form-control" value="{{ $default_datetime }}" readonly required>
+        </div>
+    </div>
+</div>
+
+
 				<div class="clearfix"></div>
 				<div class="col-sm-4">
 					<div class="form-group">
@@ -103,47 +148,93 @@
 				</div>
 				<div class="col-sm-4">
 					<div class="form-group">
-						{!! Form::label('repair_brand_id', __('repair::lang.manufacturer') . ':') !!}
-						{!! Form::select('repair_brand_id', $brands, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+						<!-- Etiqueta para seleccionar el fabricante -->
+						<label for="repair_brand_id">{{ __('repair::lang.manufacturer') }}:</label>
+
+						<!-- Select para elegir la marca del producto -->
+						<select name="repair_brand_id" id="repair_brand_id" class="form-control select2">
+							<option value="">{{ __('messages.please_select') }}</option>
+							@foreach ($brands as $key => $brand)
+								<option value="{{ $key }}" @selected(old('repair_brand_id') == $key)>
+									{{ $brand }}
+								</option>
+							@endforeach
+						</select>
 					</div>
 				</div>
+
 				<div class="clearfix"></div>
 				<div class="col-sm-4">
 					<div class="form-group">
-						{!! Form::label('repair_model', __('repair::lang.model') . ':') !!}
-						{!! Form::text('repair_model', null, ['class' => 'form-control', 'placeholder' => __('repair::lang.model')]); !!}
+						<!-- Etiqueta para el modelo del producto -->
+						<label for="repair_model">{{ __('repair::lang.model') }}:</label>
+
+						<!-- Campo de texto para ingresar el modelo -->
+						<input type="text" name="repair_model" id="repair_model" 
+							class="form-control" placeholder="{{ __('repair::lang.model') }}">
 					</div>
 				</div>
+
+
+				<div class="col-sm-4">
+    <div class="form-group">
+        <!-- Etiqueta para el número de serie del producto -->
+        <label for="repair_serial_no">{{ __('repair::lang.serial_no') }}:</label>
+
+        <!-- Campo de texto para ingresar el número de serie -->
+        <input type="text" name="repair_serial_no" id="repair_serial_no" 
+               class="form-control" placeholder="{{ __('repair::lang.serial_no') }}">
+    </div>
+</div>
+
+				@if(in_array('service_staff' ,$enabled_modules))
 				<div class="col-sm-4">
 					<div class="form-group">
-						{!! Form::label('repair_serial_no', __('repair::lang.serial_no') . ':') !!}
-						{!! Form::text('repair_serial_no', null, ['class' => 'form-control', 'placeholder' => __('repair::lang.serial_no')]); !!}
+						<!-- Etiqueta para asignar la reparación a un técnico o empleado -->
+						<label for="res_waiter_id">{{ __('repair::lang.assign_repair_to') }}:</label>
+
+						<!-- Select para elegir a quién asignar la reparación -->
+						<select name="res_waiter_id" id="res_waiter_id" class="form-control select2">
+							<option value="">{{ __('messages.please_select') }}</option>
+							@foreach ($service_staff as $key => $staff)
+								<option value="{{ $key }}" @selected(old('res_waiter_id') == $key)>
+									{{ $staff }}
+								</option>
+							@endforeach
+						</select>
 					</div>
 				</div>
-				@if(in_array('service_staff' ,$enabled_modules))
-					<div class="col-sm-4">
-						<div class="form-group">
-							{!! Form::label('res_waiter_id', __('repair::lang.assign_repair_to') . ':') !!}
-							{!! Form::select('res_waiter_id', $service_staff, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
-						</div>
-					</div>
 				@endif
 				<div class="clearfix"></div>
 				<div class="col-sm-4">
 					<br>
 					<div class="checkbox">
-						<label>
-						{!! Form::checkbox('repair_updates_email', 1, false, ['class' => 'input-icheck']); !!} @lang('repair::lang.auto_send_notification') (Email)
-						</label> @show_tooltip(__('repair::lang.auto_send_email_tooltip'))
-					</div>
+					<label for="repair_updates_email">
+						<!-- Checkbox para activar/desactivar notificaciones automáticas por correo -->
+						<input type="checkbox" name="repair_updates_email" id="repair_updates_email" 
+							class="input-icheck" value="1">
+						{{ __('repair::lang.auto_send_notification') }} (Email)
+					</label>
+
+					<!-- Tooltip con información adicional -->
+					{!! show_tooltip(__('repair::lang.auto_send_email_tooltip')) !!}
+				</div>
+
 				</div>
 				<div class="col-sm-4">
 					<br>
 					<div class="checkbox">
-						<label>
-						{!! Form::checkbox('repair_updates_sms', 1, false, ['class' => 'input-icheck']); !!} @lang('repair::lang.auto_send_notification') (SMS)
-						</label> @show_tooltip(__('repair::lang.auto_send_sms_tooltip'))
+						<label for="repair_updates_sms">
+							<!-- Checkbox para activar/desactivar notificaciones automáticas por SMS -->
+							<input type="checkbox" name="repair_updates_sms" id="repair_updates_sms" 
+								class="input-icheck" value="1">
+							{{ __('repair::lang.auto_send_notification') }} (SMS)
+						</label>
+
+						<!-- Tooltip con información adicional -->
+						{!! show_tooltip(__('repair::lang.auto_send_sms_tooltip')) !!}
 					</div>
+
 				</div>
 				<div class="clearfix"></div>
 				<div class="col-sm-2">
@@ -160,44 +251,60 @@
 				</div>
 				<div class="clearfix"></div>
 			    <div class="col-md-12">
-			        <div class="form-group">
-			            {!! Form::label('documents', __('lang_v1.upload_documents') . ':' ) !!}
-			            {!! Form::file('documents[]', ['multiple', 'id' => 'documents']); !!}
-			        </div>
+				<div class="form-group">
+					<!-- Etiqueta para la subida de documentos -->
+					<label for="documents">{{ __('lang_v1.upload_documents') }}:</label>
+
+					<!-- Input de tipo archivo para subir múltiples documentos -->
+					<input type="file" name="documents[]" id="documents" multiple>
+				</div>
+
 			    </div>
 				@include('repair::repair.partials.security_modal')
 				@include('repair::repair.partials.checklist_modal')
 			@endcomponent
 
 			@component('components.widget')
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('repair_defects',__('repair::lang.defect') . ':') !!}
-						{!! Form::textarea('repair_defects', null, ['class' => 'form-control', 'rows' => 3]); !!}
-					</div>
+			<div class="col-sm-6">
+				<div class="form-group">
+					<!-- Etiqueta para los defectos del equipo -->
+					<label for="repair_defects">{{ __('repair::lang.defect') }}:</label>
+
+					<!-- Área de texto para ingresar los defectos reportados -->
+					<textarea name="repair_defects" id="repair_defects" class="form-control" rows="3"></textarea>
 				</div>
-				<div class="col-sm-6">
-					<div class="form-group">
-						{!! Form::label('staff_note',__('repair::lang.noted_problems_n_technician_comments'). ':') !!}
-						{!! Form::textarea('staff_note', null, ['class' => 'form-control', 'rows' => 3]); !!}
-					</div>
+			</div>
+
+			<div class="col-sm-6">
+				<div class="form-group">
+					<!-- Etiqueta para notas del técnico -->
+					<label for="staff_note">{{ __('repair::lang.noted_problems_n_technician_comments') }}:</label>
+
+					<!-- Área de texto para comentarios del técnico sobre la reparación -->
+					<textarea name="staff_note" id="staff_note" class="form-control" rows="3"></textarea>
 				</div>
+			</div>
+
 			@endcomponent
 
 			@component('components.widget')
-				<div class="col-sm-10 col-sm-offset-1">
-					<div class="form-group">
-						<div class="input-group">
-							<span class="input-group-addon">
-								<i class="fa fa-barcode"></i>
-							</span>
-							{!! Form::text('search_product', null, ['class' => 'form-control mousetrap', 'id' => 'search_product', 'placeholder' => __('repair::lang.add_parts_used_in_repair'),
-							'disabled' => is_null($default_location)? true : false,
-							'autofocus' => is_null($default_location)? false : true,
-							]); !!}
-						</div>
+			<div class="col-sm-10 col-sm-offset-1">
+				<div class="form-group">
+					<div class="input-group">
+						<span class="input-group-addon">
+							<i class="fa fa-barcode"></i>
+						</span>
+
+						<!-- Campo de búsqueda para agregar partes usadas en la reparación -->
+						<input type="text" name="search_product" id="search_product" 
+							class="form-control mousetrap"
+							placeholder="{{ __('repair::lang.add_parts_used_in_repair') }}"
+							{{ is_null($default_location) ? 'disabled' : '' }}
+							{{ is_null($default_location) ? '' : 'autofocus' }}>
 					</div>
 				</div>
+			</div>
+
 
 				<div class="row col-sm-12 pos_product_div" style="min-height: 0">
 
@@ -254,98 +361,141 @@
 			@endcomponent
 
 			@component('components.widget')
-				<div class="col-md-4">
-			        <div class="form-group">
-			            {!! Form::label('discount_type', __('sale.discount_type') . ':*' ) !!}
-			            <div class="input-group">
-			                <span class="input-group-addon">
-			                    <i class="fa fa-info"></i>
-			                </span>
-			                {!! Form::select('discount_type', ['fixed' => __('lang_v1.fixed'), 'percentage' => __('lang_v1.percentage')], 'percentage' , ['class' => 'form-control','placeholder' => __('messages.please_select'), 'required', 'data-default' => 'percentage']); !!}
-			            </div>
-			        </div>
-			    </div>
-			    <div class="col-md-4">
-			        <div class="form-group">
-			            {!! Form::label('discount_amount', __('sale.discount_amount') . ':*' ) !!}
-			            <div class="input-group">
-			                <span class="input-group-addon">
-			                    <i class="fa fa-info"></i>
-			                </span>
-			                {!! Form::text('discount_amount', @num_format($business_details->default_sales_discount), ['class' => 'form-control input_number', 'data-default' => $business_details->default_sales_discount]); !!}
-			            </div>
-			        </div>
-			    </div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<!-- Etiqueta para seleccionar el tipo de descuento -->
+					<label for="discount_type">{{ __('sale.discount_type') }}:*</label>
+					<div class="input-group">
+						<span class="input-group-addon">
+							<i class="fa fa-info"></i>
+						</span>
+
+						<!-- Selección del tipo de descuento (fijo o porcentaje) -->
+						<select name="discount_type" id="discount_type" class="form-control" required data-default="percentage">
+							<option value="">{{ __('messages.please_select') }}</option>
+							<option value="fixed">{{ __('lang_v1.fixed') }}</option>
+							<option value="percentage" selected>{{ __('lang_v1.percentage') }}</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="form-group">
+					<!-- Etiqueta para el monto del descuento -->
+					<label for="discount_amount">{{ __('sale.discount_amount') }}:*</label>
+					<div class="input-group">
+						<span class="input-group-addon">
+							<i class="fa fa-info"></i>
+						</span>
+
+						<!-- Campo de entrada para el monto del descuento -->
+						<input type="text" name="discount_amount" id="discount_amount" 
+							class="form-control input_number" 
+							value="{{ num_format($business_details->default_sales_discount) }}" 
+							data-default="{{ $business_details->default_sales_discount }}">
+					</div>
+				</div>
+			</div>
+
 			    <div class="col-md-4"><br>
 			    	<b>@lang( 'sale.discount_amount' ):</b>(-) 
 					<span class="display_currency" id="total_discount">0</span>
 			    </div>
 			    <div class="clearfix"></div>
-			    <div class="col-md-12 well well-sm bg-light-gray @if(session('business.enable_rp') != 1) hide @endif">
-			    	<input type="hidden" name="rp_redeemed" id="rp_redeemed" value="0">
-			    	<input type="hidden" name="rp_redeemed_amount" id="rp_redeemed_amount" value="0">
-			    	<div class="col-md-12"><h4>{{session('business.rp_name')}}</h4></div>
-			    	<div class="col-md-4">
-				        <div class="form-group">
-				            {!! Form::label('rp_redeemed_modal', __('lang_v1.redeemed') . ':' ) !!}
-				            <div class="input-group">
-				                <span class="input-group-addon">
-				                    <i class="fa fa-gift"></i>
-				                </span>
-				                {!! Form::number('rp_redeemed_modal', 0, ['class' => 'form-control direct_sell_rp_input', 'data-amount_per_unit_point' => session('business.redeem_amount_per_unit_rp'), 'min' => 0, 'data-max_points' => 0, 'data-min_order_total' => session('business.min_order_total_for_redeem') ]); !!}
-				                <input type="hidden" id="rp_name" value="{{session('business.rp_name')}}">
-				            </div>
-				        </div>
-				    </div>
-				    <div class="col-md-4">
-				    	<p><strong>@lang('lang_v1.available'):</strong> <span id="available_rp">0</span></p>
-				    </div>
-				    <div class="col-md-4">
-				    	<p><strong>@lang('lang_v1.redeemed_amount'):</strong> (-)<span id="rp_redeemed_amount_text">0</span></p>
-				    </div>
-			    </div>
-			    <div class="clearfix"></div>
-			    <div class="col-md-4">
-			    	<div class="form-group">
-			            {!! Form::label('tax_rate_id', __('sale.order_tax') . ':*' ) !!}
-			            <div class="input-group">
-			                <span class="input-group-addon">
-			                    <i class="fa fa-info"></i>
-			                </span>
-			                {!! Form::select('tax_rate_id', $taxes['tax_rates'], $business_details->default_sales_tax, ['placeholder' => __('messages.please_select'), 'class' => 'form-control', 'data-default'=> $business_details->default_sales_tax], $taxes['attributes']); !!}
 
-							<input type="hidden" name="tax_calculation_amount" id="tax_calculation_amount" 
-							value="@if(empty($edit)) {{@num_format($business_details->tax_calculation_amount)}} @else {{@num_format(optional($transaction->tax)->amount)}} @endif" data-default="{{$business_details->tax_calculation_amount}}">
-			            </div>
-			        </div>
-			    </div>
-			    <div class="col-md-4 col-md-offset-4">
-			    	<b>@lang( 'sale.order_tax' ):</b>(+) 
-					<span class="display_currency" id="order_tax">0</span>
-			    </div>
-			    <div class="clearfix"></div>
-				<div class="col-md-4">
-					<div class="form-group">
-			            {!! Form::label('shipping_details', __('sale.shipping_details')) !!}
-			            <div class="input-group">
-							<span class="input-group-addon">
-			                    <i class="fa fa-info"></i>
-			                </span>
-			                {!! Form::textarea('shipping_details',null, ['class' => 'form-control','placeholder' => __('sale.shipping_details') ,'rows' => '1', 'cols'=>'30']); !!}
-			            </div>
-			        </div>
+				<div class="col-md-12 well well-sm bg-light-gray @if(session('business.enable_rp') != 1) hide @endif">
+					<input type="hidden" name="rp_redeemed" id="rp_redeemed" value="0">
+					<input type="hidden" name="rp_redeemed_amount" id="rp_redeemed_amount" value="0">
+
+					<div class="col-md-12">
+						<h4>{{ session('business.rp_name') }}</h4>
+					</div>
+
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="rp_redeemed_modal">{{ __('lang_v1.redeemed') }}:</label>
+							<div class="input-group">
+								<span class="input-group-addon">
+									<i class="fa fa-gift"></i>
+								</span>
+								<input type="number" name="rp_redeemed_modal" id="rp_redeemed_modal"
+									class="form-control direct_sell_rp_input"
+									data-amount_per_unit_point="{{ session('business.redeem_amount_per_unit_rp') }}"
+									min="0" data-max_points="0"
+									data-min_order_total="{{ session('business.min_order_total_for_redeem') }}"
+									value="0">
+								<input type="hidden" id="rp_name" value="{{ session('business.rp_name') }}">
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<p><strong>@lang('lang_v1.available'):</strong> <span id="available_rp">0</span></p>
+					</div>
+
+					<div class="col-md-4">
+						<p><strong>@lang('lang_v1.redeemed_amount'):</strong> (-)<span id="rp_redeemed_amount_text">0</span></p>
+					</div>
 				</div>
+
+				<div class="clearfix"></div>
+
 				<div class="col-md-4">
 					<div class="form-group">
-						{!!Form::label('shipping_charges', __('sale.shipping_charges'))!!}
+						<label for="tax_rate_id">{{ __('sale.order_tax') }}:*</label>
 						<div class="input-group">
-						<span class="input-group-addon">
-						<i class="fa fa-info"></i>
-						</span>
-						{!!Form::text('shipping_charges',@num_format(0.00),['class'=>'form-control input_number','placeholder'=> __('sale.shipping_charges')]);!!}
+							<span class="input-group-addon">
+								<i class="fa fa-info"></i>
+							</span>
+							<select name="tax_rate_id" id="tax_rate_id" class="form-control" data-default="{{ $business_details->default_sales_tax }}">
+								<option value="">{{ __('messages.please_select') }}</option>
+								@foreach($taxes['tax_rates'] as $key => $value)
+									<option value="{{ $key }}" {{ $key == $business_details->default_sales_tax ? 'selected' : '' }}>
+										{{ $value }}
+									</option>
+								@endforeach
+							</select>
+						</div>
+						<input type="hidden" name="tax_calculation_amount" id="tax_calculation_amount"
+							value="{{ empty($edit) ? num_format($business_details->tax_calculation_amount) : num_format(optional($transaction->tax)->amount) }}"
+							data-default="{{ $business_details->tax_calculation_amount }}">
+					</div>
+				</div>
+
+				<div class="col-md-4 col-md-offset-4">
+					<b>@lang('sale.order_tax'):</b> (+) <span class="display_currency" id="order_tax">0</span>
+				</div>
+
+				<div class="clearfix"></div>
+
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="shipping_details">{{ __('sale.shipping_details') }}</label>
+						<div class="input-group">
+							<span class="input-group-addon">
+								<i class="fa fa-info"></i>
+							</span>
+							<textarea name="shipping_details" id="shipping_details" class="form-control" rows="1" placeholder="{{ __('sale.shipping_details') }}"></textarea>
 						</div>
 					</div>
 				</div>
+
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="shipping_charges">{{ __('sale.shipping_charges') }}</label>
+						<div class="input-group">
+							<span class="input-group-addon">
+								<i class="fa fa-info"></i>
+							</span>
+							<input type="text" name="shipping_charges" id="shipping_charges"
+								class="form-control input_number"
+								value="{{ num_format(0.00) }}"
+								placeholder="{{ __('sale.shipping_charges') }}">
+						</div>
+					</div>
+				</div>
+
 			    <div class="clearfix"></div>
 			    <div class="col-md-4 col-md-offset-8">
 			    	<div><b>@lang('sale.total_payable'): </b>
@@ -365,7 +515,7 @@
 		</div>
 	</div>
 	
-	{!! Form::close() !!}
+</form>
 </section>
 
 <div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

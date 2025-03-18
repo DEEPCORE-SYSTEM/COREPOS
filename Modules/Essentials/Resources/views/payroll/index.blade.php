@@ -11,39 +11,62 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12">
-        @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-            @if($is_admin)
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('user_id_filter', __('essentials::lang.employee') . ':') !!}
-                    {!! Form::select('user_id_filter', $employees, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('department_id', __('essentials::lang.department') . ':') !!}
-                    {!! Form::select('department_id', $departments, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('designation_id', __('essentials::lang.designation') . ':') !!}
-                    {!! Form::select('designation_id', $designations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                </div>
-            </div>
-            @endif
-            <div class="col-md-3">
-                <div class="form-group">
-                    {!! Form::label('month_year_filter', __( 'essentials::lang.month_year' ) . ':') !!}
-                    <div class="input-group">
-                        {!! Form::text('month_year_filter', null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.month_year' ) ]); !!}
-                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                @if($is_admin)
+                    <!-- Filtro de empleado -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="user_id_filter">@lang('essentials::lang.employee'):</label>
+                            <select name="user_id_filter" id="user_id_filter" class="form-control select2" style="width:100%">
+                                <option value="">{{ __('lang_v1.all') }}</option>
+                                @foreach($employees as $key => $employee)
+                                    <option value="{{ $key }}">{{ $employee }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Filtro de departamento -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="department_id">@lang('essentials::lang.department'):</label>
+                            <select name="department_id" id="department_id" class="form-control select2" style="width:100%">
+                                <option value="">{{ __('lang_v1.all') }}</option>
+                                @foreach($departments as $key => $department)
+                                    <option value="{{ $key }}">{{ $department }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Filtro de designación -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="designation_id">@lang('essentials::lang.designation'):</label>
+                            <select name="designation_id" id="designation_id" class="form-control select2" style="width:100%">
+                                <option value="">{{ __('lang_v1.all') }}</option>
+                                @foreach($designations as $key => $designation)
+                                    <option value="{{ $key }}">{{ $designation }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Filtro de mes y año -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="month_year_filter">@lang('essentials::lang.month_year'):</label>
+                        <div class="input-group">
+                            <input type="text" name="month_year_filter" id="month_year_filter" class="form-control" placeholder="@lang('essentials::lang.month_year')">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endcomponent
+            @endcomponent
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
             @component('components.widget', ['class' => 'box-solid', 'title' => __( 'essentials::lang.all_payrolls' )])
@@ -51,22 +74,24 @@
                     @slot('tool')
                         <div class="box-tools">
                             <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#payroll_modal">
-                                <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
+                                <i class="fa fa-plus"></i> @lang( 'messages.add' )
+                            </button>
                         </div>
                     @endslot
                 @endif
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="payrolls_table">
                         <thead>
                             <tr>
-                                <th>@lang( 'essentials::lang.employee' )</th>
-                                <th>@lang( 'essentials::lang.department' )</th>
-                                <th>@lang( 'essentials::lang.designation' )</th>
-                                <th>@lang( 'essentials::lang.month_year' )</th>
-                                <th>@lang( 'purchase.ref_no' )</th>
-                                <th>@lang( 'sale.total_amount' )</th>
-                                <th>@lang( 'sale.payment_status' )</th>
-                                <th>@lang( 'messages.action' )</th>
+                                <th>@lang('essentials::lang.employee')</th>
+                                <th>@lang('essentials::lang.department')</th>
+                                <th>@lang('essentials::lang.designation')</th>
+                                <th>@lang('essentials::lang.month_year')</th>
+                                <th>@lang('purchase.ref_no')</th>
+                                <th>@lang('sale.total_amount')</th>
+                                <th>@lang('sale.payment_status')</th>
+                                <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
                     </table>
@@ -74,11 +99,12 @@
             @endcomponent
         </div>
     </div>
+
     @if($is_admin)
         @includeIf('essentials::payroll.payroll_modal')
     @endif
-
 </section>
+
 <!-- /.content -->
 <!-- /.content -->
 <div class="modal fade payment_modal" tabindex="-1" role="dialog" 

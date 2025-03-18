@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AccountType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AccountTypeController extends Controller
 {
@@ -59,7 +60,7 @@ class AccountTypeController extends Controller
                             'msg' => __("lang_v1.added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -138,7 +139,7 @@ class AccountTypeController extends Controller
                             'msg' => __("lang_v1.updated_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

@@ -6,11 +6,12 @@ use App\Models\SellingPriceGroup;
 use App\Utils\Util;
 use App\Models\Variation;
 use App\Models\VariationGroupPrice;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Log;
 
 class SellingPriceGroupController extends Controller
 {
@@ -107,7 +108,7 @@ class SellingPriceGroupController extends Controller
                             'msg' => __("lang_v1.added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -176,7 +177,7 @@ class SellingPriceGroupController extends Controller
                             'msg' => __("lang_v1.updated_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -210,7 +211,7 @@ class SellingPriceGroupController extends Controller
                             'msg' => __("lang_v1.deleted_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -355,7 +356,7 @@ class SellingPriceGroupController extends Controller
                         ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => $e->getMessage()

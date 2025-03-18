@@ -6,7 +6,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
-use Menu;
+use Spatie\Menu\Laravel\Menu;
 
 class DataController extends Controller
 {
@@ -36,8 +36,9 @@ class DataController extends Controller
             $is_connector_enabled = (boolean)$module_util->hasThePermissionInSubscription($business_id, 'connector_module', 'superadmin_package');
         }
         if ($is_connector_enabled) {
-            Menu::modify('admin-sidebar-menu', function ($menu) {
-                $menu->dropdown(
+            Menu::new()->submenu('admin-sidebar-menu', function ($menu) {
+
+                $menu->submenu(
                     __('connector::lang.connector'),
                     function ($sub) {
                         if (auth()->user()->can('superadmin')) {
@@ -54,7 +55,7 @@ class DataController extends Controller
                         );
                     },
                     ['icon' => 'fas fa-plug', 'style' => 'background-color: #2dce89 !important;']
-                )->order(89);
+                );
             });
         }
     }

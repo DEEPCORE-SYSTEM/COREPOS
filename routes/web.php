@@ -17,10 +17,11 @@ use App\Http\Controllers\TaxonomyController;
 use App\Http\Controllers\VariationTemplateController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AttributeController;
+use Illuminate\Support\Facades\Auth;
 
 
 
-Route::middleware([])->group(function () {
+Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
         return view('welcome');
     });

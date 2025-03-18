@@ -6,7 +6,7 @@ use App\Models\CashRegister;
 use App\Models\CashRegisterTransaction;
 use App\Models\Transaction;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CashRegisterUtil extends Util
 {

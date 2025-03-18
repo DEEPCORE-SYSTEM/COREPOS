@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 
 use App\Utils\ModuleUtil;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CreateDummyBusiness extends Command
 {

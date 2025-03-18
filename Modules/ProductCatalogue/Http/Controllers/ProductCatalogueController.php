@@ -13,6 +13,7 @@ use App\Utils\ProductUtil;
 use App\Models\BusinessLocation;
 use App\Utils\ModuleUtil;
 use App\Models\Category;
+use Carbon\Carbon;
 
 class ProductCatalogueController extends Controller
 {
@@ -52,7 +53,7 @@ class ProductCatalogueController extends Controller
         $business = Business::with(['currency'])->findOrFail($business_id);
         $business_location = BusinessLocation::where('business_id', $business_id)->findOrFail($location_id);
 
-        $now = \Carbon::now()->toDateTimeString();
+        $now = Carbon::now()->toDateTimeString();
         $discounts = Discount::where('business_id', $business_id)
                                 ->where('location_id', $location_id)
                                 ->where('is_active', 1)

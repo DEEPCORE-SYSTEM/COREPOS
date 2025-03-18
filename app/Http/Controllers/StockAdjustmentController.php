@@ -13,9 +13,10 @@ use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use Datatables;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
+use Carbon\Carbon;
 
 class StockAdjustmentController extends Controller
 {
@@ -424,7 +425,7 @@ class StockAdjustmentController extends Controller
                     'type' => 'stock_adjustment',
                     'business_id' => $business_id,
                     'created_by' => $user_id,
-                    'transaction_date' => \Carbon::now()->format('Y-m-d'),
+                    'transaction_date' => Carbon::now()->format('Y-m-d'),
                     'total_amount_recovered' => 0,
                     'location_id' => $purchase_line->transaction->location_id,
                     'adjustment_type' => 'normal',

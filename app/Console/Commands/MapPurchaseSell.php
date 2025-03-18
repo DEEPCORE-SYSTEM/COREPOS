@@ -10,7 +10,8 @@ use App\Models\PurchaseLine;
 use Illuminate\Console\Command;
 
 use App\Utils\TransactionUtil;
-use DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Utils\BusinessUtil;
 
 class MapPurchaseSell extends Command
@@ -30,6 +31,7 @@ class MapPurchaseSell extends Command
     protected $description = 'Delete existing mapping and Add mapping for purchase & Sell for all transactions of all businesses.';
 
     protected $transactionUtil;
+    protected $businessUtil;
 
     /**
      * Create a new command instance.
@@ -127,7 +129,7 @@ class MapPurchaseSell extends Command
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             die($e->getMessage());
         }

@@ -7,6 +7,7 @@ use App\Models\GroupSubTax;
 use Datatables;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GroupTaxController extends Controller
 {
@@ -87,7 +88,7 @@ class GroupTaxController extends Controller
                             'msg' => __("tax_rate.tax_group_added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -161,7 +162,7 @@ class GroupTaxController extends Controller
                             'msg' => __("tax_rate.tax_group_updated_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -191,7 +192,7 @@ class GroupTaxController extends Controller
                             'msg' => __("tax_rate.deleted_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

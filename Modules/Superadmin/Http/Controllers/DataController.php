@@ -2,11 +2,13 @@
 
 namespace Modules\Superadmin\Http\Controllers;
 
-use \Notification;
+use Illuminate\Support\Facades\Notification;
 use App\Models\System;
 use App\Utils\Util;
+
 use Illuminate\Routing\Controller;
-use Menu;
+use Illuminate\Support\Facades\Log;
+use Spatie\Menu\Laravel\Menu;
 use Modules\Superadmin\Notifications\NewBusinessNotification;
 use Modules\Superadmin\Notifications\NewBusinessWelcomNotification;
 
@@ -89,7 +91,7 @@ class DataController extends Controller
                 ->notify(new NewBusinessWelcomNotification($welcome_email_data));
             }
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
         }
 
         return null;

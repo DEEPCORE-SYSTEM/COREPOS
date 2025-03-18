@@ -3,9 +3,9 @@
 namespace Modules\Superadmin\Http\Controllers;
 
 use Modules\Superadmin\Entities\Subscription;
-use App\Business;
+use App\Models\Business;
 use App\Models\System;
-use \Carbon;
+use Carbon\Carbon;
 use Charts;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;

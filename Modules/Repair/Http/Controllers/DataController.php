@@ -4,13 +4,14 @@ namespace Modules\Repair\Http\Controllers;
 
 use App\Models\Brands;
 use App\Models\Category;
+use Spatie\Menu\Laravel\Menu;
 use App\Models\Transaction;
 use App\Utils\ModuleUtil;
 use App\Models\Warranty;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Menu;
+
 use Modules\Repair\Entities\DeviceModel;
 use Modules\Repair\Entities\RepairStatus;
 use Modules\Repair\Utils\RepairUtil;
@@ -155,13 +156,13 @@ class DataController extends Controller
         }
 
         if ($is_repair_enabled && (auth()->user()->can('superadmin') || auth()->user()->can('repair.view') || auth()->user()->can('job_sheet.view_assigned') || auth()->user()->can('job_sheet.view_all'))) {
-            Menu::modify('admin-sidebar-menu', function ($menu) use ($background_color) {
+            
+            Menu::new()->submenu('admin-sidebar-menu', function ($menu) use ($background_color) {
                 $menu->url(
                             action('\Modules\Repair\Http\Controllers\DashboardController@index'),
                             __('repair::lang.repair'),
                             ['icon' => 'fa fas fa-wrench', 'active' => request()->segment(1) == 'repair', 'style' => 'background-color:'.$background_color]
-                        )
-                ->order(24);
+                        );
             });
         }
     }

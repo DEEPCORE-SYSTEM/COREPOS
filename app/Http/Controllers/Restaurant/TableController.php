@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Restaurant;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Datatables;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Log;
 
 use App\Restaurant\ResTable;
 use App\Models\BusinessLocation;
@@ -89,7 +90,7 @@ class TableController extends Controller
                             'msg' => __("lang_v1.added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -156,7 +157,7 @@ class TableController extends Controller
                             'msg' => __("lang_v1.updated_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -188,7 +189,7 @@ class TableController extends Controller
                             'msg' => __("lang_v1.deleted_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

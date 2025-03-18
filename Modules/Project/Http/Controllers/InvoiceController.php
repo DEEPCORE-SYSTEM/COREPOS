@@ -16,7 +16,7 @@ use Modules\Project\Entities\InvoiceLine;
 use Modules\Project\Entities\Project;
 use Modules\Project\Entities\ProjectTransaction;
 use Yajra\DataTables\Facades\DataTables;
-use App\BusinessLocation;
+use App\Models\BusinessLocation;
 class InvoiceController extends Controller
 {
     /**

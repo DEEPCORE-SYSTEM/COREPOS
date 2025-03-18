@@ -12,13 +12,14 @@ use App\Models\TransactionSellLine;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\VariationLocationDetails;
-use DB;
+use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use App\Models\System;
-use Config;
+use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
 
 class Util
 {
@@ -241,7 +242,7 @@ class Util
             $mysql_format = 'Y-m-d H:i:s';
         }
 
-        return !empty($date_format) ? \Carbon::createFromFormat($date_format, $date)->format($mysql_format) : null;
+        return !empty($date_format) ? Carbon::createFromFormat($date_format, $date)->format($mysql_format) : null;
     }
 
     /**
@@ -256,7 +257,7 @@ class Util
         if (session('business.time_format') == 12) {
             $time_format = 'h:i A';
         }
-        return !empty($time_format) ? \Carbon::createFromFormat($time_format, $time)->format('H:i') : null;
+        return !empty($time_format) ? Carbon::createFromFormat($time_format, $time)->format('H:i') : null;
     }
 
     /**
@@ -271,7 +272,7 @@ class Util
         if (session('business.time_format') == 12) {
             $time_format = 'h:i A';
         }
-        return !empty($time) ? \Carbon::createFromFormat('H:i:s', $time)->format($time_format) : null;
+        return !empty($time) ? Carbon::createFromFormat('H:i:s', $time)->format($time_format) : null;
     }
 
     /**
@@ -293,7 +294,7 @@ class Util
             }
         }
         
-        return !empty($date) ? \Carbon::createFromTimestamp(strtotime($date))->format($format) : null;
+        return !empty($date) ? Carbon::createFromTimestamp(strtotime($date))->format($format) : null;
     }
 
     /**
@@ -356,7 +357,7 @@ class Util
         $ref_digits =  str_pad($ref_count, 4, 0, STR_PAD_LEFT);
 
         if (!in_array($type, ['contacts', 'business_location', 'username'])) {
-            $ref_year = \Carbon::now()->year;
+            $ref_year = Carbon::now()->year;
             $ref_number = $prefix . $ref_year . '/' . $ref_digits;
         } else {
             $ref_number = $prefix . $ref_digits;

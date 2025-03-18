@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Log;
 
 class BusinessController extends Controller
 {
@@ -228,7 +229,7 @@ class BusinessController extends Controller
             return redirect('login')->with('status', $output);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
@@ -472,7 +473,7 @@ class BusinessController extends Controller
                             'msg' => __('business.settings_updated_success')
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
@@ -524,7 +525,7 @@ class BusinessController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             return $this->respondWentWrong($e);
         }
@@ -551,7 +552,7 @@ class BusinessController extends Controller
                 'msg' => __('lang_v1.email_tested_successfully')
             ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage()
@@ -587,7 +588,7 @@ class BusinessController extends Controller
                 'msg' => $response
             ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage()

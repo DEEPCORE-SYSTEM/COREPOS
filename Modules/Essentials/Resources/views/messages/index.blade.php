@@ -5,42 +5,59 @@
 @section('content')
 @include('essentials::layouts.nav_essentials')
 <section class="content">
-	<!-- Chat box -->
-	<div class="box box-solid">
-	<div class="box-header">
-	  <i class="fa fa-comments-o"></i>
+    <!-- Caja de chat -->
+    <div class="box box-solid">
+        <div class="box-header">
+            <i class="fa fa-comments-o"></i>
+            <h3 class="box-title">@lang('essentials::lang.messages')</h3>
+        </div>
 
-	  <h3 class="box-title">@lang('essentials::lang.messages')</h3>
-	</div>
-	<div class="box-body" id="chat-box" style="height: 70vh; overflow-y: scroll;">
-		@can('essentials.view_message')
-		  @foreach($messages as $message)
-		  	@include('essentials::messages.message_div')
-		  @endforeach
-	  	@endcan
-	</div>
-	<!-- /.chat -->
-	@can('essentials.create_message')
-	<div class="box-footer">
-		{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\EssentialsMessageController@store'), 'method' => 'post', 'id' => 'add_essentials_msg_form']) !!}
-			<div class="input-group">
-		  		{!! Form::textarea('message', null, ['class' => 'form-control', 'required', 'id' => 'chat-msg', 'placeholder' => __('essentials::lang.type_message'), 'rows' => 1]); !!}
-		  		<div class="input-group-addon" 
-		  		style="width: 137px;padding: 0;border: none;">
-		  			{!! Form::select('location_id',$business_locations,  null, ['class' => 'form-control', 'placeholder' => __('lang_v1.select_location'), 'style' => 'width: 100%;' ]); !!}
-		  		</div>
-		  		<div class="input-group-btn">
-		  			<button type="submit" class="btn btn-success pull-right ladda-button" data-style="expand-right">
-		  				<span class="ladda-label"><i class="fa fa-plus"></i></span>
-		  			</button>
-		  		</div>
-			</div>
-		  {!! Form::close() !!}
-	</div>
-	@endcan
-	</div>
-	<!-- /.box (chat box) -->
+        <!-- Mensajes en el chat -->
+        <div class="box-body" id="chat-box" style="height: 70vh; overflow-y: scroll;">
+            @can('essentials.view_message')
+                @foreach($messages as $message)
+                    @include('essentials::messages.message_div')
+                @endforeach
+            @endcan
+        </div>
+        <!-- Fin de la sección de chat -->
+
+        @can('essentials.create_message')
+            <!-- Formulario para enviar mensajes -->
+            <div class="box-footer">
+                <form action="{{ action('\Modules\Essentials\Http\Controllers\EssentialsMessageController@store') }}" 
+                      method="POST" id="add_essentials_msg_form">
+                    @csrf
+
+                    <div class="input-group">
+                        <!-- Campo de texto para el mensaje -->
+                        <textarea name="message" id="chat-msg" class="form-control" required rows="1" 
+                                  placeholder="@lang('essentials::lang.type_message')"></textarea>
+
+                        <!-- Selector de ubicación -->
+                        <div class="input-group-addon" style="width: 137px; padding: 0; border: none;">
+                            <select name="location_id" class="form-control" style="width: 100%;">
+                                <option value="">@lang('lang_v1.select_location')</option>
+                                @foreach($business_locations as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Botón para enviar el mensaje -->
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-success pull-right ladda-button" data-style="expand-right">
+                                <span class="ladda-label"><i class="fa fa-plus"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        @endcan
+    </div>
+    <!-- Fin de la caja de chat -->
 </section>
+
 @endsection
 
 @section('javascript')

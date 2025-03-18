@@ -17,25 +17,38 @@
 					<i class="fa fa-edit"></i>
 					<h3 class="box-title">@lang('superadmin::lang.compose_message')</h3>
 				</div>
-		        <div class="box-body">
-		        	{!! Form::open(['url' => action('\Modules\Superadmin\Http\Controllers\CommunicatorController@send'), 'method' => 'post', 'id' => 'communication_form']) !!}
-		        		<div class="col-md-12 form-group">
-		        			{!! Form::label('recipients', __('superadmin::lang.recipients').':*') !!} <button type="button" class="btn btn-primary btn-xs select-all">@lang('lang_v1.select_all')</button> <button type="button" class="btn btn-primary btn-xs deselect-all">@lang('lang_v1.deselect_all')</button>
-							{!! Form::select('recipients[]', $businesses, null, ['class' => 'form-control select2', 'required', 'multiple', 'id' => 'recipients']); !!}
-		        		</div>
-		        		<div class="col-md-12 form-group">
-		        			{!! Form::label('subject', __('superadmin::lang.subject').':*') !!}
-		        			{!! Form::text('subject', null, ['class' => 'form-control', 'required']); !!}
-		        		</div>
-		        		<div class="col-md-12 form-group">
-		        			{!! Form::label('message', __('superadmin::lang.message').':*') !!}
-		        			{!! Form::textarea('message', null, ['class' => 'form-control', 'required', 'rows' => 6]); !!}
-		        		</div>
-		        		<div class="col-md-12 form-group">
-		        			<button type="submit" class="btn btn-danger pull-right" id="send_message">@lang('superadmin::lang.send')</button>
-		        		</div>
-		        	{!! Form::close() !!}
-		        </div>
+				<div class="box-body">
+					<form action="{{ action('\Modules\Superadmin\Http\Controllers\CommunicatorController@send') }}" method="post" id="communication_form">
+						@csrf
+
+						<div class="col-md-12 form-group">
+							<label for="recipients">{{ __('superadmin::lang.recipients') }}:*</label>
+							<button type="button" class="btn btn-primary btn-xs select-all">@lang('lang_v1.select_all')</button>
+							<button type="button" class="btn btn-primary btn-xs deselect-all">@lang('lang_v1.deselect_all')</button>
+							
+							<select name="recipients[]" id="recipients" class="form-control select2" required multiple>
+								@foreach($businesses as $key => $value)
+									<option value="{{ $key }}">{{ $value }}</option>
+								@endforeach
+							</select>
+						</div>
+
+						<div class="col-md-12 form-group">
+							<label for="subject">{{ __('superadmin::lang.subject') }}:*</label>
+							<input type="text" id="subject" name="subject" class="form-control" required>
+						</div>
+
+						<div class="col-md-12 form-group">
+							<label for="message">{{ __('superadmin::lang.message') }}:*</label>
+							<textarea id="message" name="message" class="form-control" required rows="6"></textarea>
+						</div>
+
+						<div class="col-md-12 form-group">
+							<button type="submit" class="btn btn-danger pull-right" id="send_message">@lang('superadmin::lang.send')</button>
+						</div>
+					</form>
+				</div>
+
 		    </div>
 		</div>
 		<div class="col-sm-12">

@@ -9,9 +9,11 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Utils\ProductUtil;
 use App\Models\Variation;
-use DB;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ImportOpeningStockController extends Controller
 {
@@ -198,7 +200,7 @@ class ImportOpeningStockController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => "File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage()
@@ -222,7 +224,7 @@ class ImportOpeningStockController extends Controller
         $user_id = request()->session()->get('user.id');
 
         $transaction_date = request()->session()->get("financial_year.start");
-        $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+        $transaction_date = Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
 
         //Get product tax
         $tax_percent = !empty($product->tax_percent) ? $product->tax_percent : 0;

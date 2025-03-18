@@ -16,46 +16,51 @@
 <section class="content">
     @include('layouts.partials.search_settings')
     <br>
-    {!! Form::open(['action' => '\Modules\Superadmin\Http\Controllers\SuperadminSettingsController@update', 'method' => 'put']) !!}
-    <div class="row">
-        <div class="col-xs-12">
-           <!--  <pos-tab-container> -->
-            <div class="col-xs-12 pos-tab-container">
-                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu">
-                    <div class="list-group">
-                        <a href="#" class="list-group-item text-center active">@lang('superadmin::lang.super_admin_settings')</a>
-                        <a href="#" class="list-group-item text-center">@lang('superadmin::lang.application_settings')</a>
-                        <a href="#" class="list-group-item text-center">@lang('superadmin::lang.email_smtp_settings')</a>
-                        <a href="#" class="list-group-item text-center">@lang('superadmin::lang.payment_gateways')</a>
-                        <a href="#" class="list-group-item text-center">@lang('superadmin::lang.backup')</a>
-                        <a href="#" class="list-group-item text-center">@lang('superadmin::lang.cron')</a>
-                        <a href="#" class="list-group-item text-center">@lang('superadmin::lang.pusher_settings')</a>
-                        <a href="#" class="list-group-item text-center">@lang('superadmin::lang.additional_js_css')</a>
+    
+    <form action="{{ action('\Modules\Superadmin\Http\Controllers\SuperadminSettingsController@update') }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="col-xs-12 pos-tab-container">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item text-center active">@lang('superadmin::lang.super_admin_settings')</a>
+                            <a href="#" class="list-group-item text-center">@lang('superadmin::lang.application_settings')</a>
+                            <a href="#" class="list-group-item text-center">@lang('superadmin::lang.email_smtp_settings')</a>
+                            <a href="#" class="list-group-item text-center">@lang('superadmin::lang.payment_gateways')</a>
+                            <a href="#" class="list-group-item text-center">@lang('superadmin::lang.backup')</a>
+                            <a href="#" class="list-group-item text-center">@lang('superadmin::lang.cron')</a>
+                            <a href="#" class="list-group-item text-center">@lang('superadmin::lang.pusher_settings')</a>
+                            <a href="#" class="list-group-item text-center">@lang('superadmin::lang.additional_js_css')</a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
+                        @include('superadmin::superadmin_settings.partials.super_admin_settings')
+                        @include('superadmin::superadmin_settings.partials.application_settings')
+                        @include('superadmin::superadmin_settings.partials.email_smtp_settings')
+                        @include('superadmin::superadmin_settings.partials.payment_gateways')
+                        @include('superadmin::superadmin_settings.partials.backup')
+                        @include('superadmin::superadmin_settings.partials.cron')
+                        @include('superadmin::superadmin_settings.partials.pusher_setting')
+                        @include('superadmin::superadmin_settings.partials.additional_js_css')
                     </div>
                 </div>
-                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
-                    @include('superadmin::superadmin_settings.partials.super_admin_settings')
-                    @include('superadmin::superadmin_settings.partials.application_settings')
-                    @include('superadmin::superadmin_settings.partials.email_smtp_settings')
-                    @include('superadmin::superadmin_settings.partials.payment_gateways')
-                    @include('superadmin::superadmin_settings.partials.backup')
-                    @include('superadmin::superadmin_settings.partials.cron')
-                    @include('superadmin::superadmin_settings.partials.pusher_setting')
-                    @include('superadmin::superadmin_settings.partials.additional_js_css')
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group pull-right">
+                    <button type="submit" class="btn btn-danger">@lang('messages.update')</button>
                 </div>
             </div>
-            <!--  </pos-tab-container> -->
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="form-group pull-right">
-            {{Form::submit(__('messages.update'), ['class'=>"btn btn-danger"])}}
-            </div>
-        </div>
-    </div>
-    {!! Form::close() !!}
+    </form>
 </section>
+<!-- /.content -->
 @stop
 @section('javascript')
 <script type="text/javascript">

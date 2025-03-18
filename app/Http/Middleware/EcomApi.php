@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Modules\Ecommerce\Entities\EcomApiSetting;
+use Modules\Ecommerce\Entities\EcomApiSetting; // Ensure this class exists in the specified namespace
 
 class EcomApi
 {

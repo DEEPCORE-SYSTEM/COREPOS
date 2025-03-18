@@ -15,10 +15,15 @@
 <div class="row">
     <div class="col-md-12">
         <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('ledger_date_range', __('report.date_range') . ':') !!}
-                {!! Form::text('ledger_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-            </div>
+        <div class="form-group">
+            <!-- Etiqueta para el selector de rango de fechas -->
+            <label for="ledger_date_range">{{ __('report.date_range') }}:</label>
+
+            <!-- Campo de entrada para seleccionar un rango de fechas -->
+            <input type="text" name="ledger_date_range" id="ledger_date_range"
+                class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
+        </div>
+
         </div>
         <div class="col-md-9 text-right">
             <button data-href="{{action('ContactController@getLedger')}}?contact_id={{$contact->id}}&action=pdf" class="btn btn-default btn-xs" id="print_ledger_pdf"><i class="fas fa-file-pdf"></i></button>

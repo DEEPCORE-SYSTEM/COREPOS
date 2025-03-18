@@ -19,33 +19,60 @@
     @component('components.filters', ['title' => __('report.filters')])
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('package_id',  __('superadmin::lang.packages') . ':') !!}
-                {!! Form::select('package_id', $packages, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('subscription_status',  __('superadmin::lang.subscription_status') . ':') !!}
-                {!! Form::select('subscription_status', $subscription_statuses, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('is_active',  __('sale.status') . ':') !!}
-                {!! Form::select('is_active', ['active' => __('business.is_active'), 'inactive' => __('lang_v1.inactive')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('last_transaction_date',  __('superadmin::lang.last_transaction_date') . ':') !!}
-                {!! Form::select('last_transaction_date', $last_transaction_date, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('messages.please_select')]); !!}
+                <label for="package_id">{{ __('superadmin::lang.packages') }}:</label>
+                <select id="package_id" name="package_id" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('lang_v1.all') }}</option>
+                    @foreach($packages as $key => $value)
+                        <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('no_transaction_since',  __('superadmin::lang.no_transaction_since') . ':') !!}
-                {!! Form::select('no_transaction_since', $last_transaction_date, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('messages.please_select')]); !!}
+                <label for="subscription_status">{{ __('superadmin::lang.subscription_status') }}:</label>
+                <select id="subscription_status" name="subscription_status" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('lang_v1.all') }}</option>
+                    @foreach($subscription_statuses as $key => $value)
+                        <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="is_active">{{ __('sale.status') }}:</label>
+                <select id="is_active" name="is_active" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('lang_v1.all') }}</option>
+                    <option value="active">{{ __('business.is_active') }}</option>
+                    <option value="inactive">{{ __('lang_v1.inactive') }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="last_transaction_date">{{ __('superadmin::lang.last_transaction_date') }}:</label>
+                <select id="last_transaction_date" name="last_transaction_date" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('messages.please_select') }}</option>
+                    @foreach($last_transaction_date as $key => $value)
+                        <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="no_transaction_since">{{ __('superadmin::lang.no_transaction_since') }}:</label>
+                <select id="no_transaction_since" name="no_transaction_since" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('messages.please_select') }}</option>
+                    @foreach($last_transaction_date as $key => $value)
+                        <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
     @endcomponent

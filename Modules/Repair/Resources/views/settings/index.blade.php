@@ -60,14 +60,24 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    {!! Form::label('brand_id',  __('product.brand') . ':') !!}
-                                    {!! Form::select('brand_id', $brands, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                                    <label for="brand_id">@lang('product.brand'):</label>
+                                    <select name="brand_id" id="brand_id" class="form-control select2" style="width:100%">
+                                        <option value="">{{ __('lang_v1.all') }}</option>
+                                        @foreach ($brands as $key => $brand)
+                                            <option value="{{ $key }}">{{ $brand }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    {!! Form::label('device_id',  __('repair::lang.device') . ':') !!}
-                                    {!! Form::select('device_id', $devices, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                                    <label for="device_id">@lang('repair::lang.device'):</label>
+                                    <select name="device_id" id="device_id" class="form-control select2" style="width:100%">
+                                        <option value="">{{ __('lang_v1.all') }}</option>
+                                        @foreach ($devices as $key => $device)
+                                            <option value="{{ $key }}">{{ $device }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -81,7 +91,13 @@
         </div>
     </div>
 </section>
+
+
+
 @stop
+
+
+
 @section('javascript')
 <script type="text/javascript">
     $(document).ready( function(){

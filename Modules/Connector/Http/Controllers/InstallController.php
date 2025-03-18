@@ -9,9 +9,13 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InstallController extends Controller
 {
+    protected $module_name;
+    protected $appVersion;
+
     public function __construct()
     {
         $this->module_name = 'connector';
@@ -77,7 +81,7 @@ class InstallController extends Controller
                 ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = [
                 'success' => false,

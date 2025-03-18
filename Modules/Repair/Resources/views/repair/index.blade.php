@@ -10,24 +10,42 @@
 </section>
 
 <!-- Main content -->
+
 <section class="content no-print">
+
     @component('components.filters', ['title' => __('report.filters'), 'closed' => false])
+        {{-- Incluir filtros de ventas (ubicación, cliente, estado de pago, rango de fechas, creado por) --}}
         @include('sell.partials.sell_list_filters', ['only' => ['sell_list_filter_location_id', 'sell_list_filter_customer_id', 'sell_list_filter_payment_status', 'sell_list_filter_date_range', 'created_by']])
+
+        {{-- Filtro para el estado de la reparación --}}
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('repair_status_id',  __('sale.status') . ':') !!}
-                {!! Form::select('repair_status_id', $repair_status_dropdown['statuses'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                <label for="repair_status_id">{{ __('sale.status') }}:</label>
+                <select id="repair_status_id" name="repair_status_id" class="form-control select2" style="width:100%">
+                    <option value="">{{ __('lang_v1.all') }}</option>
+                    @foreach($repair_status_dropdown['statuses'] as $key => $value)
+                        <option value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
-        @if(in_array('service_staff' ,$enabled_modules) && !$is_service_staff)
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('service_staff_id',  __('repair::lang.technician') . ':') !!}
-                {!! Form::select('service_staff_id', $service_staffs, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+
+        {{-- Si el módulo de técnicos está habilitado y el usuario no es un técnico, mostrar el filtro de técnicos --}}
+        @if(in_array('service_staff', $enabled_modules) && !$is_service_staff)
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="service_staff_id">{{ __('repair::lang.technician') }}:</label>
+                    <select id="service_staff_id" name="service_staff_id" class="form-control select2" style="width:100%">
+                        <option value="">{{ __('lang_v1.all') }}</option>
+                        @foreach($service_staffs as $key => $value)
+                            <option value="{{ $key }}">{{ $value }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-        </div>
         @endif
     @endcomponent
+
     <div class="row">
         <div class="col-md-12">
             <div class="nav-tabs-custom">
@@ -193,6 +211,7 @@
 
     <div class="modal fade" id="edit_repair_status_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 </section>
+
 <!-- /.content -->
 @stop
 @section('javascript')

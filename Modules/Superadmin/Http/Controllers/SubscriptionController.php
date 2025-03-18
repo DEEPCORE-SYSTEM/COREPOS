@@ -3,7 +3,7 @@
 namespace Modules\Superadmin\Http\Controllers;
 
 use \Notification;
-use App\Business;
+use App\Models\Business;
 use App\Models\System;
 use App\Utils\ModuleUtil;
 
@@ -29,7 +29,7 @@ class SubscriptionController extends BaseController
 {
     protected $provider;
 
-    public function __construct(ModuleUtil $moduleUtil = null)
+    public function __construct(ModuleUtil $moduleUtil)
     {
         if (! defined('CURL_SSLVERSION_TLSv1_2')) {
             define('CURL_SSLVERSION_TLSv1_2', 6);

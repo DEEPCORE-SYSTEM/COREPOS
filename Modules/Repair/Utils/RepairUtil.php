@@ -4,7 +4,7 @@ namespace Modules\Repair\Utils;
 
 use \Notification;
 use App\Models\Business;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\NotificationTemplate;
 use App\Charts\CommonChart;
 use App\Utils\Util;
@@ -16,6 +16,7 @@ use Modules\Repair\Entities\DeviceModel;
 use App\Models\Category;
 use Modules\Repair\Entities\JobSheet;
 use Modules\Repair\Notifications\RepairStatusUpdated;
+use Carbon\Carbon;
 
 class RepairUtil extends Util
 {
@@ -101,7 +102,7 @@ class RepairUtil extends Util
     {
         $warranty = '';
         if (!empty($repair->repair_completed_on)) {
-            $repair_completed_on = \Carbon::parse($repair->repair_completed_on);
+            $repair_completed_on = Carbon::parse($repair->repair_completed_on);
 
             $warranty_expires_on = $repair_completed_on;
             if ($repair->duration_type == 'months') {

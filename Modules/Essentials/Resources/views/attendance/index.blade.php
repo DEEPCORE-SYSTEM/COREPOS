@@ -107,22 +107,33 @@
                             </div>
                         </div>
                     @endcan
+
                     <div class="tab-pane @if(!auth()->user()->can('essentials.crud_all_attendance')) active @endif" id="attendance_tab">
                         <div class="row">
+
                             @can('essentials.crud_all_attendance')
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        {!! Form::label('employee_id', __('essentials::lang.employee') . ':') !!}
-                                        {!! Form::select('employee_id', $employees, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                                        <label for="employee_id">@lang('essentials::lang.employee'):</label>
+                                        <select name="employee_id" id="employee_id" class="form-control select2" style="width:100%">
+                                            <option value="">@lang('lang_v1.all')</option>
+                                            @foreach($employees as $key => $value)
+                                                <option value="{{ $key }}">{{ $value }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             @endcan
+
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    {!! Form::label('date_range', __('report.date_range') . ':') !!}
-                                    {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+                                    <label for="date_range">@lang('report.date_range'):</label>
+                                    <input type="text" name="date_range" id="date_range" class="form-control" readonly 
+                                        placeholder="@lang('lang_v1.select_a_date_range')">
                                 </div>
                             </div>
+
+
                             @can('essentials.crud_all_attendance')
                             <div class="col-md-6 spacer">
                                 <button type="button" class="btn btn-primary btn-modal pull-right" data-href="{{action('\Modules\Essentials\Http\Controllers\AttendanceController@create')}}" data-container="#attendance_modal">

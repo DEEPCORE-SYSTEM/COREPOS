@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Modules\Connector\Transformers\CommonResource;
-use App\Business;
+use App\Models\Business;
 use App\Utils\ModuleUtil;
 
 /**
@@ -103,7 +104,7 @@ class AttendanceController extends ApiController
         	$data = [
                     'business_id' => $business_id,
                     'user_id' => $request->input('user_id'),
-                    'clock_in_time' => empty($request->input('clock_in_time')) ?\Carbon::now() : $request->input('clock_in_time'),
+                    'clock_in_time' => empty($request->input('clock_in_time')) ? Carbon::now() : $request->input('clock_in_time'),
                     'clock_in_note' => $request->input('clock_in_note'),
                     'ip_address' => $request->input('ip_address'),
                 ];
@@ -166,7 +167,7 @@ class AttendanceController extends ApiController
         	$data = [
                 'business_id' => $business_id,
                 'user_id' => $request->input('user_id'),
-                'clock_out_time' => empty($request->input('clock_out_time')) ?\Carbon::now() : $request->input('clock_out_time'),
+                'clock_out_time' => empty($request->input('clock_out_time')) ? Carbon::now() : $request->input('clock_out_time'),
                 'clock_out_note' => $request->input('clock_out_note')
             ];
 

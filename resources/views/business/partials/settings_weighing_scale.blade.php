@@ -1,43 +1,80 @@
+<!-- Sección de configuración de báscula de peso -->
 <div class="row">
+    <!-- Encabezado y descripción -->
     <div class="col-sm-12">
         <h4>@lang('lang_v1.weighing_scale_setting'):</h4>
         <p>@lang('lang_v1.weighing_scale_setting_help')</p>
         <br/>
     </div>
 
-    <!-- 1st part: Prefix (here any prefix can be entered), user can leave it blank also if prefix not supported by scale.
-	2nd part: Dropdown list from 1 to 9 for Barcode 0
-	3rd part: Dropdown list from 1 to 5 for Quantity 
-	4th part: Dropdown list from 1 to 4 for Quantity decimals. -->
+    <!-- Configuración de formato de código de barras -->
+    <!-- 
+        1. Prefijo: Cualquier prefijo puede ser ingresado, puede dejarse en blanco si la báscula no lo soporta
+        2. Lista desplegable del 1 al 9 para el código de barras 0
+        3. Lista desplegable del 1 al 5 para la cantidad
+        4. Lista desplegable del 1 al 4 para decimales de cantidad
+    -->
 
-
+    <!-- Prefijo del código de barras -->
     <div class="col-sm-3">
         <div class="form-group">
-            {!! Form::label('label_prefix', __('lang_v1.weighing_barcode_prefix') . ':') !!}
-             {!! Form::text('weighing_scale_setting[label_prefix]', isset($weighing_scale_setting['label_prefix']) ? $weighing_scale_setting['label_prefix'] : null, ['class' => 'form-control', 'id' => 'label_prefix']); !!}
+            <label for="label_prefix">{{ __('lang_v1.weighing_barcode_prefix') }}:</label>
+            <input type="text" 
+                   name="weighing_scale_setting[label_prefix]" 
+                   id="label_prefix"
+                   class="form-control"
+                   value="{{ isset($weighing_scale_setting['label_prefix']) ? $weighing_scale_setting['label_prefix'] : null }}">
         </div>
     </div>
 
+    <!-- Longitud del SKU del producto -->
     <div class="col-sm-3">
         <div class="form-group">
-            {!! Form::label('product_sku_length', __('lang_v1.weighing_product_sku_length') . ':') !!}
-            
-            {!! Form::select('weighing_scale_setting[product_sku_length]', [1,2,3,4,5,6,7,8,9], isset($weighing_scale_setting['product_sku_length']) ? $weighing_scale_setting['product_sku_length'] : 4, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'product_sku_length']); !!}
+            <label for="product_sku_length">{{ __('lang_v1.weighing_product_sku_length') }}:</label>
+            <select name="weighing_scale_setting[product_sku_length]" 
+                    id="product_sku_length"
+                    class="form-control select2" 
+                    style="width: 100%;">
+                @for($i = 1; $i <= 9; $i++)
+                    <option value="{{ $i }}" {{ (isset($weighing_scale_setting['product_sku_length']) ? $weighing_scale_setting['product_sku_length'] : 4) == $i ? 'selected' : '' }}>
+                        {{ $i }}
+                    </option>
+                @endfor
+            </select>
         </div>
     </div>
 
+    <!-- Longitud de la parte entera de la cantidad -->
     <div class="col-sm-3">
         <div class="form-group">
-            {!! Form::label('qty_length', __('lang_v1.weighing_qty_integer_part_length') . ':') !!}
-            
-            {!! Form::select('weighing_scale_setting[qty_length]', [1,2,3,4,5], isset($weighing_scale_setting['qty_length']) ? $weighing_scale_setting['qty_length'] : 3, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'qty_length']); !!}
+            <label for="qty_length">{{ __('lang_v1.weighing_qty_integer_part_length') }}:</label>
+            <select name="weighing_scale_setting[qty_length]" 
+                    id="qty_length"
+                    class="form-control select2" 
+                    style="width: 100%;">
+                @for($i = 1; $i <= 5; $i++)
+                    <option value="{{ $i }}" {{ (isset($weighing_scale_setting['qty_length']) ? $weighing_scale_setting['qty_length'] : 3) == $i ? 'selected' : '' }}>
+                        {{ $i }}
+                    </option>
+                @endfor
+            </select>
         </div>
     </div>
 
+    <!-- Longitud de la parte decimal de la cantidad -->
     <div class="col-sm-3">
         <div class="form-group">
-            {!! Form::label('qty_length_decimal', __('lang_v1.weighing_qty_fractional_part_length') . ':') !!}
-            {!! Form::select('weighing_scale_setting[qty_length_decimal]', [1,2,3,4], isset($weighing_scale_setting['qty_length_decimal']) ? $weighing_scale_setting['qty_length_decimal'] : 2, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'qty_length_decimal']); !!}
+            <label for="qty_length_decimal">{{ __('lang_v1.weighing_qty_fractional_part_length') }}:</label>
+            <select name="weighing_scale_setting[qty_length_decimal]" 
+                    id="qty_length_decimal"
+                    class="form-control select2" 
+                    style="width: 100%;">
+                @for($i = 1; $i <= 4; $i++)
+                    <option value="{{ $i }}" {{ (isset($weighing_scale_setting['qty_length_decimal']) ? $weighing_scale_setting['qty_length_decimal'] : 2) == $i ? 'selected' : '' }}>
+                        {{ $i }}
+                    </option>
+                @endfor
+            </select>
         </div>
     </div>
 </div>

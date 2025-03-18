@@ -6,7 +6,7 @@ use App\Models\Transaction;
 use App\Models\TransactionSellLinesPurchaseLines;
 use App\Utils\Util;
 use App\Models\Variation;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Modules\Manufacturing\Entities\MfgRecipeIngredient;
 
 class ManufacturingUtil extends Util

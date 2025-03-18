@@ -6,6 +6,7 @@ use App\Models\System;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Modules\Superadmin\Entities\Subscription;
 use Modules\Superadmin\Entities\SuperadminFrontendPage;
@@ -116,7 +117,7 @@ class SuperadminServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
             return $path . '/modules/superadmin';
-        }, \Config::get('view.paths')), [$sourcePath]), 'superadmin');
+        }, Config::get('view.paths')), [$sourcePath]), 'superadmin');
     }
 
     /**

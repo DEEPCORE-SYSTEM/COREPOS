@@ -7,15 +7,17 @@ use App\Models\Contact;
 use App\Models\System;
 use App\Models\User;
 use App\Utils\ModuleUtil;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\Log;
 
 class ManageUserController extends Controller
 {
+    protected $moduleUtil;
     /**
      * Constructor
      *
@@ -143,7 +145,7 @@ class ManageUserController extends Controller
                         'msg' => __("user.user_added")
                     ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                         'msg' => __("messages.something_went_wrong")
@@ -339,7 +341,7 @@ class ManageUserController extends Controller
 
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => $e->getMessage()
@@ -383,7 +385,7 @@ class ManageUserController extends Controller
                                 'msg' => __("user.user_delete_success")
                                 ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

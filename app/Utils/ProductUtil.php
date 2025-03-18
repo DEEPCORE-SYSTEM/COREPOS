@@ -21,9 +21,11 @@ use App\Models\VariationLocationDetails;
 use App\Models\VariationTemplate;
 use App\Models\VariationValueTemplate;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProductUtil extends Util
 {
+
     /**
      * Create single type product variation
      *
@@ -936,8 +938,8 @@ class ProductUtil extends Util
                         'rack' => !empty($detail['rack']) ? $detail['rack'] : null,
                         'row' => !empty($detail['row']) ? $detail['row'] : null,
                         'position' => !empty($detail['position']) ? $detail['position'] : null,
-                        'created_at' => \Carbon::now()->toDateTimeString(),
-                        'updated_at' => \Carbon::now()->toDateTimeString()
+                        'created_at' => Carbon::now()->toDateTimeString(),
+                        'updated_at' => Carbon::now()->toDateTimeString()
                     ];
             }
 
@@ -1083,7 +1085,7 @@ class ProductUtil extends Util
 
                 $exp_date = null;
                 if (!empty($value['exp_date'])) {
-                    $exp_date = \Carbon::createFromFormat('d-m-Y', $value['exp_date'])->format('Y-m-d');
+                    $exp_date = Carbon::createFromFormat('d-m-Y', $value['exp_date'])->format('Y-m-d');
                 }
 
                 $lot_number = null;
@@ -1477,7 +1479,7 @@ class ProductUtil extends Util
      */
     public function getProductDiscount($product, $business_id, $location_id, $is_cg = false, $price_group = null, $variation_id = null)
     {
-        $now = \Carbon::now()->toDateTimeString();
+        $now = Carbon::now()->toDateTimeString();
 
         //Search if both category and brand matches
         $query = Discount::where('business_id', $business_id)

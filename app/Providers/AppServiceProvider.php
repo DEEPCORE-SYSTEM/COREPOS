@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Models\System;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use App\Utils\ModuleUtil;
 
@@ -27,18 +29,16 @@ class AppServiceProvider extends ServiceProvider
         $url = parse_url(config('app.url'));
         
         if($url['scheme'] == 'https'){
-           \URL::forceScheme('https');
+           URL::forceScheme('https');
         }
 
         if (request()->has('lang')) {
-            \App::setLocale(request()->get('lang'));
+            App::setLocale(request()->get('lang'));
         }
 
-        //In Laravel 5.6, Blade will double encode special characters by default. If you would like to maintain the previous behavior of preventing double encoding, you may add Blade::withoutDoubleEncoding() to your AppServiceProvider boot method.
-        Blade::withoutDoubleEncoding();
+        Blade::withoutDoubleEncoding(); // Evita la doble codificación en Blade
 
-        //Laravel 5.6 uses Bootstrap 4 by default. Shift did not update your front-end resources or dependencies as this could impact your UI. If you are using Bootstrap and wish to continue using Bootstrap 3, you should add Paginator::useBootstrapThree() to your AppServiceProvider boot method.
-        Paginator::useBootstrapThree();
+        Paginator::useBootstrapFive(); // Para que la paginación use Bootstrap 5
 
         $asset_v = config('constants.asset_version', 1);
         View::share('asset_v', $asset_v);

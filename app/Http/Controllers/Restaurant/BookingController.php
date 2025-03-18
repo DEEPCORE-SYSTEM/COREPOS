@@ -8,11 +8,13 @@ use App\Models\CustomerGroup;
 use App\Restaurant\Booking;
 use App\Models\User;
 use App\Utils\Util;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\RestaurantUtil;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -148,7 +150,7 @@ class BookingController extends Controller
                 die(__("messages.something_went_wrong"));
             }
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = ['success' => 0,
                             'msg' => __("messages.something_went_wrong")
                         ];
@@ -221,7 +223,7 @@ class BookingController extends Controller
                             'msg' => trans("lang_v1.updated_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = ['success' => 0,
                             'msg' => __("messages.something_went_wrong")
                         ];
@@ -272,7 +274,7 @@ class BookingController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
-            $today = \Carbon::now()->format('Y-m-d');
+            $today = Carbon::now()->format('Y-m-d');
             $query = Booking::where('business_id', $business_id)
                         ->where('booking_status', 'booked')
                         ->whereDate('booking_start', $today)

@@ -7,7 +7,7 @@ use App\Models\AccountTransaction;
 use App\Models\AccountType;
 use App\Models\TransactionPayment;
 use App\Utils\Util;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -15,6 +15,7 @@ use App\Models\Media;
 use App\Models\BusinessLocation;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
@@ -236,7 +237,7 @@ class AccountController extends Controller
                         'account_id' => $account->id,
                         'type' => 'credit',
                         'sub_type' => 'opening_balance',
-                        'operation_date' => \Carbon::now(),
+                        'operation_date' => Carbon::now(),
                         'created_by' => $user_id
                     ];
 
@@ -247,7 +248,7 @@ class AccountController extends Controller
                             'msg' => __("account.account_created_success")
                         ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
                     
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -438,7 +439,7 @@ class AccountController extends Controller
                                 'msg' => __("account.account_updated_success")
                                 ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -478,7 +479,7 @@ class AccountController extends Controller
                             'msg' => __("lang_v1.deleted_success")
                             ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -512,7 +513,7 @@ class AccountController extends Controller
                                     'msg' => __("account.account_closed_success")
                                     ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
@@ -610,7 +611,7 @@ class AccountController extends Controller
                                 ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
         
             $output = ['success' => false,
                         'msg' => __("messages.something_went_wrong")
@@ -702,7 +703,7 @@ class AccountController extends Controller
                                 ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
         
             $output = ['success' => false,
                         'msg' => __("messages.something_went_wrong")
@@ -935,7 +936,7 @@ class AccountController extends Controller
                         'msg' => __("lang_v1.success")
                         ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
                 $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")
