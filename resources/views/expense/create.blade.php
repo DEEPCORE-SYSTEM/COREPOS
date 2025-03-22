@@ -10,128 +10,176 @@
 
 <!-- Main content -->
 <section class="content">
-	{!! Form::open(['url' => action('ExpenseController@store'), 'method' => 'post', 'id' => 'add_expense_form', 'files' => true ]) !!}
-	<div class="box box-solid">
-		<div class="box-body">
-			<div class="row">
+    <form action="{{ action('ExpenseController@store') }}" method="POST" id="add_expense_form" enctype="multipart/form-data">
+        @csrf <!-- Token de seguridad de Laravel -->
+        <div class="box box-solid">
+            <div class="box-body">
+                <div class="row">
 
-				@if(count($business_locations) == 1)
-					@php 
-						$default_location = current(array_keys($business_locations->toArray())) 
-					@endphp
-				@else
-					@php $default_location = null; @endphp
-				@endif
-				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('location_id', __('purchase.business_location').':*') !!}
-						{!! Form::select('location_id', $business_locations, $default_location, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required'], $bl_attributes); !!}
-					</div>
-				</div>
+                    <!-- Determinar la ubicación por defecto -->
+                    @php
+                        $default_location = count($business_locations) == 1 ? current(array_keys($business_locations->toArray())) : null;
+                    @endphp
 
-				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('expense_category_id', __('expense.expense_category').':') !!}
-						{!! Form::select('expense_category_id', $expense_categories, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('ref_no', __('purchase.ref_no').':') !!}
-						{!! Form::text('ref_no', null, ['class' => 'form-control']); !!}
-						<p class="help-block">
-			                @lang('lang_v1.leave_empty_to_autogenerate')
-			            </p>
-					</div>
-				</div>
-				<div class="clearfix"></div>
-				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('transaction_date', __('messages.date') . ':*') !!}
-						<div class="input-group">
-							<span class="input-group-addon">
-								<i class="fa fa-calendar"></i>
-							</span>
-							{!! Form::text('transaction_date', @format_datetime('now'), ['class' => 'form-control', 'readonly', 'required', 'id' => 'expense_transaction_date']); !!}
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('expense_for', __('expense.expense_for').':') !!} @show_tooltip(__('tooltip.expense_for'))
-						{!! Form::select('expense_for', $users, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('contact_id', __('lang_v1.expense_for_contact').':') !!} 
-						{!! Form::select('contact_id', $contacts, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
-					</div>
-				</div>
-				<div class="clearfix"></div>
-				<div class="col-sm-4">
-                    <div class="form-group">
-                        {!! Form::label('document', __('purchase.attach_document') . ':') !!}
-                        {!! Form::file('document', ['id' => 'upload_document', 'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types')))]); !!}
-                        <small><p class="help-block">@lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])
-                        @includeIf('components.document_help_text')</p></small>
+                    <!-- Selección de ubicación -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="location_id">{{ __('purchase.business_location') }}:*</label>
+                            <select name="location_id" id="location_id" class="form-control select2" required>
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($business_locations as $key => $location)
+                                    <option value="{{ $key }}" {{ $default_location == $key ? 'selected' : '' }}>
+                                        {{ $location }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Categoría de gasto -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="expense_category_id">{{ __('expense.expense_category') }}:</label>
+                            <select name="expense_category_id" id="expense_category_id" class="form-control select2">
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($expense_categories as $key => $category)
+                                    <option value="{{ $key }}">{{ $category }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Número de referencia -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="ref_no">{{ __('purchase.ref_no') }}:</label>
+                            <input type="text" name="ref_no" id="ref_no" class="form-control">
+                            <p class="help-block">{{ __('lang_v1.leave_empty_to_autogenerate') }}</p>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Fecha de la transacción -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="transaction_date">{{ __('messages.date') }}:*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input type="text" name="transaction_date" id="transaction_date" class="form-control" value="{{ now()->format('Y-m-d H:i:s') }}" readonly required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gasto para (usuario) -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="expense_for">{{ __('expense.expense_for') }}:</label>
+                            <select name="expense_for" id="expense_for" class="form-control select2">
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($users as $key => $user)
+                                    <option value="{{ $key }}">{{ $user }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Contacto relacionado al gasto -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="contact_id">{{ __('lang_v1.expense_for_contact') }}:</label>
+                            <select name="contact_id" id="contact_id" class="form-control select2">
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($contacts as $key => $contact)
+                                    <option value="{{ $key }}">{{ $contact }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Archivo adjunto -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="document">{{ __('purchase.attach_document') }}:</label>
+                            <input type="file" name="document" id="upload_document" accept="{{ implode(',', array_keys(config('constants.document_upload_mimes_types'))) }}">
+                            <small>
+                                <p class="help-block">
+                                    {{ __('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)]) }}
+                                </p>
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Impuesto aplicable -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="tax_id">{{ __('product.applicable_tax') }}:</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-info"></i></span>
+                                <select name="tax_id" id="tax_id" class="form-control">
+                                    <option value="">{{ __('messages.please_select') }}</option>
+                                    @foreach($taxes['tax_rates'] as $key => $tax)
+                                        <option value="{{ $key }}">{{ $tax }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monto total -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="final_total">{{ __('sale.total_amount') }}:*</label>
+                            <input type="text" name="final_total" id="final_total" class="form-control input_number" required>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Notas adicionales -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="additional_notes">{{ __('expense.expense_note') }}:</label>
+                            <textarea name="additional_notes" id="additional_notes" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- ¿Es un reembolso? -->
+                    <div class="col-md-4 col-sm-6">
+                        <br>
+                        <label>
+                            <input type="checkbox" name="is_refund" value="1" class="input-icheck"> {{ __('lang_v1.is_refund') }}?
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+        </div> <!-- Fin de caja -->
+
+        <!-- Sección de pagos -->
+        <div class="box box-solid">
+            <div class="box-body">
+                <h4>{{ __('purchase.add_payment') }}:</h4>
+                @include('sale_pos.partials.payment_row_form', ['row_index' => 0, 'show_date' => true])
+                <hr>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="pull-right">
+                            <strong>{{ __('purchase.payment_due') }}:</strong>
+                            <span id="payment_due">{{ number_format(0, 2) }}</span>
+                        </div>
                     </div>
                 </div>
-				<div class="col-md-4">
-			    	<div class="form-group">
-			            {!! Form::label('tax_id', __('product.applicable_tax') . ':' ) !!}
-			            <div class="input-group">
-			                <span class="input-group-addon">
-			                    <i class="fa fa-info"></i>
-			                </span>
-			                {!! Form::select('tax_id', $taxes['tax_rates'], null, ['class' => 'form-control'], $taxes['attributes']); !!}
+            </div>
+        </div>
 
-							<input type="hidden" name="tax_calculation_amount" id="tax_calculation_amount" 
-							value="0">
-			            </div>
-			        </div>
-			    </div>
-			    <div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('final_total', __('sale.total_amount') . ':*') !!}
-						{!! Form::text('final_total', null, ['class' => 'form-control input_number', 'placeholder' => __('sale.total_amount'), 'required']); !!}
-					</div>
-				</div>
-				<div class="clearfix"></div>
-				<div class="col-sm-4">
-					<div class="form-group">
-						{!! Form::label('additional_notes', __('expense.expense_note') . ':') !!}
-								{!! Form::textarea('additional_notes', null, ['class' => 'form-control', 'rows' => 3]); !!}
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6">
-					<br>
-					<label>
-		              {!! Form::checkbox('is_refund', 1, false, ['class' => 'input-icheck', 'id' => 'is_refund']); !!} @lang('lang_v1.is_refund')?
-		            </label>@show_tooltip(__('lang_v1.is_refund_help'))
-				</div>
-			</div>
-		</div>
-	</div> <!--box end-->
-	@include('expense.recur_expense_form_part')
-	@component('components.widget', ['class' => 'box-solid', 'id' => "payment_rows_div", 'title' => __('purchase.add_payment')])
-	<div class="payment_row">
-		@include('sale_pos.partials.payment_row_form', ['row_index' => 0, 'show_date' => true])
-		<hr>
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="pull-right">
-					<strong>@lang('purchase.payment_due'):</strong>
-					<span id="payment_due">{{@num_format(0)}}</span>
-				</div>
-			</div>
-		</div>
-	</div>
-	@endcomponent
-	<div class="col-sm-12 text-center">
-		<button type="submit" class="btn btn-primary btn-big">@lang('messages.save')</button>
-	</div>
-{!! Form::close() !!}
+        <!-- Botón de guardar -->
+        <div class="col-sm-12 text-center">
+            <button type="submit" class="btn btn-primary btn-big">{{ __('messages.save') }}</button>
+        </div>
+    </form>
 </section>
 @endsection
 @section('javascript')

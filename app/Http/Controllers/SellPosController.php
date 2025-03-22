@@ -63,6 +63,7 @@ use App\Models\TransactionPayment;
 use Stripe\Charge;
 use Stripe\Stripe;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SellPosController extends Controller
 {
@@ -579,7 +580,7 @@ class SellPosController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $msg = trans("messages.something_went_wrong");
                 
             if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
@@ -1260,7 +1261,7 @@ class SellPosController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = ['success' => 0,
                             'msg' => __('messages.something_went_wrong')
                         ];
@@ -1322,7 +1323,7 @@ class SellPosController extends Controller
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollBack();
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
                 $output['success'] = false;
                 $output['msg'] = trans("messages.something_went_wrong");
@@ -1503,7 +1504,7 @@ class SellPosController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output['success'] = false;
             $output['msg'] = __('lang_v1.item_out_of_stock');
@@ -1632,7 +1633,7 @@ class SellPosController extends Controller
                     $output = ['success' => 1, 'receipt' => $receipt];
                 }
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
                 
                 $output = ['success' => 0,
                         'msg' => trans("messages.something_went_wrong")
@@ -1854,7 +1855,7 @@ class SellPosController extends Controller
         } else {
             $error_description = $payment->error_description;
 
-            \Log::emergency($payment->error_description);
+            Log::emergency($payment->error_description);
             throw new \Exception($error_description);
         }
     }
@@ -1935,7 +1936,7 @@ class SellPosController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = [
                     'success' => 0,
                     'msg' =>  __('messages.something_went_wrong')
@@ -2130,7 +2131,7 @@ class SellPosController extends Controller
                     'msg' => trans("lang_v1.updated_success")
                 ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => 0,
                             'msg' => trans("messages.something_went_wrong")
@@ -2282,7 +2283,7 @@ class SellPosController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $msg = trans("messages.something_went_wrong");
                 
             if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
@@ -2528,7 +2529,7 @@ class SellPosController extends Controller
             try {
                 $this->transactionUtil->mapPurchaseSell($business, $transaction->sell_lines, 'purchase');
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
                 $msg = trans("messages.something_went_wrong");
                     
                 if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
@@ -2560,7 +2561,7 @@ class SellPosController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $msg = trans("messages.something_went_wrong");
                 
             if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
@@ -2608,7 +2609,7 @@ class SellPosController extends Controller
             $output = ['success' => 1, 'msg' => __('lang_v1.converted_to_proforma_successfully')];
 
         } catch (Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = ['success' => 0,
                             'msg' => trans("messages.something_went_wrong")

@@ -12,61 +12,92 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12">
+            <!-- Componente de filtros -->
             @component('components.filters', ['title' => __('report.filters')])
                 @if(auth()->user()->can('all_expense.access'))
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-                            {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                            <label for="location_id">{{ __('purchase.business_location') }}:</label>
+                            <select name="location_id" id="location_id" class="form-control select2" style="width:100%">
+                                @foreach($business_locations as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
                     <div class="col-sm-3">
                         <div class="form-group">
-                            {!! Form::label('expense_for', __('expense.expense_for').':') !!}
-                            {!! Form::select('expense_for', $users, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                            <label for="expense_for">{{ __('expense.expense_for') }}:</label>
+                            <select name="expense_for" id="expense_for" class="form-control select2" style="width:100%">
+                                @foreach($users as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
+
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('expense_contact_filter',  __('contact.contact') . ':') !!}
-                            {!! Form::select('expense_contact_filter', $contacts, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                            <label for="expense_contact_filter">{{ __('contact.contact') }}:</label>
+                            <select name="expense_contact_filter" id="expense_contact_filter" class="form-control select2" style="width:100%">
+                                <option value="">{{ __('lang_v1.all') }}</option>
+                                @foreach($contacts as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 @endif
+
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('expense_category_id',__('expense.expense_category').':') !!}
-                        {!! Form::select('expense_category_id', $categories, null, ['placeholder' =>
-                        __('report.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'expense_category_id']); !!}
+                        <label for="expense_category_id">{{ __('expense.expense_category') }}:</label>
+                        <select name="expense_category_id" id="expense_category_id" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('report.all') }}</option>
+                            @foreach($categories as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('expense_date_range', __('report.date_range') . ':') !!}
-                        {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'expense_date_range', 'readonly']); !!}
+                        <label for="expense_date_range">{{ __('report.date_range') }}:</label>
+                        <input type="text" name="date_range" id="expense_date_range" class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
                     </div>
                 </div>
+
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('expense_payment_status',  __('purchase.payment_status') . ':') !!}
-                        {!! Form::select('expense_payment_status', ['paid' => __('lang_v1.paid'), 'due' => __('lang_v1.due'), 'partial' => __('lang_v1.partial')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        <label for="expense_payment_status">{{ __('purchase.payment_status') }}:</label>
+                        <select name="expense_payment_status" id="expense_payment_status" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            <option value="paid">{{ __('lang_v1.paid') }}</option>
+                            <option value="due">{{ __('lang_v1.due') }}</option>
+                            <option value="partial">{{ __('lang_v1.partial') }}</option>
+                        </select>
                     </div>
                 </div>
             @endcomponent
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
+            <!-- Componente de tabla de gastos -->
             @component('components.widget', ['class' => 'box-primary', 'title' => __('expense.all_expenses')])
                 @can('expense.add')
                     @slot('tool')
                         <div class="box-tools">
-                            <a class="btn btn-block btn-primary" href="{{action('ExpenseController@create')}}">
-                            <i class="fa fa-plus"></i> @lang('messages.add')</a>
+                            <a class="btn btn-block btn-primary" href="{{ action('ExpenseController@create') }}">
+                                <i class="fa fa-plus"></i> @lang('messages.add')
+                            </a>
                         </div>
                     @endslot
                 @endcan
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="expense_table">
                         <thead>
@@ -80,7 +111,7 @@
                                 <th>@lang('sale.payment_status')</th>
                                 <th>@lang('product.tax')</th>
                                 <th>@lang('sale.total_amount')</th>
-                                <th>@lang('purchase.payment_due')
+                                <th>@lang('purchase.payment_due')</th>
                                 <th>@lang('expense.expense_for')</th>
                                 <th>@lang('contact.contact')</th>
                                 <th>@lang('expense.expense_note')</th>
@@ -102,8 +133,8 @@
             @endcomponent
         </div>
     </div>
-
 </section>
+
 <!-- /.content -->
 <!-- /.content -->
 <div class="modal fade payment_modal" tabindex="-1" role="dialog" 

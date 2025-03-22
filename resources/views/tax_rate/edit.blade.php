@@ -1,40 +1,56 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
 
-    {!! Form::open(['url' => action('TaxRateController@update', [$tax_rate->id]), 'method' => 'PUT', 'id' => 'tax_rate_edit_form' ]) !!}
+    <!-- Formulario para actualizar una tasa de impuesto -->
+    <form action="{{ action('TaxRateController@update', [$tax_rate->id]) }}" method="post" id="tax_rate_edit_form">
+      @csrf
+      @method('PUT')
 
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'tax_rate.edit_taxt_rate' )</h4>
-    </div>
-
-    <div class="modal-body">
-      <div class="form-group">
-        {!! Form::label('name', __( 'tax_rate.name' ) . ':*') !!}
-          {!! Form::text('name', $tax_rate->name, ['class' => 'form-control', 'required', 'placeholder' => __( 'tax_rate.name' )]); !!}
+      <!-- Encabezado del modal -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">{{ __('tax_rate.edit_taxt_rate') }}</h4>
       </div>
 
-      <div class="form-group">
-        {!! Form::label('amount', __( 'tax_rate.rate' ) . ':*') !!} @show_tooltip(__('lang_v1.tax_exempt_help'))
-          {!! Form::text('amount', $tax_rate->amount, ['class' => 'form-control input_number', 'required']); !!}
-      </div>
-
-      <div class="form-group">
-        <div class="checkbox">
-          <label>
-             {!! Form::checkbox('for_tax_group', 1, !empty($tax_rate->for_tax_group), [ 'class' => 'input_icheck']); !!} @lang( 'lang_v1.for_tax_group_only' )
-          </label> @show_tooltip(__('lang_v1.for_tax_group_only_help'))
+      <div class="modal-body">
+        <!-- Campo para el nombre de la tasa de impuesto -->
+        <div class="form-group">
+          <label for="name">{{ __('tax_rate.name') }}:*</label>
+          <input type="text" name="name" id="name" class="form-control" required
+                 placeholder="{{ __('tax_rate.name') }}" value="{{ old('name', $tax_rate->name) }}">
         </div>
+
+        <!-- Campo para la tasa de impuesto -->
+        <div class="form-group">
+          <label for="amount">{{ __('tax_rate.rate') }}:*</label>
+          <span data-toggle="tooltip" title="{{ __('lang_v1.tax_exempt_help') }}">&#x1F6C8;</span>
+          <input type="text" name="amount" id="amount" class="form-control input_number" required
+                 value="{{ old('amount', $tax_rate->amount) }}">
+        </div>
+
+        <!-- Checkbox para indicar si es solo para grupos de impuestos -->
+        <div class="form-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="for_tax_group" value="1" class="input_icheck"
+                     {{ !empty($tax_rate->for_tax_group) ? 'checked' : '' }}>
+              {{ __('lang_v1.for_tax_group_only') }}
+            </label>
+            <span data-toggle="tooltip" title="{{ __('lang_v1.for_tax_group_only_help') }}">&#x1F6C8;</span>
+          </div>
+        </div>
+
       </div>
 
-    </div>
+      <!-- Botones de acción -->
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">{{ __('messages.update') }}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('messages.close') }}</button>
+      </div>
 
-    <div class="modal-footer">
-      <button type="submit" class="btn btn-primary">@lang( 'messages.update' )</button>
-      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-    </div>
-
-    {!! Form::close() !!}
+    </form>
 
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

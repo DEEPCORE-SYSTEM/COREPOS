@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\Util;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+
 
 class ClientController extends Controller
 {
@@ -78,7 +80,7 @@ class ClientController extends Controller
                             'msg' => __("lang_v1.added_success")
                         ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
             $output = ['success' => false,
                             'msg' => __("messages.something_went_wrong")

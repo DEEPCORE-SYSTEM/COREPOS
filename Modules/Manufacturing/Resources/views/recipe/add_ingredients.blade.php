@@ -38,6 +38,7 @@
                         <div class="col-md-10 col-md-offset-1">
                             <div class="form-group">
                                 <label for="search_product">@lang('manufacturing::lang.select_ingredient'):</label>
+                                
                                 <input type="text" name="search_product" id="search_product" class="form-control" placeholder="@lang('manufacturing::lang.select_ingredient')" autofocus>
                                 <input type="hidden" name="variation_id" value="{{ $variation->id }}">
                             </div>

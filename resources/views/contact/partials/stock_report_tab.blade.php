@@ -1,10 +1,17 @@
 <div class="row">
 	<div class="col-md-4">
-	    <div class="form-group">
-	        {!! Form::label('sr_location_id',  __('purchase.business_location') . ':') !!}
+    <div class="form-group">
+    <!-- Etiqueta para el campo de selección de ubicación de negocio -->
+    <label for="sr_location_id">@lang('purchase.business_location'):</label>
+    
+    <!-- Campo de selección (select) para elegir la ubicación de negocio -->
+    <select name="sr_location_id" id="sr_location_id" class="form-control select2" style="width:100%">
+        @foreach($business_locations as $id => $location)
+            <option value="{{ $id }}">{{ $location }}</option>
+        @endforeach
+    </select>
+</div>
 
-	        {!! Form::select('sr_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
-	    </div>
 	</div>
 </div>
 <div class="row">

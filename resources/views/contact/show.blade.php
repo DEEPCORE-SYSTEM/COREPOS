@@ -12,11 +12,11 @@
         <div class="col-md-4 col-xs-12 mt-15 pull-right">
     <!-- Dropdown para seleccionar un contacto -->
             <select name="contact_id" id="contact_id" class="form-control select2">
-            @foreach($contact_dropdown as $id => $name)
+                @foreach($contact_dropdown as $id => $name)
                 <option value="{{ $id }}" {{ $id == $contact->id ? 'selected' : '' }}>
                     {{ $name }}
                 </option>
-            @endforeach
+                @endforeach
             </select>
         </div>
 
@@ -128,7 +128,7 @@
                     </li>
 
                     @if( in_array($contact->type, ['customer', 'both']) && session('business.enable_rp'))
-                        <li class="
+                    <li class="
                             @if(!empty($view_type) &&  $view_type == 'reward_point')
                                 active
                             @else
@@ -173,7 +173,7 @@
                         @include('contact.partials.ledger_tab')
                     </div>
                     @if(in_array($contact->type, ['both', 'supplier']))
-                        <div class="tab-pane
+                    <div class="tab-pane
                             @if(!empty($view_type) &&  $view_type == 'purchase')
                                 active
                             @else
@@ -183,8 +183,9 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        {!! Form::label('purchase_list_filter_date_range', __('report.date_range') . ':') !!}
-                                        {!! Form::text('purchase_list_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+                                    <label for="purchase_list_filter_date_range">{{ __('report.date_range') }}:</label>
+                                    <input type="text" id="purchase_list_filter_date_range" name="purchase_list_filter_date_range" class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
+
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -198,11 +199,11 @@
                             @else
                                 ''
                             @endif" id="stock_report_tab">
-                            @include('contact.partials.stock_report_tab')
-                        </div>
+                        @include('contact.partials.stock_report_tab')
+                    </div>
                     @endif
                     @if(in_array($contact->type, ['both', 'customer']))
-                        <div class="tab-pane 
+                    <div class="tab-pane 
                             @if(!empty($view_type) &&  $view_type == 'sales')
                                 active
                             @else
@@ -231,8 +232,7 @@
                                 active
                             @else
                                 ''
-                            @endif"
-                        id="documents_and_notes_tab">
+                            @endif" id="documents_and_notes_tab">
                         @include('contact.partials.documents_and_notes_tab')
                     </div>
                     <div class="tab-pane 
@@ -244,7 +244,7 @@
                         <div id="contact_payments_div" style="height: 500px;overflow-y: scroll;"></div>
                     </div>
                     @if( in_array($contact->type, ['customer', 'both']) && session('business.enable_rp'))
-                        <div class="tab-pane
+                    <div class="tab-pane
                             @if(!empty($view_type) &&  $view_type == 'reward_point')
                                 active
                             @else
@@ -252,24 +252,23 @@
                             @endif"
                         id="reward_point_tab">
                         <br>
-                            <div class="row">
+                        <div class="row">
                             @if($reward_enabled)
                                 <div class="col-md-3">
                                     <div class="info-box bg-yellow">
                                         <span class="info-box-icon"><i class="fa fa-gift"></i></span>
 
-                                        <div class="info-box-content">
-                                          <span class="info-box-text">{{session('business.rp_name')}}</span>
-                                          <span class="info-box-number">{{$contact->total_rp ?? 0}}</span>
-                                        </div>
-                                        <!-- /.info-box-content -->
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{session('business.rp_name')}}</span>
+                                        <span class="info-box-number">{{$contact->total_rp ?? 0}}</span>
                                     </div>
+                                    <!-- /.info-box-content -->
                                 </div>
+                            </div>
                             @endif
                             <div class="col-md-12">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-striped" 
-                                    id="rp_log_table" width="100%">
+                                    <table class="table table-bordered table-striped" id="rp_log_table" width="100%">
                                         <thead>
                                             <tr>
                                                 <th>@lang('messages.date')</th>
@@ -282,25 +281,24 @@
                                 </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
                     @endif
 
-                    <div class="tab-pane"
-                        id="activities_tab">
+                    <div class="tab-pane" id="activities_tab">
                         @include('activity_log.activities')
                     </div>
 
                     @if(!empty($contact_view_tabs))
-                        @foreach($contact_view_tabs as $key => $tabs)
-                            @foreach ($tabs as $index => $value)
-                                @if(!empty($value['tab_content_path']))
-                                    @php
-                                        $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
-                                    @endphp
-                                    @include($value['tab_content_path'], $tab_data)
-                                @endif
-                            @endforeach
-                        @endforeach
+                    @foreach($contact_view_tabs as $key => $tabs)
+                    @foreach ($tabs as $index => $value)
+                    @if(!empty($value['tab_content_path']))
+                    @php
+                    $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
+                    @endphp
+                    @include($value['tab_content_path'], $tab_data)
+                    @endif
+                    @endforeach
+                    @endforeach
                     @endif
                 </div>
             </div>
@@ -334,13 +332,26 @@ $(document).ready( function(){
     rp_log_table = $('#rp_log_table').DataTable({
         processing: true,
         serverSide: true,
-        aaSorting: [[0, 'desc']],
+        aaSorting: [
+            [0, 'desc']
+        ],
         ajax: '/sells?customer_id={{ $contact->id }}&rewards_only=true',
-        columns: [
-            { data: 'transaction_date', name: 'transactions.transaction_date'  },
-            { data: 'invoice_no', name: 'transactions.invoice_no'},
-            { data: 'rp_earned', name: 'transactions.rp_earned'},
-            { data: 'rp_redeemed', name: 'transactions.rp_redeemed'},
+        columns: [{
+                data: 'transaction_date',
+                name: 'transactions.transaction_date'
+            },
+            {
+                data: 'invoice_no',
+                name: 'transactions.invoice_no'
+            },
+            {
+                data: 'rp_earned',
+                name: 'transactions.rp_earned'
+            },
+            {
+                data: 'rp_redeemed',
+                name: 'transactions.rp_redeemed'
+            },
         ]
     });
 
@@ -349,48 +360,73 @@ $(document).ready( function(){
         serverSide: true,
         'ajax': {
             url: "{{action('ContactController@getSupplierStockReport', [$contact->id])}}",
-            data: function (d) {
+            data: function(d) {
                 d.location_id = $('#sr_location_id').val();
             }
         },
-        columns: [
-            { data: 'product_name', name: 'p.name'  },
-            { data: 'sub_sku', name: 'v.sub_sku'  },
-            { data: 'purchase_quantity', name: 'purchase_quantity', searchable: false},
-            { data: 'total_quantity_sold', name: 'total_quantity_sold', searchable: false},
-            { data: 'total_quantity_returned', name: 'total_quantity_returned', searchable: false},
-            { data: 'current_stock', name: 'current_stock', searchable: false},
-            { data: 'stock_price', name: 'stock_price', searchable: false}
+        columns: [{
+                data: 'product_name',
+                name: 'p.name'
+            },
+            {
+                data: 'sub_sku',
+                name: 'v.sub_sku'
+            },
+            {
+                data: 'purchase_quantity',
+                name: 'purchase_quantity',
+                searchable: false
+            },
+            {
+                data: 'total_quantity_sold',
+                name: 'total_quantity_sold',
+                searchable: false
+            },
+            {
+                data: 'total_quantity_returned',
+                name: 'total_quantity_returned',
+                searchable: false
+            },
+            {
+                data: 'current_stock',
+                name: 'current_stock',
+                searchable: false
+            },
+            {
+                data: 'stock_price',
+                name: 'stock_price',
+                searchable: false
+            }
         ],
         fnDrawCallback: function(oSettings) {
             __currency_convert_recursively($('#supplier_stock_report_table'));
         },
     });
 
-    $('#sr_location_id').change( function() {
+    $('#sr_location_id').change(function() {
         supplier_stock_report_table.ajax.reload();
     });
 
-    $('#contact_id').change( function() {
+    $('#contact_id').change(function() {
         if ($(this).val()) {
             window.location = "{{url('/contacts')}}/" + $(this).val();
         }
     });
 
-    $('a[href="#sales_tab"]').on('shown.bs.tab', function (e) {
+    $('a[href="#sales_tab"]').on('shown.bs.tab', function(e) {
         sell_table.ajax.reload();
     });
 });
 
-$("input.transaction_types, input#show_payments").on('ifChanged', function (e) {
+$("input.transaction_types, input#show_payments").on('ifChanged', function(e) {
     get_contact_ledger();
 });
 
-$(document).one('shown.bs.tab', 'a[href="#payments_tab"]', function(){
+$(document).one('shown.bs.tab', 'a[href="#payments_tab"]', function() {
     get_contact_payments();
 })
 
-$(document).on('click', '#contact_payments_pagination a', function(e){
+$(document).on('click', '#contact_payments_pagination a', function(e) {
     e.preventDefault();
     get_contact_payments($(this).attr('href'));
 })
@@ -403,9 +439,9 @@ function get_contact_payments(url = null) {
         url: url,
         dataType: 'html',
         success: function(result) {
-            $('#contact_payments_div').fadeOut(400, function(){
+            $('#contact_payments_div').fadeOut(400, function() {
                 $('#contact_payments_div')
-                .html(result).fadeIn(400);
+                    .html(result).fadeIn(400);
             });
         },
     });
@@ -415,15 +451,18 @@ function get_contact_ledger() {
 
     var start_date = '';
     var end_date = '';
-    var transaction_types = $('input.transaction_types:checked').map(function(i, e) {return e.value}).toArray();
+    var transaction_types = $('input.transaction_types:checked').map(function(i, e) {
+        return e.value
+    }).toArray();
     var show_payments = $('input#show_payments').is(':checked');
 
-    if($('#ledger_date_range').val()) {
+    if ($('#ledger_date_range').val()) {
         start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
         end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
     }
     $.ajax({
-        url: '/contacts/ledger?contact_id={{$contact->id}}&start_date=' + start_date + '&transaction_types=' + transaction_types + '&show_payments=' + show_payments + '&end_date=' + end_date,
+        url: '/contacts/ledger?contact_id={{$contact->id}}&start_date=' + start_date + '&transaction_types=' +
+            transaction_types + '&show_payments=' + show_payments + '&end_date=' + end_date,
         dataType: 'html',
         success: function(result) {
             $('#contact_ledger_div')
@@ -432,8 +471,8 @@ function get_contact_ledger() {
 
             $('#ledger_table').DataTable({
                 searching: false,
-                ordering:false,
-                paging:false,
+                ordering: false,
+                paging: false,
                 dom: 't'
             });
         },
@@ -444,7 +483,8 @@ $(document).on('click', '#send_ledger', function() {
     var start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
     var end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
 
-    var url = "{{action('NotificationController@getTemplate', [$contact->id, 'send_ledger'])}}" + '?start_date=' + start_date + '&end_date=' + end_date;
+    var url = "{{action('NotificationController@getTemplate', [$contact->id, 'send_ledger'])}}" +
+        '?start_date=' + start_date + '&end_date=' + end_date;
 
     $.ajax({
         url: url,
@@ -464,40 +504,40 @@ $(document).on('click', '#print_ledger_pdf', function() {
     var url = $(this).data('href') + '&start_date=' + start_date + '&end_date=' + end_date;
     window.open(url);
 });
-
 </script>
 @include('sale_pos.partials.sale_table_javascript')
 <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
 @if(in_array($contact->type, ['both', 'supplier']))
-    <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
+<script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
 @endif
 
 <!-- document & note.js -->
 @include('documents_and_notes.document_and_note_js')
 @if(!empty($contact_view_tabs))
-    @foreach($contact_view_tabs as $key => $tabs)
-        @foreach ($tabs as $index => $value)
-            @if(!empty($value['module_js_path']))
-                @include($value['module_js_path'])
-            @endif
-        @endforeach
-    @endforeach
+@foreach($contact_view_tabs as $key => $tabs)
+@foreach ($tabs as $index => $value)
+@if(!empty($value['module_js_path']))
+@include($value['module_js_path'])
+@endif
+@endforeach
+@endforeach
 @endif
 
 <script type="text/javascript">
-    $(document).ready( function(){
-        $('#purchase_list_filter_date_range').daterangepicker(
-            dateRangeSettings,
-            function (start, end) {
-                $('#purchase_list_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
-               purchase_table.ajax.reload();
-            }
-        );
-        $('#purchase_list_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
-            $('#purchase_list_filter_date_range').val('');
+$(document).ready(function() {
+    $('#purchase_list_filter_date_range').daterangepicker(
+        dateRangeSettings,
+        function(start, end) {
+            $('#purchase_list_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
+                moment_date_format));
             purchase_table.ajax.reload();
-        });
+        }
+    );
+    $('#purchase_list_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
+        $('#purchase_list_filter_date_range').val('');
+        purchase_table.ajax.reload();
     });
+});
 </script>
 @include('sale_pos.partials.subscriptions_table_javascript', ['contact_id' => $contact->id])
 @endsection

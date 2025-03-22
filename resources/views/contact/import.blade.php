@@ -30,23 +30,30 @@
     <div class="row">
         <div class="col-sm-12">
             @component('components.widget', ['class' => 'box-primary'])
-                {!! Form::open(['url' => action('ContactController@postImportContacts'), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
-                    <div class="row">
-                        <div class="col-sm-6">
-                        <div class="col-sm-8">
-                            <div class="form-group">
-                                {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
-                                {!! Form::file('contacts_csv', ['accept'=> '.xls', 'required' => 'required']); !!}
-                              </div>
-                        </div>
-                        <div class="col-sm-4">
-                        <br>
-                            <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
-                        </div>
-                        </div>
-                    </div>
+            <form action="{{ action('ContactController@postImportContacts') }}" method="POST" enctype="multipart/form-data">
+    @csrf <!-- Token de seguridad para formularios POST en Laravel -->
 
-                {!! Form::close() !!}
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <!-- Etiqueta para el campo de carga de archivos -->
+                    <label for="contacts_csv">@lang('product.file_to_import'):</label>
+                    
+                    <!-- Campo de entrada para subir el archivo -->
+                    <input type="file" name="contacts_csv" id="contacts_csv" class="form-control" accept=".xls" required>
+                </div>
+            </div>
+            
+            <div class="col-sm-4">
+                <br>
+                <!-- Botón de envío -->
+                <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
+            </div>
+        </div>
+    </div>
+</form>
+
                 <br><br>
                 <div class="row">
                     <div class="col-sm-4">

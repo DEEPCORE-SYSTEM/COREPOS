@@ -125,16 +125,16 @@ class Subscription extends Model
     public static function end_date($business_id)
     {
         $date_today = Carbon::today();
-
+    
         $subscription = Subscription::where('business_id', $business_id)
                             ->approved()
                             ->select(DB::raw("MAX(end_date) as end_date"))
                             ->first();
-
+    
         if (empty($subscription->end_date)) {
             return $date_today;
         } else {
-            return $subscription->end_date->addDay();
+            return Carbon::parse($subscription->end_date)->addDay();
         }
     }
 

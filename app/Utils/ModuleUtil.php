@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Composer\Semver\Comparator;
 use Modules\Ecommerce\Entities\EcomApiSetting;
+use Carbon\Carbon;
 
 class ModuleUtil extends Util
 {
@@ -296,8 +297,8 @@ class ModuleUtil extends Util
             }
 
             //Start
-            $start_dt = $package->start_date->toDateTimeString();
-            $end_dt = $package->end_date->endOfDay()->toDateTimeString();
+            $start_dt = Carbon::parse($package->start_date)->toDateTimeString();
+            $end_dt = Carbon::parse($package->end_date)->endOfDay()->toDateTimeString();
 
             if ($type == 'locations') {
                 //Check for available location and max number allowed.

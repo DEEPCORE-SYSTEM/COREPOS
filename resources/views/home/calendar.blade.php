@@ -16,34 +16,50 @@
                 <div class="box-body">
                     <div class="row">
                         @if(!empty($users))
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    {!! Form::label('user_id', __('role.user') . ':') !!}
-                                    {!! Form::select('user_id', $users, auth()->user()->id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
-                                </div>
-                            </div>
-                        @endif
                         <div class="col-md-12">
                             <div class="form-group">
-                                {!! Form::label('location_id', __('sale.location') . ':') !!}
-                                {!! Form::select('location_id', $all_locations, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+                                <label for="user_id">{{ __('role.user') }}:</label>
+                                <select name="user_id" id="user_id" class="form-control select2">
+                                    <option value="">{{ __('messages.please_select') }}</option>
+                                    @foreach($users as $id => $name)
+                                    <option value="{{ $id }}" {{ auth()->user()->id == $id ? 'selected' : '' }}>
+                                        {{ $name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
+                        @endif
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="location_id">{{ __('sale.location') }}:</label>
+                                <select name="location_id" id="location_id" class="form-control select2">
+                                    <option value="">{{ __('messages.please_select') }}</option>
+                                    @foreach($all_locations as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="clearfix"></div>
                         @foreach($event_types as $key => $value)
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>
-                                      {!! Form::checkbox('events', $key, true, 
-                                      [ 'class' => 'input-icheck event_check']); !!} <span style="color: {{$value['color']}}">{{ $value['label'] }}</span>
-                                    </label>
+                                    <input type="checkbox" name="events[]" value="{{ $key }}"
+                                        class="input-icheck event_check" checked>
+                                    <span style="color: {{ $value['color'] }}">{{ $value['label'] }}</span>
+                                </label>
+
                             </div>
                         </div>
                         @endforeach
+
                         @if(Module::has('Essentials'))
                         <div class="col-md-12">
-                            <button class="btn btn-block btn-success btn-modal" 
-                                data-href="{{action('\Modules\Essentials\Http\Controllers\ToDoController@create')}}?from_calendar=true" 
+                            <button class="btn btn-block btn-success btn-modal"
+                                data-href="{{action('\Modules\Essentials\Http\Controllers\ToDoController@create')}}?from_calendar=true"
                                 data-container="#task_modal">
                                 <i class="fa fa-plus"></i> @lang( 'essentials::lang.add_to_do' )</a>
                             </button>
