@@ -4,18 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Utils\Util;
-use DataTables;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class SalesCommissionAgentController extends Controller
 {
     /**
-       * Constructor
-       *
-       * @param Util $commonUtil
-       * @return void
-       */
+     * Constructor
+     *
+     * @return void
+     */
     public function __construct(Util $commonUtil)
     {
         $this->commonUtil = $commonUtil;
@@ -28,7 +27,7 @@ class SalesCommissionAgentController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
+        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -36,10 +35,10 @@ class SalesCommissionAgentController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $users = User::where('business_id', $business_id)
-                        ->where('is_cmmsn_agnt', 1)
-                        ->select(['id',
-                            DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"),
-                            'email', 'contact_no', 'address', 'cmmsn_percent']);
+                ->where('is_cmmsn_agnt', 1)
+                ->select(['id',
+                    DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"),
+                    'email', 'contact_no', 'address', 'cmmsn_percent']);
 
             return Datatables::of($users)
                 ->addColumn(
@@ -70,7 +69,7 @@ class SalesCommissionAgentController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('user.create')) {
+        if (! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -80,12 +79,11 @@ class SalesCommissionAgentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('user.create')) {
+        if (! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -98,16 +96,16 @@ class SalesCommissionAgentController extends Controller
             $input['is_cmmsn_agnt'] = 1;
 
             $user = User::create($input);
-            
+
             $output = ['success' => true,
-                          'msg' => __("lang_v1.commission_agent_added_success")
-                      ];
+                'msg' => __('lang_v1.commission_agent_added_success'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                           'msg' => __("messages.something_went_wrong")
-                       ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return $output;
@@ -121,26 +119,25 @@ class SalesCommissionAgentController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('user.update')) {
+        if (! auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
 
         $user = User::findOrFail($id);
 
         return view('sales_commission_agent.edit')
-                    ->with(compact('user'));
+            ->with(compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('user.update')) {
+        if (! auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -151,20 +148,20 @@ class SalesCommissionAgentController extends Controller
                 $business_id = $request->session()->get('user.business_id');
 
                 $user = User::where('id', $id)
-                            ->where('business_id', $business_id)
-                            ->where('is_cmmsn_agnt', 1)
-                            ->first();
+                    ->where('business_id', $business_id)
+                    ->where('is_cmmsn_agnt', 1)
+                    ->first();
                 $user->update($input);
 
                 $output = ['success' => true,
-                            'msg' => __("lang_v1.commission_agent_updated_success")
-                            ];
+                    'msg' => __('lang_v1.commission_agent_updated_success'),
+                ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;
@@ -179,7 +176,7 @@ class SalesCommissionAgentController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('user.delete')) {
+        if (! auth()->user()->can('user.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -193,14 +190,14 @@ class SalesCommissionAgentController extends Controller
                     ->delete();
 
                 $output = ['success' => true,
-                                'msg' => __("lang_v1.commission_agent_deleted_success")
-                                ];
+                    'msg' => __('lang_v1.commission_agent_deleted_success'),
+                ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;

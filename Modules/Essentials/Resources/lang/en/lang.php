@@ -1,4 +1,5 @@
 <?php
+
 return [
     'essentials' => 'Essentials',
     'document' => 'Document',

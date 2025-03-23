@@ -26,5 +26,5 @@ return [
     'stock_adjustment_added_successfully' => 'Stock adjustment added successfully',
     'search_products' => 'Search Products',
     'delete_success' => 'Stock adjustment deleted successfully',
-    'view_details' => 'View stock adjustment details'
+    'view_details' => 'View stock adjustment details',
 ];

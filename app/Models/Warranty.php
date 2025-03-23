@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Models;
-use Carbon\Carbon;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Warranty extends Model
@@ -17,13 +17,13 @@ class Warranty extends Model
     public static function forDropdown($business_id)
     {
         $warranties = Warranty::where('business_id', $business_id)
-                            ->get();
+            ->get();
         $dropdown = [];
 
         foreach ($warranties as $warranty) {
-            $dropdown[$warranty->id] = $warranty->name . ' (' . $warranty->duration . ' ' . __('lang_v1.' . $warranty->duration_type) . ')';
+            $dropdown[$warranty->id] = $warranty->name.' ('.$warranty->duration.' '.__('lang_v1.'.$warranty->duration_type).')';
         }
-        
+
         return $dropdown;
     }
 
@@ -34,7 +34,8 @@ class Warranty extends Model
      */
     public function getDisplayNameAttribute()
     {
-        $name = $this->name . ' (' . $this->duration . ' ' . __('lang_v1.' . $this->duration_type) . ')';
+        $name = $this->name.' ('.$this->duration.' '.__('lang_v1.'.$this->duration_type).')';
+
         return $name;
     }
 

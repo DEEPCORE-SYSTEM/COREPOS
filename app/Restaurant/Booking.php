@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-    //Allowed booking statuses ('waiting', 'booked', 'completed', 'cancelled')
+    // Allowed booking statuses ('waiting', 'booked', 'completed', 'cancelled')
 
     /**
      * The attributes that aren't mass assignable.
@@ -59,7 +59,7 @@ class Booking extends Model
             'booking_end' => $input['booking_end'],
             'created_by' => $input['created_by'],
             'booking_status' => isset($input['booking_status']) ? $input['booking_status'] : 'booked',
-            'booking_note' => $input['booking_note']
+            'booking_note' => $input['booking_note'],
         ];
         $booking = Booking::create($data);
 

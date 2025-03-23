@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateBusinessLocationsTable extends Migration
 {
@@ -29,7 +29,7 @@ class CreateBusinessLocationsTable extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            //Indexing
+            // Indexing
             $table->index('business_id');
         });
     }

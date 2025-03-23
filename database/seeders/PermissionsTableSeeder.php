@@ -2,7 +2,6 @@
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Permission;
 
 class PermissionsTableSeeder extends Seeder
@@ -82,7 +81,7 @@ class PermissionsTableSeeder extends Seeder
             ['name' => 'access_all_locations'],
             ['name' => 'dashboard.data'],
 
-              // Adding permissions for ToDo
+            // Adding permissions for ToDo
             ['name' => 'todo.view'],
             ['name' => 'todo.create'],
             ['name' => 'todo.update'],

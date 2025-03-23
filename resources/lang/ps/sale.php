@@ -69,5 +69,5 @@ return [
     'edit_sale' => 'د خرڅولو سمول',
     'shipping' => 'لېږدول',
     'shipping_details' => 'د لیږد تفصیلات',
-    'shipping_charges' => 'د لیږد مصاریف'
+    'shipping_charges' => 'د لیږد مصاریف',
 ];

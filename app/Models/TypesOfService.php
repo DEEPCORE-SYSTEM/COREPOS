@@ -19,20 +19,19 @@ class TypesOfService extends Model
      * @var array
      */
     protected $casts = [
-        'location_price_group' => 'array'
+        'location_price_group' => 'array',
     ];
 
     /**
      * Return list of types of service for a business
      *
-     * @param int $business_id
-     *
+     * @param  int  $business_id
      * @return array
      */
     public static function forDropdown($business_id)
     {
         $types_of_service = TypesOfService::where('business_id', $business_id)
-                    ->pluck('name', 'id');
+            ->pluck('name', 'id');
 
         return $types_of_service;
     }

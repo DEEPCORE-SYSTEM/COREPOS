@@ -29,7 +29,7 @@ class CreateVariationLocationDetailsTable extends Migration
 
             $table->timestamps();
 
-            //Indexing
+            // Indexing
             $table->index('product_id');
             $table->index('product_variation_id');
             $table->index('variation_id');

@@ -30,7 +30,7 @@ return [
     'close_register' => ' راجستر وتړئ',
     'total_card_slips' => 'د بانکي کارت ټول اسناد',
     'total_cheques' => 'ټول چیکونه',
-    'closing_note' =>'تړل یادداشت',
+    'closing_note' => 'تړل یادداشت',
     'close_success' => 'راجیستر په بریالیتوب سره وتړل شو',
     'open' => 'خلاص کړئ',
     'close' => 'وتړئ',

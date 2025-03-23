@@ -35,7 +35,7 @@ return [
     'header_text' => 'Teks judul',
     'invoice_no_prefix' => 'Nomor faktur. label',
     'invoice_heading' => 'Judul faktur',
-    'sub_total_label' =>'Label subtotal',
+    'sub_total_label' => 'Label subtotal',
     'discount_label' => 'Label diskon',
     'tax_label' => 'Label pajak',
     'total_label' => 'Label total',

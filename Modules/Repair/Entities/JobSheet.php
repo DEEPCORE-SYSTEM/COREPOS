@@ -2,8 +2,8 @@
 
 namespace Modules\Repair\Entities;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Variation;
+use Illuminate\Database\Eloquent\Model;
 
 class JobSheet extends Model
 {
@@ -13,7 +13,7 @@ class JobSheet extends Model
      * @var array
      */
     protected $guarded = ['id'];
-    
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -23,7 +23,7 @@ class JobSheet extends Model
         'checklist' => 'array',
         'parts' => 'array',
     ];
-    
+
     /**
      * The table associated with the model.
      *
@@ -38,7 +38,7 @@ class JobSheet extends Model
     {
         return $this->belongsTo(\App\Models\Contact::class, 'contact_id');
     }
-    
+
     /**
      * user added job sheet.
      */
@@ -111,17 +111,17 @@ class JobSheet extends Model
     public function getPartsUsed()
     {
         $parts = [];
-        if (!empty($this->parts)) {
+        if (! empty($this->parts)) {
             $variation_ids = [];
             $job_sheet_parts = $this->parts;
 
-            foreach($job_sheet_parts as $key => $value) {
+            foreach ($job_sheet_parts as $key => $value) {
                 $variation_ids[] = $key;
-            } 
+            }
 
             $variations = Variation::whereIn('id', $variation_ids)
-                                ->with(['product_variation', 'product', 'product.unit'])  
-                                ->get();
+                ->with(['product_variation', 'product', 'product.unit'])
+                ->get();
 
             foreach ($variations as $variation) {
                 $parts[$variation->id]['variation_id'] = $variation->id;

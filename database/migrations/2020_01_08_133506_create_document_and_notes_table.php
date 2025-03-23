@@ -16,7 +16,7 @@ class CreateDocumentAndNotesTable extends Migration
         Schema::create('document_and_notes', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('business_id')->index();
-            
+
             $table->integer('notable_id')->index();
             $table->string('notable_type');
 

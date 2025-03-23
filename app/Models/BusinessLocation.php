@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\SellingPriceGroup;
-use App\Models\Variation;
+use Illuminate\Support\Facades\DB;
 
 class BusinessLocation extends Model
 {
-
     /**
      * The attributes that aren't mass assignable.
      *
@@ -23,16 +20,15 @@ class BusinessLocation extends Model
      * @var array
      */
     protected $casts = [
-        'featured_products' => 'array'
+        'featured_products' => 'array',
     ];
 
     /**
      * Return list of locations for a business
      *
-     * @param int $business_id
-     * @param boolean $show_all = false
-     * @param array $receipt_printer_type_attribute =
-     *
+     * @param  int  $business_id
+     * @param  bool  $show_all  = false
+     * @param  array  $receipt_printer_type_attribute  =
      * @return array
      */
     public static function forDropdown($business_id, $show_all = false, $receipt_printer_type_attribute = false, $append_id = true, $check_permission = true)
@@ -45,7 +41,6 @@ class BusinessLocation extends Model
                 $query->whereIn('id', $permitted_locations);
             }
         }
-        
 
         if ($append_id) {
             $query->select(
@@ -73,15 +68,16 @@ class BusinessLocation extends Model
                 $default_payment_accounts = json_decode($item->default_payment_accounts, true);
                 $default_payment_accounts['advance'] = [
                     'is_enabled' => 1,
-                    'account' => null
+                    'account' => null,
                 ];
+
                 return [$item->id => [
-                            'data-receipt_printer_type' => $item->receipt_printer_type,
-                            'data-default_price_group' => !empty($item->selling_price_group_id) && array_key_exists($item->selling_price_group_id, $price_groups) ? $item->selling_price_group_id : null,
-                            'data-default_payment_accounts' => json_encode($default_payment_accounts),
-                            'data-default_invoice_scheme_id' => $item->invoice_scheme_id
-                        ]
-                    ];
+                    'data-receipt_printer_type' => $item->receipt_printer_type,
+                    'data-default_price_group' => ! empty($item->selling_price_group_id) && array_key_exists($item->selling_price_group_id, $price_groups) ? $item->selling_price_group_id : null,
+                    'data-default_payment_accounts' => json_encode($default_payment_accounts),
+                    'data-default_invoice_scheme_id' => $item->invoice_scheme_id,
+                ],
+                ];
             })->all();
 
             return ['locations' => $locations, 'attributes' => $attributes];
@@ -98,7 +94,7 @@ class BusinessLocation extends Model
     /**
      * Scope a query to only include active location.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
@@ -118,11 +114,11 @@ class BusinessLocation extends Model
             return [];
         }
         $query = Variation::whereIn('variations.id', $this->featured_products)
-                                    ->join('product_locations as pl', 'pl.product_id', '=', 'variations.product_id')
-                                    ->join('products as p', 'p.id', '=', 'variations.product_id')
-                                    ->where('p.not_for_selling', 0)
-                                    ->with(['product_variation', 'product', 'media'])
-                                    ->select('variations.*');
+            ->join('product_locations as pl', 'pl.product_id', '=', 'variations.product_id')
+            ->join('products as p', 'p.id', '=', 'variations.product_id')
+            ->where('p.not_for_selling', 0)
+            ->with(['product_variation', 'product', 'media'])
+            ->select('variations.*');
 
         if ($check_location) {
             $query->where('pl.location_id', $this->id);
@@ -133,30 +129,32 @@ class BusinessLocation extends Model
             foreach ($featured_products as $featured_product) {
                 $array[$featured_product->id] = $featured_product->full_name;
             }
+
             return $array;
         }
+
         return $featured_products;
     }
 
-    public function getLocationAddressAttribute() 
+    public function getLocationAddressAttribute()
     {
         $location = $this;
         $address_line_1 = [];
-        if (!empty($location->landmark)) {
+        if (! empty($location->landmark)) {
             $address_line_1[] = $location->landmark;
         }
-        if (!empty($location->city)) {
+        if (! empty($location->city)) {
             $address_line_1[] = $location->city;
         }
-        if (!empty($location->state)) {
+        if (! empty($location->state)) {
             $address_line_1[] = $location->state;
         }
         $address = implode(', ', $address_line_1);
         $address_line_2 = [];
-        if (!empty($location->country)) {
+        if (! empty($location->country)) {
             $address_line_2[] = $location->country;
         }
-        if (!empty($location->zip_code)) {
+        if (! empty($location->zip_code)) {
             $address_line_2[] = $location->zip_code;
         }
         $address .= '<br>';

@@ -1,21 +1,16 @@
 <?php
 
 namespace App\Exceptions;
-     
-use Throwable;
-use Illuminate\Auth\AuthenticationException;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-
-use Illuminate\Support\Facades\Mail;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
-use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
-
-use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
+use App\Mail\ExceptionOccured;
 use Exception;
-use App\Mail\ExceptionOccured; // Asegúrate de importar la clase del Mailable
-
-
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
+use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
+use Throwable; // Asegúrate de importar la clase del Mailable
 
 class Handler extends ExceptionHandler
 {
@@ -68,7 +63,6 @@ class Handler extends ExceptionHandler
      * Convert an authentication exception into an unauthenticated response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
      * @return \Illuminate\Http\Response
      */
     protected function unauthenticated($request, AuthenticationException $exception)
@@ -83,23 +77,23 @@ class Handler extends ExceptionHandler
     /**
      * Sends the exception email in demo server
      *
-     * @param $exception
+     * @param  $exception
      */
     public function sendEmail(Throwable $e)
     {
         try {
             // Convertimos la excepción en un FlattenException
             $e = FlattenException::createFromThrowable($e);
-    
+
             // Usamos HtmlErrorRenderer en lugar de SymfonyExceptionHandler
-            $renderer = new HtmlErrorRenderer();
+            $renderer = new HtmlErrorRenderer;
             $html = $renderer->render($e)->getAsString();
-    
+
             // Obtener el correo desde la configuración
             $email = config('mail.username');
-    
+
             // Enviar el correo si la configuración está definida
-            if (!empty($email)) {
+            if (! empty($email)) {
                 Mail::to($email)->send(new ExceptionOccured($html));
             }
         } catch (Exception $ex) {

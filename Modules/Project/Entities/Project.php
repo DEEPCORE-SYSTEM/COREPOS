@@ -17,24 +17,25 @@ class Project extends Model
     protected $table = 'pjt_projects';
 
     /**
-    * The attributes that aren't mass assignable.
-    *
-    * @var array
-    */
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
     protected $guarded = ['id'];
 
     /**
-    * The attributes that should be cast to native types.
-    *
-    * @var array
-    */
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
     protected $casts = [
         'settings' => 'array',
     ];
-    
+
     protected static $logUnguarded = true;
+
     protected static $logOnlyDirty = true;
-    
+
     /**
      * The member that belongs to the project.
      */
@@ -50,6 +51,7 @@ class Project extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by');
     }
+
     /**
      * Return the project lead
      */
@@ -73,7 +75,7 @@ class Project extends Model
     {
         return $this->hasMany('Modules\Project\Entities\ProjectTask');
     }
-    
+
     /**
      * Get all of the projects's notes & documents.
      */
@@ -104,12 +106,12 @@ class Project extends Model
     public static function statusDropdown()
     {
         $status = [
-                'not_started' => __('project::lang.not_started'),
-                'in_progress' =>  __('project::lang.in_progress'),
-                'on_hold' => __('project::lang.on_hold'),
-                'cancelled' => __('project::lang.cancelled'),
-                'completed' => __('project::lang.completed')
-            ];
+            'not_started' => __('project::lang.not_started'),
+            'in_progress' => __('project::lang.in_progress'),
+            'on_hold' => __('project::lang.on_hold'),
+            'cancelled' => __('project::lang.cancelled'),
+            'completed' => __('project::lang.completed'),
+        ];
 
         return $status;
     }
@@ -122,7 +124,7 @@ class Project extends Model
         $projects = Project::where('business_id', $business_id);
 
         // if user_id not empty get assigned project for filter
-        if (!empty($user_id)) {
+        if (! empty($user_id)) {
             $projects->whereHas('members', function ($q) use ($user_id) {
                 $q->where('user_id', $user_id);
             });

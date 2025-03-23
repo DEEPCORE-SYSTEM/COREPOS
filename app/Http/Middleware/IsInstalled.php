@@ -1,31 +1,29 @@
 <?php
 
 namespace App\Http\Middleware;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request; 
+
 use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class IsInstalled
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
-    //public function handle($request, Closure $next)
+    // public function handle($request, Closure $next)
     public function handle(Request $request, Closure $next)
     {
         $envPath = base_path('.env');
-        if (!file_exists($envPath)) {
-            return redirect(url('/') . '/install');
+        if (! file_exists($envPath)) {
+            return redirect(url('/').'/install');
         } else {
             // if (!Cache::has('callback')) {
             //     $ch = curl_init(); $request_url = base64_decode('aHR0cHM6Ly9sLnVsdGltYXRlZm9zdGVycy5jb20vYXBpL3R5cGVfMw=='); $callback = 0;
 
-            //     $curlConfig = [CURLOPT_URL => $request_url, 
+            //     $curlConfig = [CURLOPT_URL => $request_url,
             //         CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_SSL_VERIFYHOST => false, CURLOPT_SSL_VERIFYPEER => false,
             //         CURLOPT_POSTFIELDS => [
             //             'url' => url("/"),
@@ -48,7 +46,7 @@ class IsInstalled
             //     $c = Cache::get('callback');if($c === 'r'){die();}elseif (!$c) {die();}
             // }
         }
-        
+
         return $next($request);
     }
 }

@@ -17,7 +17,7 @@ return [
     'supplier' => 'Pemasok',
     'customer' => 'Pelanggan',
     'purchase' => 'Pembelian & Penyesuaian Stok',
-    'report' =>'Laporan',
+    'report' => 'Laporan',
 
     'user.view' => 'Lihat pengguna',
     'user.create' => 'Tambah pengguna',
@@ -86,7 +86,7 @@ return [
     'brand' => 'Merek',
     'tax_rate' => 'Tarif Pajak',
     'unit' => 'Satuan',
-    'access_locations' =>'Akses lokasi',
+    'access_locations' => 'Akses lokasi',
     'all_locations' => 'Semua lokasi',
     'dashboard' => 'Beranda',
     'dashboard.data' => 'Lihat data Beranda',

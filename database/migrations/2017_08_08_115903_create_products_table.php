@@ -38,7 +38,7 @@ class CreateProductsTable extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
 
-            //Indexing
+            // Indexing
             $table->index('name');
             $table->index('business_id');
             $table->index('unit_id');

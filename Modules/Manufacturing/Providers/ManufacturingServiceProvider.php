@@ -27,16 +27,16 @@ class ManufacturingServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
-        //TODO:Remove
+        // TODO:Remove
         View::composer('manufacturing::layouts.partials.sidebar', function ($view) {
             if (auth()->user()->can('superadmin')) {
                 $__is_mfg_enabled = true;
             } else {
                 $business_id = session()->get('user.business_id');
-                $module_util = new ModuleUtil();
-                $__is_mfg_enabled = (boolean)$module_util->hasThePermissionInSubscription($business_id, 'manufacturing_module', 'superadmin_package');
+                $module_util = new ModuleUtil;
+                $__is_mfg_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'manufacturing_module', 'superadmin_package');
             }
 
             $view->with(compact('__is_mfg_enabled'));
@@ -81,11 +81,11 @@ class ManufacturingServiceProvider extends ServiceProvider
         $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/manufacturing';
+            return $path.'/modules/manufacturing';
         }, \Config::get('view.paths')), [$sourcePath]), 'manufacturing');
     }
 
@@ -101,7 +101,7 @@ class ManufacturingServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'manufacturing');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'manufacturing');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'manufacturing');
         }
     }
 
@@ -112,9 +112,9 @@ class ManufacturingServiceProvider extends ServiceProvider
      */
     public function registerFactories()
     {
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             Factory::guessFactoryNamesUsing(function ($modelName) {
-                return 'Modules\\Manufacturing\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
+                return 'Modules\\Manufacturing\\Database\\Factories\\'.class_basename($modelName).'Factory';
             });
         }
     }

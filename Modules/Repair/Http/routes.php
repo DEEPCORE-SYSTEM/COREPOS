@@ -1,4 +1,5 @@
 <?php
+
 Route::get('/repair-status', 'Modules\Repair\Http\Controllers\CustomerRepairStatusController@index')->name('repair-status');
 Route::post('/post-repair-status', 'Modules\Repair\Http\Controllers\CustomerRepairStatusController@postRepairStatus')->name('post-repair-status');
 Route::group(['middleware' => ['web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu'], 'prefix' => 'repair', 'namespace' => 'Modules\Repair\Http\Controllers'], function () {
@@ -9,7 +10,7 @@ Route::group(['middleware' => ['web', 'authh', 'auth', 'SetSessionData', 'langua
     Route::get('print-repair/{transaction_id}/customer-copy', 'RepairController@printCustomerCopy')->name('repair.customerCopy');
     Route::resource('/repair', 'RepairController')->except(['create', 'edit']);
     Route::resource('/status', 'RepairStatusController', ['except' => ['show']]);
-    
+
     Route::resource('/repair-settings', 'RepairSettingsController', ['only' => ['index', 'store']]);
 
     Route::get('/install', 'InstallController@index');

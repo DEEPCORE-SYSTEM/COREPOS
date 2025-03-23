@@ -2,9 +2,8 @@
 
 namespace App\Events;
 
-use Illuminate\Queue\SerializesModels;
-
 use App\Models\TransactionPayment;
+use Illuminate\Queue\SerializesModels;
 
 class TransactionPaymentUpdated
 {

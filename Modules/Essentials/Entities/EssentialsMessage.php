@@ -14,8 +14,8 @@ class EssentialsMessage extends Model
     protected $guarded = ['id'];
 
     /**
-    * Get sender.
-    */
+     * Get sender.
+     */
     public function sender()
     {
         return $this->belongsTo(\App\Models\User::class, 'user_id');

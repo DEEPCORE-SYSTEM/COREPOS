@@ -18,7 +18,7 @@ class AddUnitPriceBeforeDiscountColumnToTransactionSellLineTable extends Migrati
             $table->decimal('unit_price_before_discount', 22, 4)->after('quantity')->default(0);
         });
 
-        //Set all unit_price_before_discount value same as unit_price value
+        // Set all unit_price_before_discount value same as unit_price value
         $sell_lines = TransactionSellLine::get();
         foreach ($sell_lines as $sell_line) {
             $sell_line->unit_price_before_discount = $sell_line->unit_price;

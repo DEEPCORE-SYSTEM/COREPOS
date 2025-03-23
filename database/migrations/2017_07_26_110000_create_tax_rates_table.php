@@ -18,10 +18,10 @@ class CreateTaxRatesTable extends Migration
             $table->integer('business_id')->unsigned();
             $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');
             $table->string('name');
-            //$table->enum('calculation_type', ['fixed', 'percentage']);
+            // $table->enum('calculation_type', ['fixed', 'percentage']);
             $table->float('amount', 22, 4);
             $table->boolean('is_tax_group')->default('0');
-            //$table->enum('rounding_type', ['up', 'down', 'normal']);
+            // $table->enum('rounding_type', ['up', 'down', 'normal']);
             $table->integer('created_by')->unsigned();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->softDeletes();

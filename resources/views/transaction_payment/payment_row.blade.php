@@ -70,106 +70,109 @@
                         <input type="hidden" name="advance_balance" id="advance_balance"
                             value="{{ $transaction->contact->balance }}"
                             data-error-msg="{{ __('lang_v1.required_advance_balance_not_available') }}">
+                        @endif
+                    </div>
+                </div>
 
-                        <div class="row payment_row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="amount">{{ __('sale.amount') }}:*</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="fas fa-money-bill-alt"></i>
-                                        </span>
-                                        <input type="text" name="amount" class="form-control input_number" required
-                                            placeholder="Amount" value="{{ num_format($payment_line->amount) }}"
-                                            data-rule-max-value="{{ num_format($payment_line->amount) }}"
-                                            data-msg-max-value="{{ __('lang_v1.max_amount_to_be_paid_is', ['amount' => $amount_formated]) }}">
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="paid_on">{{ __('lang_v1.paid_on') }}:*</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="fa fa-calendar"></i>
-                                        </span>
-                                        <input type="text" name="paid_on" class="form-control" readonly required
-                                            value="{{ format_datetime($payment_line->paid_on) }}">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="method">{{ __('purchase.payment_method') }}:*</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="fas fa-money-bill-alt"></i>
-                                        </span>
-                                        <select name="method" class="form-control select2 payment_types_dropdown"
-                                            required style="width:100%;">
-                                            @foreach($payment_types as $key => $type)
-                                            <option value="{{ $key }}"
-                                                {{ $payment_line->method == $key ? 'selected' : '' }}>{{ $type }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if(!empty($accounts))
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="account_id">{{ __('lang_v1.payment_account') }}:</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="fas fa-money-bill-alt"></i>
-                                        </span>
-                                        <select name="account_id" id="account_id" class="form-control select2"
-                                            style="width:100%;">
-                                            @foreach($accounts as $key => $account)
-                                            <option value="{{ $key }}"
-                                                {{ !empty($payment_line->account_id) && $payment_line->account_id == $key ? 'selected' : '' }}>
-                                                {{ $account }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="document">{{ __('purchase.attach_document') }}:</label>
-                                    <input type="file" name="document"
-                                        accept="{{ implode(',', array_keys(config('constants.document_upload_mimes_types'))) }}">
-                                    <p class="help-block">
-                                        @includeIf('components.document_help_text')
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="clearfix"></div>
-
-                            @include('transaction_payment.payment_type_details')
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="note">{{ __('lang_v1.payment_note') }}:</label>
-                                    <textarea name="note" class="form-control"
-                                        rows="3">{{ $payment_line->note }}</textarea>
-                                </div>
+                <div class="row payment_row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="amount">{{ __('sale.amount') }}:*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fas fa-money-bill-alt"></i>
+                                </span>
+                                <input type="text" name="amount" class="form-control input_number" required
+                                    placeholder="Amount" value="{{ num_format($payment_line->amount) }}"
+                                    data-rule-max-value="{{ num_format($payment_line->amount) }}"
+                                    data-msg-max-value="{{ __('lang_v1.max_amount_to_be_paid_is', ['amount' => $amount_formated]) }}">
                             </div>
                         </div>
+                    </div>
 
-
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close'
-                                )</button>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="paid_on">{{ __('lang_v1.paid_on') }}:*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                <input type="text" name="paid_on" class="form-control" readonly required
+                                    value="{{ format_datetime($payment_line->paid_on) }}">
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="method">{{ __('purchase.payment_method') }}:*</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fas fa-money-bill-alt"></i>
+                                </span>
+                                <select name="method" class="form-control select2 payment_types_dropdown" required
+                                    style="width:100%;">
+                                    @foreach($payment_types as $key => $type)
+                                    <option value="{{ $key }}" {{ $payment_line->method == $key ? 'selected' : '' }}>
+                                        {{ $type }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                   
+
+                    @if(!empty($accounts))
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="account_id">{{ __('lang_v1.payment_account') }}:</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fas fa-money-bill-alt"></i>
+                                </span>
+                                <select name="account_id" id="account_id" class="form-control select2"
+                                    style="width:100%;">
+                                    @foreach($accounts as $key => $account)
+                                    <option value="{{ $key }}"
+                                        {{ !empty($payment_line->account_id) && $payment_line->account_id == $key ? 'selected' : '' }}>
+                                        {{ $account }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="document">{{ __('purchase.attach_document') }}:</label>
+                            <input type="file" name="document"
+                                accept="{{ implode(',', array_keys(config('constants.document_upload_mimes_types'))) }}">
+                            <p class="help-block">
+                                @includeIf('components.document_help_text')
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    @include('transaction_payment.payment_type_details')
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="note">{{ __('lang_v1.payment_note') }}:</label>
+                            <textarea name="note" class="form-control" rows="3">{{ $payment_line->note }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close')</button>
+                </div>
 
         </form>
 

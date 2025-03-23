@@ -58,7 +58,7 @@ $custom_labels = json_decode(session('business.custom_labels'), true);
                     <label for="ref_no">{{ __('purchase.ref_no') }}:</label>
 
                     @show_tooltip(__('lang_v1.leave_empty_to_autogenerate'))
-                    <input type="text" name="ref_no" class="form-control">
+                    <input type="text" name="ref_no" id="ref_no" class="form-control">
 
                 </div>
             </div>
@@ -135,7 +135,7 @@ $custom_labels = json_decode(session('business.custom_labels'), true);
                         <span class="input-group-addon">
                             <i class="fa fa-info"></i>
                         </span>
-                        <input type="number" name="exchange_rate" value="{{ $currency_details->p_exchange_rate }}"
+                        <input type="number" name="exchange_rate" id="exchange_rate" value="{{ $currency_details->p_exchange_rate }}"
                             class="form-control" required step="0.001">
 
                     </div>

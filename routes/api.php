@@ -1,14 +1,13 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
 use Laravel\Passport\Http\Controllers\AuthorizationController;
 use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
 use Laravel\Passport\Http\Controllers\ClientController;
 use Laravel\Passport\Http\Controllers\PersonalAccessTokenController;
 use Laravel\Passport\Http\Controllers\ScopeController;
-use Laravel\Passport\Http\Controllers\TransientTokenController;
-use Illuminate\Support\Facades\Route;
 
 Route::post('/oauth/token', [AccessTokenController::class, 'issueToken'])
     ->middleware(['throttle']);

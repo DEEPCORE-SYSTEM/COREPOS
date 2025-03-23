@@ -1,4 +1,5 @@
 <?php
+
 return [
     'account' => 'ບັນຊີ',
     'manage_your_account' => 'ຈັດການບັນຊີຂອງທ່ານ',

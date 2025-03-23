@@ -27,11 +27,12 @@
             <span class="input-group-addon">
                 <i class="fa fa-calendar"></i>
             </span>
-            <input type="text" name="payment[{{ $row_index }}][paid_on]"
-                value="{{ isset($payment_line['paid_on']) ? date('Y-m-d H:i:s', strtotime($payment_line['paid_on'])) : now()->format('Y-m-d H:i:s') }}"
+            <input type="text" name="payment[{{ $row_index }}][paid_on]" id="paid_on_{{ $row_index }}"
+                value="{{ isset($payment_line['paid_on']) ? format_datetime($payment_line['paid_on']) : @format_datetime(now()) }}"
                 class="form-control paid_on" readonly required>
         </div>
     </div>
+</div>
 </div>
 
 @endif

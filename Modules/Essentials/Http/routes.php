@@ -1,24 +1,25 @@
 <?php
+
 use Modules\Essentials\Http\Controllers\AttendanceController;
 
 Route::group(['middleware' => ['web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu'], 'namespace' => 'Modules\Essentials\Http\Controllers'], function () {
     Route::group(['prefix' => 'essentials'], function () {
-        
+
         Route::get('/dashboard', 'DashboardController@essentialsDashboard');
         Route::get('/install', 'InstallController@index');
         Route::get('/install/update', 'InstallController@update');
         Route::get('/install/uninstall', 'InstallController@uninstall');
-        
+
         Route::get('/', 'EssentialsController@index');
 
-        //document controller
+        // document controller
         Route::resource('document', 'DocumentController')->only(['index', 'store', 'destroy', 'show']);
         Route::get('document/download/{id}', 'DocumentController@download');
 
-        //document share controller
+        // document share controller
         Route::resource('document-share', 'DocumentShareController')->only(['edit', 'update']);
 
-        //todo controller
+        // todo controller
         Route::resource('todo', 'ToDoController');
 
         Route::post('todo/add-comment', 'ToDoController@addComment');
@@ -26,22 +27,22 @@ Route::group(['middleware' => ['web', 'authh', 'auth', 'SetSessionData', 'langua
         Route::get('todo/delete-document/{id}', 'ToDoController@deleteDocument');
         Route::post('todo/upload-document', 'ToDoController@uploadDocument');
         Route::get('view-todo-{id}-share-docs', 'ToDoController@viewSharedDocs');
-        
-        //reminder controller
+
+        // reminder controller
         Route::resource('reminder', 'ReminderController')->only(['index', 'store', 'edit', 'update', 'destroy', 'show']);
 
-        //message controller
+        // message controller
         Route::get('get-new-messages', 'EssentialsMessageController@getNewMessages');
-        Route::resource('messages', 'EssentialsMessageController')->only(['index', 'store','destroy']);
+        Route::resource('messages', 'EssentialsMessageController')->only(['index', 'store', 'destroy']);
 
-        //Allowance and deduction controller
+        // Allowance and deduction controller
         Route::resource('allowance-deduction', 'EssentialsAllowanceAndDeductionController');
 
         Route::resource('knowledge-base', 'KnowledgeBaseController');
 
         Route::get('user-location/{latlng}', 'AttendanceController@getUserLocation');
         Route::post('/attendance/clock-in-clock-out', [AttendanceController::class, 'clockInClockOut'])
-    ->name('attendance.clockInClockOut');
+            ->name('attendance.clockInClockOut');
 
     });
 

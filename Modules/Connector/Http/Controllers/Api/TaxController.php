@@ -2,16 +2,14 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Models\TaxRate;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Transformers\CommonResource;
 
-use App\Models\TaxRate;
-
 /**
  * @group Tax management
+ *
  * @authenticated
  *
  * APIs for managing taxes
@@ -79,15 +77,16 @@ class TaxController extends ApiController
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        
+
         $taxes = TaxRate::where('business_id', $business_id)
-                        ->get();
+            ->get();
 
         return CommonResource::collection($taxes);
     }
 
     /**
      * Get the specified tax
+     *
      * @urlParam tax required comma separated ids of required taxes Example: 1
      *
      * @response {
@@ -105,8 +104,8 @@ class TaxController extends ApiController
                     "updated_at": "2018-01-04 02:40:07"
                 }
             ]
-        }   
-    */
+        }
+     */
     public function show($tax_ids)
     {
         $user = Auth::user();
@@ -115,8 +114,8 @@ class TaxController extends ApiController
         $tax_ids = explode(',', $tax_ids);
 
         $taxes = TaxRate::where('business_id', $business_id)
-                        ->whereIn('id', $tax_ids)
-                        ->get();
+            ->whereIn('id', $tax_ids)
+            ->get();
 
         return CommonResource::collection($taxes);
     }

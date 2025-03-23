@@ -17,7 +17,7 @@ return [
     'supplier' => 'عرضه کونکي',
     'customer' => 'ګیراک',
     'purchase' => 'د خریدارۍ او د سټاک بدلون',
-    'report' =>'راپور',
+    'report' => 'راپور',
 
     'user.view' => 'کارن وګورئ',
     'user.create' => 'کارن اضافه کړئ',
@@ -86,7 +86,7 @@ return [
     'brand' => 'برانډ',
     'tax_rate' => 'د مالیې نرخ',
     'unit' => 'واحد',
-    'access_locations' =>'ځایونو ته لاسرسی',
+    'access_locations' => 'ځایونو ته لاسرسی',
     'all_locations' => 'ټول ځایونه',
     'dashboard' => 'کور',
     'dashboard.data' => 'د کور ډاټا وګورئ',

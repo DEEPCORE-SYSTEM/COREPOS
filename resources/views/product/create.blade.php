@@ -469,11 +469,12 @@
                         data-product_id="{{ !empty($duplicate_product) ? $duplicate_product->id : '0' }}">
                         @foreach($product_types as $key => $value)
                         <option value="{{ $key }}"
-                            {{ old('type', !empty($duplicate_product->type) ? $duplicate_product->type : null) == $key ? 'selected' : '' }}>
+                            {{ !empty($duplicate_product->type) && $duplicate_product->type == $key ? 'selected' : '' }}>
                             {{ $value }}
                         </option>
                         @endforeach
                     </select>
+
                 </div>
             </div>
 

@@ -118,7 +118,7 @@ return [
     'key' => env('APP_KEY', 'base64:W8UqtE9LHZW+gRag78o4BCbN1M0w4HdaIFdLqHJ/9PA='),
 
     'cipher' => 'AES-256-CBC',
-    
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
@@ -157,7 +157,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        //Unicodeveloper\Paystack\PaystackServiceProvider::class,
+        // Unicodeveloper\Paystack\PaystackServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -174,11 +174,11 @@ return [
 
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
-      //  Collective\Html\HtmlServiceProvider::class,
-       
+        //  Collective\Html\HtmlServiceProvider::class,
+
         // Spatie\Permission\PermissionServiceProvider::class,
-     //   Milon\Barcode\BarcodeServiceProvider::class,
-        //ConsoleTVs\Charts\ChartsServiceProvider::class,
+        //   Milon\Barcode\BarcodeServiceProvider::class,
+        // ConsoleTVs\Charts\ChartsServiceProvider::class,
         App\Providers\DropboxServiceProvider::class,
 
     ],
@@ -232,13 +232,13 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Menu' => Spatie\Menu\Laravel\Menu::class,
-       // 'Form' => Collective\Html\FormFacade::class,
-        //'Html' => Collective\Html\HtmlFacade::class,
+        // 'Form' => Collective\Html\FormFacade::class,
+        // 'Html' => Collective\Html\HtmlFacade::class,
         'Carbon' => 'Carbon\Carbon',
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
         'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
         'Datatables' => Yajra\DataTables\Facades\DataTables::class,
         'Paystack' => Unicodeveloper\Paystack\Facades\Paystack::class,
-    ]
+    ],
 ];

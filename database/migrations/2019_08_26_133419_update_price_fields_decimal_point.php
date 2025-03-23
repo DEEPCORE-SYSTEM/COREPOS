@@ -12,7 +12,7 @@ class UpdatePriceFieldsDecimalPoint extends Migration
      */
     public function up()
     {
-        //Get all columns with type decimal(20, 2)
+        // Get all columns with type decimal(20, 2)
         $db_name = env('DB_DATABASE');
 
         $columns = DB::select("SELECT distinct table_name, 
@@ -23,9 +23,9 @@ class UpdatePriceFieldsDecimalPoint extends Migration
             and numeric_scale=2 
             and numeric_precision=20");
 
-        //Alter all columns
+        // Alter all columns
         foreach ($columns as $col) {
-            if(!empty($col->table_name)){
+            if (! empty($col->table_name)) {
                 $table_name = $col->table_name;
                 $col_name = $col->column_name;
                 $default = is_null($col->column_default) ? 'NULL' : $col->column_default;

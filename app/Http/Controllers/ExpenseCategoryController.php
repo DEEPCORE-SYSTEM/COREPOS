@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class ExpenseCategoryController extends Controller
 {
@@ -16,7 +16,7 @@ class ExpenseCategoryController extends Controller
      */
     public function index()
     {
-        if (!(auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
+        if (! (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -24,7 +24,7 @@ class ExpenseCategoryController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $expense_category = ExpenseCategory::where('business_id', $business_id)
-                        ->select(['name', 'code', 'id']);
+                ->select(['name', 'code', 'id']);
 
             return Datatables::of($expense_category)
                 ->addColumn(
@@ -48,7 +48,7 @@ class ExpenseCategoryController extends Controller
      */
     public function create()
     {
-        if (!(auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
+        if (! (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -58,12 +58,11 @@ class ExpenseCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        if (!(auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
+        if (! (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -73,14 +72,14 @@ class ExpenseCategoryController extends Controller
 
             ExpenseCategory::create($input);
             $output = ['success' => true,
-                            'msg' => __("expense.added_success")
-                        ];
+                'msg' => __('expense.added_success'),
+            ];
         } catch (\Exception $e) {
-            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return $output;
@@ -89,7 +88,6 @@ class ExpenseCategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ExpenseCategory  $expenseCategory
      * @return \Illuminate\Http\Response
      */
     public function show(ExpenseCategory $expenseCategory)
@@ -105,7 +103,7 @@ class ExpenseCategoryController extends Controller
      */
     public function edit($id)
     {
-        if (!(auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
+        if (! (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -114,20 +112,19 @@ class ExpenseCategoryController extends Controller
             $expense_category = ExpenseCategory::where('business_id', $business_id)->find($id);
 
             return view('expense_category.edit')
-                    ->with(compact('expense_category'));
+                ->with(compact('expense_category'));
         }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        if (!(auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
+        if (! (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -142,14 +139,14 @@ class ExpenseCategoryController extends Controller
                 $expense_category->save();
 
                 $output = ['success' => true,
-                            'msg' => __("expense.updated_success")
-                            ];
+                    'msg' => __('expense.updated_success'),
+                ];
             } catch (\Exception $e) {
-                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;
@@ -164,7 +161,7 @@ class ExpenseCategoryController extends Controller
      */
     public function destroy($id)
     {
-        if (!(auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
+        if (! (auth()->user()->can('expense.add') || auth()->user()->can('expense.edit'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -176,14 +173,14 @@ class ExpenseCategoryController extends Controller
                 $expense_category->delete();
 
                 $output = ['success' => true,
-                            'msg' => __("expense.deleted_success")
-                            ];
+                    'msg' => __('expense.deleted_success'),
+                ];
             } catch (\Exception $e) {
-                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;

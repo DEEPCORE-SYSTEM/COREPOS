@@ -19,7 +19,7 @@ class AddShippingFieldsToTransactionsTable extends Migration
             $table->string('shipping_status')->nullable()->after('shipping_address');
             $table->string('delivered_to')->nullable()->after('shipping_status');
         });
-        
+
         Permission::create(['name' => 'access_shipping']);
     }
 
@@ -28,7 +28,5 @@ class AddShippingFieldsToTransactionsTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 }

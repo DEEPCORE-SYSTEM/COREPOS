@@ -27,5 +27,5 @@ return [
     'payment_dues' => 'Pembayaran jatuh tempo',
     'due_amount' => 'Jumlah Jatuh Tempo',
     'stock_expiry_alert' => 'Peringatan Stok Kadaluarsa',
-    'todays_profit' => "Keuntungan hari ini",
-    ];
+    'todays_profit' => 'Keuntungan hari ini',
+];

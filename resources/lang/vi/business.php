@@ -68,7 +68,7 @@ return [
         9 => 'Tháng 9',
         10 => 'Tháng 10',
         11 => 'Tháng 11',
-        12 => 'Tháng 12'
+        12 => 'Tháng 12',
     ],
     'fy_start_month' => 'Tháng bắt đầu năm tài chính',
     'accounting_method' => 'Phương pháp quản lý tồn kho',

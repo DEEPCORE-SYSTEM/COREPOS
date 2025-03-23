@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Transaction;
+use Illuminate\Database\Migrations\Migration;
 
 class SetStatusAsReceivedForOpeningStock extends Migration
 {
@@ -15,8 +13,8 @@ class SetStatusAsReceivedForOpeningStock extends Migration
     public function up()
     {
         Transaction::where('type', 'opening_stock')
-                    ->where('status', '!=', 'received')
-                    ->update(['status' => 'received']);
+            ->where('status', '!=', 'received')
+            ->update(['status' => 'received']);
     }
 
     /**

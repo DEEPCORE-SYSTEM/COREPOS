@@ -2,16 +2,14 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Category;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Transformers\CommonResource;
 
-use App\Category;
-
 /**
  * @group Taxonomy management
+ *
  * @authenticated
  *
  * APIs for managing taxonomies
@@ -20,6 +18,7 @@ class CategoryController extends ApiController
 {
     /**
      * List taxonomy
+     *
      * @queryParam type Type of taxonomy (product, device, hrm_department)
      *
      * @response {
@@ -89,19 +88,18 @@ class CategoryController extends ApiController
                 }
             ]
         }
-     *
      */
     public function index()
     {
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        
-        $query = Category::where('business_id', $business_id)
-                        ->onlyParent()
-                        ->with('sub_categories');
 
-        if (!empty(request()->input('type'))) {
+        $query = Category::where('business_id', $business_id)
+            ->onlyParent()
+            ->with('sub_categories');
+
+        if (! empty(request()->input('type'))) {
             $query->where('category_type', request()->input('type'));
         }
 
@@ -115,6 +113,7 @@ class CategoryController extends ApiController
      *
      * @urlParam taxonomy required comma separated ids of product categories Example: 1
 
+     *
      * @response {
             "data": [
                 {
@@ -175,9 +174,9 @@ class CategoryController extends ApiController
         $category_ids = explode(',', $category_ids);
 
         $categories = Category::where('business_id', $business_id)
-                        ->whereIn('id', $category_ids)
-                        ->with('sub_categories')
-                        ->get();
+            ->whereIn('id', $category_ids)
+            ->with('sub_categories')
+            ->get();
 
         return CommonResource::collection($categories);
     }

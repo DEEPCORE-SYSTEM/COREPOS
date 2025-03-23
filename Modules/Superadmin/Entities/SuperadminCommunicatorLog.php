@@ -14,7 +14,7 @@ class SuperadminCommunicatorLog extends Model
      * @var array
      */
     protected $casts = [
-        'business_ids' => 'array'
+        'business_ids' => 'array',
     ];
 
     /**

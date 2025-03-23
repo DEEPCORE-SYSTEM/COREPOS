@@ -30,7 +30,7 @@ return [
     'role_deleted' => 'Role deleted successfully',
     'manage_users' => 'Manage users',
     'all_users' => 'All users',
-    'name' =>'Name',
+    'name' => 'Name',
     'role' => 'Role',
     'add_user' => 'Add user',
     'user_added' => 'User added successfully',

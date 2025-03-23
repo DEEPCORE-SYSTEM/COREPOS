@@ -15,14 +15,12 @@ class ShiftController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $moduleUtil;
 
     /**
      * Constructor
      *
-     * @param ModuleUtil $moduleUtil
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil)
@@ -32,13 +30,14 @@ class ShiftController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -46,37 +45,41 @@ class ShiftController extends Controller
 
         if (request()->ajax()) {
             $shifts = Shift::where('essentials_shifts.business_id', $business_id)
-                        ->select([
-                            'id',
-                            'name',
-                            'type',
-                            'start_time',
-                            'end_time',
-                            'holidays'
-                        ]);
+                ->select([
+                    'id',
+                    'name',
+                    'type',
+                    'start_time',
+                    'end_time',
+                    'holidays',
+                ]);
 
             return Datatables::of($shifts)
                 ->editColumn('start_time', function ($row) {
                     $start_time_formated = $this->moduleUtil->format_time($row->start_time);
-                    return $start_time_formated ;
+
+                    return $start_time_formated;
                 })
                 ->editColumn('end_time', function ($row) {
                     $end_time_formated = $this->moduleUtil->format_time($row->end_time);
-                    return $end_time_formated ;
+
+                    return $end_time_formated;
                 })
                 ->editColumn('type', function ($row) {
-                    return __('essentials::lang.' . $row->type);
+                    return __('essentials::lang.'.$row->type);
                 })
                 ->editColumn('holidays', function ($row) {
-                    if (!empty($row->holidays)) {
+                    if (! empty($row->holidays)) {
                         $holidays = array_map(function ($item) {
-                            return __('lang_v1.' . $item);
+                            return __('lang_v1.'.$item);
                         }, $row->holidays);
+
                         return implode(', ', $holidays);
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    $html = '<a href="#" data-href="' . action('\Modules\Essentials\Http\Controllers\ShiftController@edit', [$row->id]) . '" data-container="#edit_shift_modal" class="btn-modal btn btn-xs btn-primary"><i class="fas fa-edit" aria-hidden="true"></i> ' . __("messages.edit") . '</a> &nbsp;<a href="#" data-href="' . action('\Modules\Essentials\Http\Controllers\ShiftController@getAssignUsers', [$row->id]) . '" data-container="#user_shift_modal" class="btn-modal btn btn-xs btn-success"><i class="fas fa-users" aria-hidden="true"></i> ' . __("essentials::lang.assign_users") . '</a>';
+                    $html = '<a href="#" data-href="'.action('\Modules\Essentials\Http\Controllers\ShiftController@edit', [$row->id]).'" data-container="#edit_shift_modal" class="btn-modal btn btn-xs btn-primary"><i class="fas fa-edit" aria-hidden="true"></i> '.__('messages.edit').'</a> &nbsp;<a href="#" data-href="'.action('\Modules\Essentials\Http\Controllers\ShiftController@getAssignUsers', [$row->id]).'" data-container="#user_shift_modal" class="btn-modal btn btn-xs btn-success"><i class="fas fa-users" aria-hidden="true"></i> '.__('essentials::lang.assign_users').'</a>';
+
                     return $html;
                 })
                 ->removeColumn('id')
@@ -87,6 +90,7 @@ class ShiftController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
@@ -96,7 +100,7 @@ class ShiftController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Response
      */
     public function store(Request $request)
@@ -104,7 +108,7 @@ class ShiftController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -124,15 +128,15 @@ class ShiftController extends Controller
             Shift::create($input);
 
             $output = ['success' => true,
-                            'msg' => __("lang_v1.added_success")
-                        ];
+                'msg' => __('lang_v1.added_success'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
-                        ];
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+
+            ];
         }
 
         return $output;
@@ -140,7 +144,8 @@ class ShiftController extends Controller
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -150,7 +155,8 @@ class ShiftController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
@@ -158,11 +164,11 @@ class ShiftController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
         $shift = Shift::where('business_id', $business_id)
-                    ->findOrFail($id);
+            ->findOrFail($id);
 
         $days = $this->moduleUtil->getDays();
 
@@ -171,8 +177,8 @@ class ShiftController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function update(Request $request, $id)
@@ -181,7 +187,7 @@ class ShiftController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-            if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+            if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
                 abort(403, 'Unauthorized action.');
             }
 
@@ -195,26 +201,26 @@ class ShiftController extends Controller
                 $input['end_time'] = null;
             }
 
-            if (!empty($input['holidays'])) {
+            if (! empty($input['holidays'])) {
                 $input['holidays'] = json_encode($input['holidays']);
             } else {
                 $input['holidays'] = null;
             }
 
             $shift = Shift::where('business_id', $business_id)
-                        ->where('id', $id)
-                        ->update($input);
+                ->where('id', $id)
+                ->update($input);
 
             $output = ['success' => true,
-                                'msg' => __("lang_v1.updated_success")
-                            ];
+                'msg' => __('lang_v1.updated_success'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-                
-            $output = ['success' => false,
-                                'msg' => __("messages.something_went_wrong")
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
-                            ];
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+
+            ];
         }
 
         return $output;
@@ -222,7 +228,8 @@ class ShiftController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
@@ -235,28 +242,28 @@ class ShiftController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
         $shift = Shift::where('business_id', $business_id)
-                    ->with(['user_shifts'])
-                    ->findOrFail($shift_id);
+            ->with(['user_shifts'])
+            ->findOrFail($shift_id);
 
         $users = User::forDropdown($business_id, false);
 
         $user_shifts = [];
 
-        if (!empty($shift->user_shifts)) {
+        if (! empty($shift->user_shifts)) {
             foreach ($shift->user_shifts as $user_shift) {
                 $user_shifts[$user_shift->user_id] = [
-                    'start_date' => !empty($user_shift->start_date) ? $this->moduleUtil->format_date($user_shift->start_date) : null,
-                    'end_date' => !empty($user_shift->end_date) ? $this->moduleUtil->format_date($user_shift->end_date) : null
+                    'start_date' => ! empty($user_shift->start_date) ? $this->moduleUtil->format_date($user_shift->start_date) : null,
+                    'end_date' => ! empty($user_shift->end_date) ? $this->moduleUtil->format_date($user_shift->end_date) : null,
                 ];
             }
         }
 
         return view('essentials::attendance.add_shift_users')
-                ->with(compact('shift', 'users', 'user_shifts'));
+            ->with(compact('shift', 'users', 'user_shifts'));
     }
 
     public function postAssignUsers(Request $request)
@@ -264,48 +271,48 @@ class ShiftController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             $shift_id = $request->input('shift_id');
             $shift = Shift::where('business_id', $business_id)
-                        ->find($shift_id);
+                ->find($shift_id);
 
             $user_shifts = $request->input('user_shift');
             $user_shift_data = [];
             $user_ids = [];
             foreach ($user_shifts as $key => $value) {
-                if (!empty($value['is_added'])) {
+                if (! empty($value['is_added'])) {
                     $user_ids[] = $key;
                     EssentialsUserShift::updateOrCreate(
                         [
                             'essentials_shift_id' => $shift_id,
-                            'user_id' => $key
+                            'user_id' => $key,
                         ],
                         [
-                            'start_date' => !empty($value['start_date']) ? $this->moduleUtil->uf_date($value['start_date']) : null,
-                            'end_date' => !empty($value['end_date']) ? $this->moduleUtil->uf_date($value['end_date']) : null,
+                            'start_date' => ! empty($value['start_date']) ? $this->moduleUtil->uf_date($value['start_date']) : null,
+                            'end_date' => ! empty($value['end_date']) ? $this->moduleUtil->uf_date($value['end_date']) : null,
                         ]
                     );
                 }
             }
 
             EssentialsUserShift::where('essentials_shift_id', $shift_id)
-                            ->whereNotIn('user_id', $user_ids)
-                            ->delete();
-            
-            $output = ['success' => true,
-                            'msg' => __("lang_v1.added_success")
-                        ];
-        } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
+                ->whereNotIn('user_id', $user_ids)
+                ->delete();
 
-                        ];
+            $output = ['success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+
+            ];
         }
 
         return $output;

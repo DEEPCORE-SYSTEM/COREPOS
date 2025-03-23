@@ -18,9 +18,9 @@ class CreateDeviceModelsTable extends Migration
 
             $table->integer('business_id')->unsigned();
             $table->foreign('business_id')
-                    ->references('id')->on('business')
-                    ->onDelete('cascade');
-                    
+                ->references('id')->on('business')
+                ->onDelete('cascade');
+
             $table->string('name');
             $table->text('repair_checklist')->nullable();
 

@@ -14,10 +14,10 @@ class EssentialsAllowanceAndDeduction extends Model
     protected $guarded = ['id'];
 
     /**
-    * The table associated with the model.
-    *
-    * @var string
-    */
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'essentials_allowances_and_deductions';
 
     public function employees()

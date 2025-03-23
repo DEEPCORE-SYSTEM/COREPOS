@@ -1,4 +1,5 @@
 <?php
+
 return [
     'repair' => 'Repair',
     'status_name' => 'Status Name',
@@ -14,7 +15,7 @@ return [
     'model' => 'Model',
     'pre_repair_checklist' => 'Pre Repair Checklist',
     'security' => 'Security',
-    'pattern' => "Pattern",
+    'pattern' => 'Pattern',
     'auto_send_notification' => 'Auto Send Notification',
     'defect' => 'Defect',
     'add_parts_used_in_repair' => 'Add parts being used to repair',
@@ -143,7 +144,7 @@ return [
     'delete_invoice' => 'Delete Invoice',
     'change_invoice_status' => 'Change Invoice Status',
     'access_job_sheet_status' => 'Add/Edit/Delete Job Sheet Status',
-    'show_repair_status' => "Show repair status",
+    'show_repair_status' => 'Show repair status',
     'repair_status_label' => 'Repair status label',
     'pick_up_on_site_addr' => 'Pick up/On site address',
     'job_sheets_by_status' => 'Job sheets by status',

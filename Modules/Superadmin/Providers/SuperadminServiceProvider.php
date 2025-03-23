@@ -5,8 +5,8 @@ namespace Modules\Superadmin\Providers;
 use App\Models\System;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Modules\Superadmin\Entities\Subscription;
 use Modules\Superadmin\Entities\SuperadminFrontendPage;
@@ -31,11 +31,11 @@ class SuperadminServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         view::composer('superadmin::layouts.partials.active_subscription', function ($view) {
             $business_id = session()->get('user.business_id');
-            $module_util = new \App\Utils\ModuleUtil();
+            $module_util = new \App\Utils\ModuleUtil;
             $is_installed = $module_util->isSuperadminInstalled();
             if ($is_installed) {
                 $__subscription = Subscription::active_subscription($business_id);
@@ -48,12 +48,12 @@ class SuperadminServiceProvider extends ServiceProvider
 
         view::composer(['layouts.partials.home_header'], function ($view) {
             $frontend_pages = SuperadminFrontendPage::where('is_shown', 1)
-                                                ->orderBy('menu_order', 'asc')
-                                                ->get();
+                ->orderBy('menu_order', 'asc')
+                ->get();
             $view->with(compact('frontend_pages'));
         });
 
-        //Set superadmin currency
+        // Set superadmin currency
         view::composer(['superadmin::layouts.partials.currency'], function ($view) {
             $__system_currency = System::getCurrency();
             $view->with(compact('__system_currency'));
@@ -65,7 +65,7 @@ class SuperadminServiceProvider extends ServiceProvider
     public function registerScheduleCommands()
     {
         $env = config('app.env');
-        //schedule command for sending subscription expiry alert
+        // schedule command for sending subscription expiry alert
         if ($env === 'live') {
             $this->app->booted(function () {
                 $schedule = $this->app->make(Schedule::class);
@@ -112,11 +112,11 @@ class SuperadminServiceProvider extends ServiceProvider
         $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/superadmin';
+            return $path.'/modules/superadmin';
         }, Config::get('view.paths')), [$sourcePath]), 'superadmin');
     }
 
@@ -132,7 +132,7 @@ class SuperadminServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'superadmin');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'superadmin');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'superadmin');
         }
     }
 
@@ -143,9 +143,9 @@ class SuperadminServiceProvider extends ServiceProvider
      */
     public function registerFactories()
     {
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             Factory::guessFactoryNamesUsing(function ($modelName) {
-                return 'Modules\\Superadmin\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
+                return 'Modules\\Superadmin\\Database\\Factories\\'.class_basename($modelName).'Factory';
             });
         }
     }
@@ -168,7 +168,7 @@ class SuperadminServiceProvider extends ServiceProvider
     protected function registerCommands()
     {
         $this->commands([
-            \Modules\Superadmin\Console\SubscriptionExpiryAlert::class
+            \Modules\Superadmin\Console\SubscriptionExpiryAlert::class,
         ]);
     }
 }

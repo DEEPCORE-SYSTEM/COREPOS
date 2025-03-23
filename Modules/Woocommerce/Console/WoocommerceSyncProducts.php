@@ -2,12 +2,12 @@
 
 namespace Modules\Woocommerce\Console;
 
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use Modules\Woocommerce\Utils\WoocommerceUtil;
-use App\Business;
+use App\Models\Business;
 use DB;
+use Illuminate\Console\Command;
+use Modules\Woocommerce\Utils\WoocommerceUtil;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class WoocommerceSyncProducts extends Command
 {
@@ -28,7 +28,6 @@ class WoocommerceSyncProducts extends Command
     /**
      * Create a new command instance.
      *
-     * @param WoocommerceUtil $woocommerceUtil
      * @return void
      */
     public function __construct(WoocommerceUtil $woocommerceUtil)
@@ -55,14 +54,14 @@ class WoocommerceSyncProducts extends Command
             $user_id = $business->owner_id;
             $sync_type = 'all';
 
-            //Set timezone to business timezone
+            // Set timezone to business timezone
             $timezone = $business->time_zone;
             config(['app.timezone' => $timezone]);
             date_default_timezone_set($timezone);
 
             DB::beginTransaction();
 
-            //Set offset 1 and limit 0 to bypass pagination
+            // Set offset 1 and limit 0 to bypass pagination
             $offset = 1;
             $limit = 0;
 
@@ -71,7 +70,7 @@ class WoocommerceSyncProducts extends Command
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
         }
     }
 

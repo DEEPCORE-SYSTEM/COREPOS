@@ -2,32 +2,32 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Utils\ModuleUtil;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Notifications\PayrollNotification;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\Category;
-use Carbon\Carbon;
 
 class PayrollController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $moduleUtil;
+
     protected $essentialsUtil;
 
     /**
      * Constructor
      *
-     * @param ProductUtils $product
+     * @param  ProductUtils  $product
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil, EssentialsUtil $essentialsUtil)
@@ -38,6 +38,7 @@ class PayrollController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function index()
@@ -45,7 +46,7 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -63,36 +64,34 @@ class PayrollController extends Controller
                     'ref_no',
                     'transactions.payment_status',
                     'dept.name as department',
-                    'dsgn.name as designation'
+                    'dsgn.name as designation',
                 ]);
 
-            
-
             if ($is_admin) {
-                if (!empty(request()->input('user_id'))) {
+                if (! empty(request()->input('user_id'))) {
                     $payrolls->where('transactions.expense_for', request()->input('user_id'));
                 }
 
-                if (!empty(request()->input('designation_id'))) {
+                if (! empty(request()->input('designation_id'))) {
                     $payrolls->where('dsgn.id', request()->input('designation_id'));
                 }
 
-                if (!empty(request()->input('department_id'))) {
+                if (! empty(request()->input('department_id'))) {
                     $payrolls->where('dept.id', request()->input('department_id'));
                 }
             }
 
-            if (!$is_admin) {
+            if (! $is_admin) {
                 $payrolls->where('transactions.expense_for', auth()->user()->id);
             }
 
-            if (!empty(request()->month_year)) {
+            if (! empty(request()->month_year)) {
                 $month_year_arr = explode('/', request()->month_year);
                 if (count($month_year_arr) == 2) {
                     $month = $month_year_arr[0];
                     $year = $month_year_arr[1];
 
-                    $payrolls->whereDate('transaction_date', $year . '-' .$month . '-01');
+                    $payrolls->whereDate('transaction_date', $year.'-'.$month.'-01');
                 }
             }
 
@@ -102,34 +101,34 @@ class PayrollController extends Controller
                     function ($row) use ($is_admin) {
                         $html = '<div class="btn-group">
                                     <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                        data-toggle="dropdown" aria-expanded="false">' .
-                                        __("messages.actions") .
+                                        data-toggle="dropdown" aria-expanded="false">'.
+                                        __('messages.actions').
                                         '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                         </span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
-                        $html .= '<li><a href="#" data-href="' . action('\Modules\Essentials\Http\Controllers\PayrollController@show', [$row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __("messages.view") . '</a></li>';
+                        $html .= '<li><a href="#" data-href="'.action('\Modules\Essentials\Http\Controllers\PayrollController@show', [$row->id]).'" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> '.__('messages.view').'</a></li>';
 
                         if ($is_admin) {
-                            $html .= '<li><a href="' . action('\Modules\Essentials\Http\Controllers\PayrollController@edit', [$row->id]) . '"><i class="fa fa-edit" aria-hidden="true"></i> ' . __("messages.edit") . '</a></li>';
-                            $html .= '<li><a href="' . action('\Modules\Essentials\Http\Controllers\PayrollController@destroy', [$row->id]) . '" class="delete-payroll"><i class="fa fa-trash" aria-hidden="true"></i> ' . __("messages.delete") . '</a></li>';
+                            $html .= '<li><a href="'.action('\Modules\Essentials\Http\Controllers\PayrollController@edit', [$row->id]).'"><i class="fa fa-edit" aria-hidden="true"></i> '.__('messages.edit').'</a></li>';
+                            $html .= '<li><a href="'.action('\Modules\Essentials\Http\Controllers\PayrollController@destroy', [$row->id]).'" class="delete-payroll"><i class="fa fa-trash" aria-hidden="true"></i> '.__('messages.delete').'</a></li>';
                         }
 
-                        $html .= '<li><a href="' . action('TransactionPaymentController@show', [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
+                        $html .= '<li><a href="'.action('TransactionPaymentController@show', [$row->id]).'" class="view_payment_modal"><i class="fa fa-money"></i> '.__('purchase.view_payments').'</a></li>';
 
-                        if ($row->payment_status != "paid" && $is_admin) {
-                            $html .= '<li><a href="' . action('TransactionPaymentController@addPayment', [$row->id]) . '" class="add_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.add_payment") . '</a></li>';
+                        if ($row->payment_status != 'paid' && $is_admin) {
+                            $html .= '<li><a href="'.action('TransactionPaymentController@addPayment', [$row->id]).'" class="add_payment_modal"><i class="fa fa-money"></i> '.__('purchase.add_payment').'</a></li>';
                         }
-
 
                         $html .= '</ul></div>';
+
                         return $html;
                     }
                 )
                 ->addColumn('transaction_date', function ($row) {
                     $transaction_date = Carbon::parse($row->transaction_date);
-                    
+
                     return $transaction_date->format('F Y');
                 })
                 ->editColumn('final_total', '<span class="display_currency" data-currency_symbol="true">{{$final_total}}</span>')
@@ -160,6 +159,7 @@ class PayrollController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
@@ -167,7 +167,7 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -176,16 +176,16 @@ class PayrollController extends Controller
         $month = $month_year_arr[0];
         $year = $month_year_arr[1];
 
-        $transaction_date = $year . '-' . $month . '-01';
+        $transaction_date = $year.'-'.$month.'-01';
 
-        //check if payroll exists for the month year; If yes redirect to edit
+        // check if payroll exists for the month year; If yes redirect to edit
         $payroll = Transaction::where('business_id', $business_id)
-                                ->where('expense_for', $employee_id)
-                                ->whereDate('transaction_date', $transaction_date)
-                                ->first();
+            ->where('expense_for', $employee_id)
+            ->whereDate('transaction_date', $transaction_date)
+            ->first();
 
         $employee = User::where('business_id', $business_id)
-                    ->findOrFail($employee_id);
+            ->findOrFail($employee_id);
 
         if (empty($payroll)) {
             $start_date = $transaction_date;
@@ -199,7 +199,7 @@ class PayrollController extends Controller
             foreach ($allowances_and_deductions as $ad) {
                 if ($ad->type == 'allowance') {
                     $allowances['allowance_names'][] = $ad->description;
-                    $allowances['allowance_amounts'][] = $ad->amount_type == 'fixed' ?$ad->amount : 0;
+                    $allowances['allowance_amounts'][] = $ad->amount_type == 'fixed' ? $ad->amount : 0;
                     $allowances['allowance_types'][] = $ad->amount_type;
                     $allowances['allowance_percents'][] = $ad->amount_type == 'percent' ? $ad->amount : 0;
                 } else {
@@ -211,7 +211,7 @@ class PayrollController extends Controller
             }
 
             return view('essentials::payroll.create')
-                    ->with(compact('employee', 'total_work_duration', 'month_name', 'transaction_date', 'year', 'allowances', 'deductions'));
+                ->with(compact('employee', 'total_work_duration', 'month_name', 'transaction_date', 'year', 'allowances', 'deductions'));
         } else {
             return redirect()->action('\Modules\Essentials\Http\Controllers\PayrollController@edit', $payroll->id);
         }
@@ -219,7 +219,7 @@ class PayrollController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param  Request $request
+     *
      * @return Response
      */
     public function store(Request $request)
@@ -227,7 +227,7 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -248,33 +248,33 @@ class PayrollController extends Controller
             $input['essentials_deductions'] = $allowances_and_deductions['essentials_deductions'];
 
             DB::beginTransaction();
-            //Update reference count
+            // Update reference count
             $ref_count = $this->moduleUtil->setAndGetReferenceCount('payroll');
-            //Generate reference number
+            // Generate reference number
             if (empty($input['ref_no'])) {
                 $settings = request()->session()->get('business.essentials_settings');
-                $settings = !empty($settings) ? json_decode($settings, true) : [];
-                $prefix = !empty($settings['payroll_ref_no_prefix']) ? $settings['payroll_ref_no_prefix'] : '';
+                $settings = ! empty($settings) ? json_decode($settings, true) : [];
+                $prefix = ! empty($settings['payroll_ref_no_prefix']) ? $settings['payroll_ref_no_prefix'] : '';
                 $input['ref_no'] = $this->moduleUtil->generateReferenceNumber('payroll', $ref_count, null, $prefix);
             }
 
             $payroll = Transaction::create($input);
 
-            //Send notification
+            // Send notification
             $payroll->action = 'created';
             $payroll->transaction_for->notify(new PayrollNotification($payroll));
 
             $output = ['success' => true,
-                            'msg' => __("lang_v1.added_success")
-                        ];
+                'msg' => __('lang_v1.added_success'),
+            ];
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return redirect()->action('\Modules\Essentials\Http\Controllers\PayrollController@index')->with('status', $output);
@@ -289,10 +289,10 @@ class PayrollController extends Controller
         $allowance_percent_array = [];
         $allowance_amounts = [];
         foreach ($request->input('allowance_amounts') as $key => $value) {
-            if (!empty($allowance_names[$key])) {
+            if (! empty($allowance_names[$key])) {
                 $allowance_amounts[] = $this->moduleUtil->num_uf($value);
                 $allowance_names_array[] = $allowance_names[$key];
-                $allowance_percent_array[] = !empty($allowance_percents[$key]) ? $this->moduleUtil->num_uf($allowance_percents[$key]) : 0;
+                $allowance_percent_array[] = ! empty($allowance_percents[$key]) ? $this->moduleUtil->num_uf($allowance_percents[$key]) : 0;
             }
         }
 
@@ -303,49 +303,50 @@ class PayrollController extends Controller
         $deduction_percents_array = [];
         $deduction_amounts = [];
         foreach ($request->input('deduction_amounts') as $key => $value) {
-            if (!empty($deduction_names[$key])) {
+            if (! empty($deduction_names[$key])) {
                 $deduction_names_array[] = $deduction_names[$key];
                 $deduction_amounts[] = $this->moduleUtil->num_uf($value);
-                $deduction_percents_array[] = !empty($deduction_percents[$key]) ? $this->moduleUtil->num_uf($deduction_percents[$key]) : 0;
+                $deduction_percents_array[] = ! empty($deduction_percents[$key]) ? $this->moduleUtil->num_uf($deduction_percents[$key]) : 0;
             }
         }
 
         $output['essentials_allowances'] = json_encode([
-                'allowance_names' => $allowance_names_array,
-                'allowance_amounts' => $allowance_amounts,
-                'allowance_types' => $allowance_types,
-                'allowance_percents' => $allowance_percent_array
-            ]);
+            'allowance_names' => $allowance_names_array,
+            'allowance_amounts' => $allowance_amounts,
+            'allowance_types' => $allowance_types,
+            'allowance_percents' => $allowance_percent_array,
+        ]);
         $output['essentials_deductions'] = json_encode([
-                'deduction_names' => $deduction_names_array,
-                'deduction_amounts' => $deduction_amounts,
-                'deduction_types' => $deduction_types,
-                'deduction_percents' => $deduction_percents_array
-            ]);
+            'deduction_names' => $deduction_names_array,
+            'deduction_amounts' => $deduction_amounts,
+            'deduction_types' => $deduction_types,
+            'deduction_percents' => $deduction_percents_array,
+        ]);
 
         return $output;
     }
 
     /**
      * Show the specified resource.
+     *
      * @return Response
      */
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
         $payroll = Transaction::where('business_id', $business_id)
-                                ->with(['transaction_for', 'payment_lines'])
-                                ->findOrFail($id);
+            ->with(['transaction_for', 'payment_lines'])
+            ->findOrFail($id);
         $transaction_date = Carbon::parse($payroll->transaction_date);
 
         $month_name = $transaction_date->format('F');
         $year = $transaction_date->format('Y');
-        $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
-        $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
+        $allowances = ! empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
+        $deductions = ! empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
 
         $payment_types = $this->moduleUtil->payment_types();
 
@@ -354,6 +355,7 @@ class PayrollController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
      * @return Response
      */
     public function edit($id)
@@ -361,27 +363,27 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || !$this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+        if (! (auth()->user()->can('superadmin') || ! $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         $payroll = Transaction::where('business_id', $business_id)
-                                ->with(['transaction_for'])
-                                ->where('type', 'payroll')
-                                ->findOrFail($id);
+            ->with(['transaction_for'])
+            ->where('type', 'payroll')
+            ->findOrFail($id);
 
         $transaction_date = Carbon::parse($payroll->transaction_date);
         $month_name = $transaction_date->format('F');
         $year = $transaction_date->format('Y');
-        $allowances = !empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
-        $deductions = !empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
+        $allowances = ! empty($payroll->essentials_allowances) ? json_decode($payroll->essentials_allowances, true) : [];
+        $deductions = ! empty($payroll->essentials_deductions) ? json_decode($payroll->essentials_deductions, true) : [];
 
         return view('essentials::payroll.edit')->with(compact('payroll', 'month_name', 'allowances', 'deductions', 'year'));
     }
 
     /**
      * Update the specified resource in storage.
-     * @param  Request $request
+     *
      * @return Response
      */
     public function update(Request $request, $id)
@@ -389,7 +391,7 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -405,8 +407,8 @@ class PayrollController extends Controller
 
             DB::beginTransaction();
             $payroll = Transaction::where('business_id', $business_id)
-                                ->where('type', 'payroll')
-                                ->findOrFail($id);
+                ->where('type', 'payroll')
+                ->findOrFail($id);
 
             $payroll->update($input);
 
@@ -414,16 +416,16 @@ class PayrollController extends Controller
             $payroll->transaction_for->notify(new PayrollNotification($payroll));
 
             $output = ['success' => true,
-                            'msg' => __("lang_v1.updated_success")
-                        ];
+                'msg' => __('lang_v1.updated_success'),
+            ];
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return redirect()->action('\Modules\Essentials\Http\Controllers\PayrollController@index')->with('status', $output);
@@ -431,13 +433,14 @@ class PayrollController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @return Response
      */
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -447,24 +450,24 @@ class PayrollController extends Controller
 
                 if ($is_admin) {
                     $payroll = Transaction::where('business_id', $business_id)
-                                ->where('type', 'payroll')
-                                ->where('id', $id)
-                                ->delete();
+                        ->where('type', 'payroll')
+                        ->where('id', $id)
+                        ->delete();
 
                     $output = ['success' => true,
-                                'msg' => __("lang_v1.deleted_success")
-                            ];
+                        'msg' => __('lang_v1.deleted_success'),
+                    ];
                 } else {
                     $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                        'msg' => __('messages.something_went_wrong'),
+                    ];
                 }
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;

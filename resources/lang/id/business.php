@@ -68,7 +68,7 @@ return [
         9 => 'September',
         10 => 'Oktober',
         11 => 'November',
-        12 => 'Desember'
+        12 => 'Desember',
     ],
     'fy_start_month' => 'Tahun keuangan awal bulan',
     'accounting_method' => 'Metode Akutansi Stok',
@@ -106,8 +106,8 @@ return [
     'tax_number2' => 'Nomor Pajak 2',
     'is_active' => 'Aktif',
     'created_by' => 'Dibuat oleh',
-    "tax_number1"=>"Nomor Pajak 1",
-    "tax_number2"=>"Nomor Pajak 2",
-    "is_active"=>"Aktif",
-    "created_by"=>"Dibuat oleh",
+    'tax_number1' => 'Nomor Pajak 1',
+    'tax_number2' => 'Nomor Pajak 2',
+    'is_active' => 'Aktif',
+    'created_by' => 'Dibuat oleh',
 ];

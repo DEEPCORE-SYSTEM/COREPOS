@@ -19,19 +19,19 @@ class WarrantyController extends Controller
 
         if (request()->ajax()) {
             $warranties = Warranty::where('business_id', $business_id)
-                         ->select(['id', 'name', 'description', 'duration', 'duration_type']);
+                ->select(['id', 'name', 'description', 'duration', 'duration_type']);
 
             return Datatables::of($warranties)
                 ->addColumn(
                     'action',
                     '<button data-href="{{action(\'WarrantyController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>'
-                 )
-                 ->removeColumn('id')
-                 ->editColumn('duration', function ($row) {
-                     return $row->duration . ' ' . __('lang_v1.' .$row->duration_type);
-                 })
-                 ->rawColumns(['action'])
-                 ->make(true);
+                )
+                ->removeColumn('id')
+                ->editColumn('duration', function ($row) {
+                    return $row->duration.' '.__('lang_v1.'.$row->duration_type);
+                })
+                ->rawColumns(['action'])
+                ->make(true);
         }
 
         return view('warranties.index');
@@ -50,7 +50,6 @@ class WarrantyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -64,14 +63,14 @@ class WarrantyController extends Controller
             $status = Warranty::create($input);
 
             $output = ['success' => true,
-                        'msg' => __("lang_v1.added_success")
-                    ];
+                'msg' => __('lang_v1.added_success'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return $output;
@@ -80,7 +79,6 @@ class WarrantyController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Warranty  $warranty
      * @return \Illuminate\Http\Response
      */
     public function show(Warranty $warranty)
@@ -109,14 +107,13 @@ class WarrantyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Warranty  $warranty
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-    
+
         if (request()->ajax()) {
             try {
                 $input = $request->only(['name', 'description', 'duration', 'duration_type']);
@@ -126,14 +123,14 @@ class WarrantyController extends Controller
                 $warranty->update($input);
 
                 $output = ['success' => true,
-                            'msg' => __("lang_v1.updated_success")
-                            ];
+                    'msg' => __('lang_v1.updated_success'),
+                ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;
@@ -143,7 +140,6 @@ class WarrantyController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Warranty  $warranty
      * @return \Illuminate\Http\Response
      */
     public function destroy(Warranty $warranty)

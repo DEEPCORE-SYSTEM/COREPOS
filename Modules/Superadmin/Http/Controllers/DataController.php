@@ -2,20 +2,20 @@
 
 namespace Modules\Superadmin\Http\Controllers;
 
-use Illuminate\Support\Facades\Notification;
 use App\Models\System;
 use App\Utils\Util;
-
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
-use Spatie\Menu\Laravel\Menu;
+use Illuminate\Support\Facades\Notification;
 use Modules\Superadmin\Notifications\NewBusinessNotification;
 use Modules\Superadmin\Notifications\NewBusinessWelcomNotification;
+use Spatie\Menu\Laravel\Menu;
 
 class DataController extends Controller
 {
     /**
      * Parses notification message from database.
+     *
      * @return array
      */
     public function parse_notification($notification)
@@ -28,22 +28,22 @@ class DataController extends Controller
 
             $notification_data = [
                 'msg' => $msg,
-                'icon_class' => "fas fa-exclamation-triangle bg-yellow",
-                'link' =>  action('\Modules\Superadmin\Http\Controllers\SubscriptionController@index'),
+                'icon_class' => 'fas fa-exclamation-triangle bg-yellow',
+                'link' => action('\Modules\Superadmin\Http\Controllers\SubscriptionController@index'),
                 'read_at' => $notification->read_at,
-                'created_at' => $notification->created_at->diffForHumans()
+                'created_at' => $notification->created_at->diffForHumans(),
             ];
-        } else if($notification->type ==
+        } elseif ($notification->type ==
             'Modules\Superadmin\Notifications\SuperadminCommunicator') {
             $msg = __('superadmin::lang.new_message_from_superadmin');
 
             $notification_data = [
                 'msg' => $msg,
-                'icon_class' => "fas fa-exclamation-triangle bg-yellow",
-                'link' =>  action("HomeController@showNotification", [$notification->id]),
+                'icon_class' => 'fas fa-exclamation-triangle bg-yellow',
+                'link' => action('HomeController@showNotification', [$notification->id]),
                 'show_popup' => true,
                 'read_at' => $notification->read_at,
-                'created_at' => $notification->created_at->diffForHumans()
+                'created_at' => $notification->created_at->diffForHumans(),
             ];
         }
 
@@ -52,46 +52,47 @@ class DataController extends Controller
 
     /**
      * Function to be called after a new business is created.
+     *
      * @return null
      */
     public function after_business_created($data)
     {
         try {
-            //Send new registration notification to superadmin
+            // Send new registration notification to superadmin
             $is_notif_enabled =
             System::getProperty('enable_new_business_registration_notification');
 
-            $common_util = new Util();
-            
-            if (!$common_util->IsMailConfigured()) {
+            $common_util = new Util;
+
+            if (! $common_util->IsMailConfigured()) {
                 return null;
             }
 
             $email = System::getProperty('email');
             $business = $data['business'];
-            
-            if (!empty($email) && $is_notif_enabled == 1) {
+
+            if (! empty($email) && $is_notif_enabled == 1) {
                 Notification::route('mail', $email)
-                ->notify(new NewBusinessNotification($business));
+                    ->notify(new NewBusinessNotification($business));
             }
 
-            //Send welcome email to business owner
+            // Send welcome email to business owner
             $welcome_email_settings = System::getProperties(['enable_welcome_email', 'welcome_email_subject', 'welcome_email_body'], true);
-            
-            if (isset($welcome_email_settings['enable_welcome_email']) && $welcome_email_settings['enable_welcome_email'] == 1 && !empty($welcome_email_settings['welcome_email_subject']) && !empty($welcome_email_settings['welcome_email_body'])) {
+
+            if (isset($welcome_email_settings['enable_welcome_email']) && $welcome_email_settings['enable_welcome_email'] == 1 && ! empty($welcome_email_settings['welcome_email_subject']) && ! empty($welcome_email_settings['welcome_email_body'])) {
                 $subject = $this->removeTags($welcome_email_settings['welcome_email_subject'], $business);
                 $body = $this->removeTags($welcome_email_settings['welcome_email_body'], $business);
 
                 $welcome_email_data = [
                     'subject' => $subject,
-                    'body' => $body
+                    'body' => $body,
                 ];
 
                 Notification::route('mail', $business->owner->email)
-                ->notify(new NewBusinessWelcomNotification($welcome_email_data));
+                    ->notify(new NewBusinessWelcomNotification($welcome_email_data));
             }
         } catch (\Exception $e) {
-            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
         }
 
         return null;
@@ -107,12 +108,13 @@ class DataController extends Controller
 
     /**
      * Adds Superadmin menus
+     *
      * @return null
      */
     public function modifyAdminMenu()
     {
         $menu = Menu::new();
-    
+
         if (auth()->user()->can('superadmin')) {
             $menu->add(
                 Menu::new()->url(
@@ -121,7 +123,7 @@ class DataController extends Controller
                 )->addParentClass('fa fas fa-users-cog')
             );
         }
-    
+
         if (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access')) {
             $menu->add(
                 Menu::new()->url(
@@ -130,11 +132,13 @@ class DataController extends Controller
                 )->addParentClass('fa fas fa-sync')
             );
         }
-    
+
         return $menu;
     }
+
     /**
      * Defines user permissions for the module.
+     *
      * @return array
      */
     public function user_permissions()
@@ -143,8 +147,8 @@ class DataController extends Controller
             [
                 'value' => 'superadmin.access_package_subscriptions',
                 'label' => __('superadmin::lang.access_package_subscriptions'),
-                'default' => false
-            ]
+                'default' => false,
+            ],
         ];
     }
 }

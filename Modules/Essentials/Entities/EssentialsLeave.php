@@ -3,8 +3,6 @@
 namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-
-
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class EssentialsLeave extends Model
@@ -13,7 +11,7 @@ class EssentialsLeave extends Model
 
     protected static $logAttributes = ['*'];
 
-    protected static $logAttributesToIgnore = [ 'created_at', 'updated_at'];
+    protected static $logAttributesToIgnore = ['created_at', 'updated_at'];
 
     protected static $logOnlyDirty = true;
 

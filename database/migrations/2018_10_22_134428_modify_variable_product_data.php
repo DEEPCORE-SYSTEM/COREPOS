@@ -1,10 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
-
 use App\Utils\InstallUtil;
+use Illuminate\Database\Migrations\Migration;
 
 class ModifyVariableProductData extends Migration
 {
@@ -15,7 +12,7 @@ class ModifyVariableProductData extends Migration
      */
     public function up()
     {
-        $installUtil = new InstallUtil();
+        $installUtil = new InstallUtil;
         $installUtil->createExistingProductsVariationsToTemplate();
     }
 

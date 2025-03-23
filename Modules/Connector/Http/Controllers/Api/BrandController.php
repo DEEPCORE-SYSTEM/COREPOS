@@ -2,16 +2,14 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Brands;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Transformers\CommonResource;
 
-use App\Brands;
-
 /**
  * @group Brand management
+ *
  * @authenticated
  *
  * APIs for managing brands
@@ -20,6 +18,7 @@ class BrandController extends ApiController
 {
     /**
      * List brands
+     *
      * @response {
             "data": [
                 {
@@ -50,9 +49,9 @@ class BrandController extends ApiController
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        
+
         $brands = Brands::where('business_id', $business_id)
-                        ->get();
+            ->get();
 
         return CommonResource::collection($brands);
     }
@@ -61,6 +60,7 @@ class BrandController extends ApiController
      * Get the specified brand
      *
      * @urlParam brand required comma separated ids of the brands Example: 1
+     *
      * @response {
             "data": [
                 {
@@ -84,8 +84,8 @@ class BrandController extends ApiController
         $brand_ids = explode(',', $brand_ids);
 
         $brands = Brands::where('business_id', $business_id)
-                        ->whereIn('id', $brand_ids)
-                        ->get();
+            ->whereIn('id', $brand_ids)
+            ->get();
 
         return CommonResource::collection($brands);
     }

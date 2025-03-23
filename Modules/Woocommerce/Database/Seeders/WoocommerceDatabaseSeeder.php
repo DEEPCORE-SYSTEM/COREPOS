@@ -2,8 +2,8 @@
 
 namespace Modules\Woocommerce\Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
 
 class WoocommerceDatabaseSeeder extends Seeder
 {
@@ -16,6 +16,6 @@ class WoocommerceDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        //$this->call([AddDummySyncLogTableSeeder::class]);
+        // $this->call([AddDummySyncLogTableSeeder::class]);
     }
 }

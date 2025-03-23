@@ -5,10 +5,7 @@ namespace Modules\Woocommerce\Providers;
 use App\Models\Business;
 use App\Utils\ModuleUtil;
 use Illuminate\Console\Scheduling\Schedule;
-
-//
 use Illuminate\Support\Facades\View;
-
 use Illuminate\Support\ServiceProvider;
 
 class WoocommerceServiceProvider extends ServiceProvider
@@ -31,17 +28,17 @@ class WoocommerceServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
-        //TODO: Need to be removed.
+        // TODO: Need to be removed.
         view::composer('woocommerce::layouts.partials.sidebar', function ($view) {
-            $module_util = new ModuleUtil();
+            $module_util = new ModuleUtil;
 
             if (auth()->user()->can('superadmin')) {
                 $__is_woo_enabled = $module_util->isModuleInstalled('Woocommerce');
             } else {
                 $business_id = session()->get('user.business_id');
-                $__is_woo_enabled = (boolean)$module_util->hasThePermissionInSubscription($business_id, 'woocommerce_module', 'superadmin_package');
+                $__is_woo_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'woocommerce_module', 'superadmin_package');
             }
 
             $view->with(compact('__is_woo_enabled'));
@@ -88,11 +85,11 @@ class WoocommerceServiceProvider extends ServiceProvider
         $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/woocommerce';
+            return $path.'/modules/woocommerce';
         }, \Config::get('view.paths')), [$sourcePath]), 'woocommerce');
     }
 
@@ -108,7 +105,7 @@ class WoocommerceServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'woocommerce');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'woocommerce');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'woocommerce');
         }
     }
 
@@ -117,10 +114,7 @@ class WoocommerceServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function registerFactories()
-    {
-    
-    }
+    public function registerFactories() {}
 
     /**
      * Get the services provided by the provider.
@@ -141,27 +135,27 @@ class WoocommerceServiceProvider extends ServiceProvider
     {
         $this->commands([
             \Modules\Woocommerce\Console\WooCommerceSyncOrder::class,
-            \Modules\Woocommerce\Console\WoocommerceSyncProducts::class
+            \Modules\Woocommerce\Console\WoocommerceSyncProducts::class,
         ]);
     }
 
     public function registerScheduleCommands()
     {
         $env = config('app.env');
-        $module_util = new ModuleUtil();
+        $module_util = new ModuleUtil;
         $is_installed = $module_util->isModuleInstalled(config('woocommerce.name'));
-        
+
         if ($env === 'live' && $is_installed) {
             $businesses = Business::whereNotNull('woocommerce_api_settings')->get();
 
             foreach ($businesses as $business) {
                 $api_settings = json_decode($business->woocommerce_api_settings);
-                if (!empty($api_settings->enable_auto_sync)) {
-                    //schedule command to auto sync orders
+                if (! empty($api_settings->enable_auto_sync)) {
+                    // schedule command to auto sync orders
                     $this->app->booted(function () use ($business) {
                         $schedule = $this->app->make(Schedule::class);
-                        $schedule->command('pos:WoocommerceSyncProducts ' . $business->id)->twiceDaily(1, 13);
-                        $schedule->command('pos:WooCommerceSyncOrder ' . $business->id)->twiceDaily(1, 13);
+                        $schedule->command('pos:WoocommerceSyncProducts '.$business->id)->twiceDaily(1, 13);
+                        $schedule->command('pos:WooCommerceSyncOrder '.$business->id)->twiceDaily(1, 13);
                     });
                 }
             }

@@ -33,6 +33,7 @@ class VariationResource extends Resource
         }
 
         $array = $array1 + $array;
+
         return $array;
     }
 }

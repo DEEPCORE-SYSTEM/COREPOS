@@ -68,7 +68,7 @@ return [
         9 => 'Septembrie',
         10 => 'Octombrie',
         11 => 'Noiembrie',
-        12 => 'Decembrie'
+        12 => 'Decembrie',
     ],
     'fy_start_month' => 'Luna de inceput an fiscal',
     'accounting_method' => 'Metoda de contabilizare stocuri',

@@ -2,49 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Charts\CommonChart;
 use App\Models\Brands;
 use App\Models\BusinessLocation;
 use App\Models\CashRegister;
 use App\Models\Category;
-
-use App\Charts\CommonChart;
 use App\Models\Contact;
-
 use App\Models\CustomerGroup;
 use App\Models\ExpenseCategory;
 use App\Models\Product;
 use App\Models\PurchaseLine;
-use App\Restaurant\ResTable;
 use App\Models\SellingPriceGroup;
+use App\Models\TaxRate;
 use App\Models\Transaction;
 use App\Models\TransactionPayment;
 use App\Models\TransactionSellLine;
 use App\Models\TransactionSellLinesPurchaseLines;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\Variation;
+use App\Models\VariationLocationDetails;
+use App\Restaurant\ResTable;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
-use App\Models\Variation;
-use App\Models\VariationLocationDetails;
-use Datatables;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use App\Models\TaxRate;
-use Spatie\Activitylog\Models\Activity;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Spatie\Activitylog\Models\Activity;
+use Yajra\DataTables\Facades\DataTables;
 
 class ReportController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $transactionUtil;
+
     protected $productUtil;
+
     protected $moduleUtil;
+
     protected $businessUtil;
 
     /**
@@ -60,7 +60,6 @@ class ReportController extends Controller
         $this->businessUtil = $businessUtil;
     }
 
-
     public function getStockBySellingPrice(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
@@ -72,11 +71,11 @@ class ReportController extends Controller
 
         $opening_stock_by_sp = $this->transactionUtil->getOpeningClosingStock($business_id, $day_before_start_date, $location_id, true, true);
 
-        $closing_stock_by_sp = $this->transactionUtil->getOpeningClosingStock( $business_id, $end_date, $location_id, false, true);
+        $closing_stock_by_sp = $this->transactionUtil->getOpeningClosingStock($business_id, $end_date, $location_id, false, true);
 
         return [
             'opening_stock_by_sp' => $opening_stock_by_sp,
-            'closing_stock_by_sp' => $closing_stock_by_sp
+            'closing_stock_by_sp' => $closing_stock_by_sp,
         ];
     }
 
@@ -87,13 +86,13 @@ class ReportController extends Controller
      */
     public function getProfitLoss(Request $request)
     {
-        if (!auth()->user()->can('profit_loss_report.view')) {
+        if (! auth()->user()->can('profit_loss_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
@@ -107,6 +106,7 @@ class ReportController extends Controller
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
+
         return view('report.profit_loss', compact('business_locations'));
     }
 
@@ -117,13 +117,13 @@ class ReportController extends Controller
      */
     public function getPurchaseSell(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
@@ -140,7 +140,7 @@ class ReportController extends Controller
             );
 
             $transaction_types = [
-                'purchase_return', 'sell_return'
+                'purchase_return', 'sell_return',
             ];
 
             $transaction_totals = $this->transactionUtil->getTransactionTotals(
@@ -156,21 +156,21 @@ class ReportController extends Controller
 
             $difference = [
                 'total' => $sell_details['total_sell_inc_tax'] + $total_sell_return_inc_tax - $purchase_details['total_purchase_inc_tax'] - $total_purchase_return_inc_tax,
-                'due' => $sell_details['invoice_due'] - $purchase_details['purchase_due']
+                'due' => $sell_details['invoice_due'] - $purchase_details['purchase_due'],
             ];
 
             return ['purchase' => $purchase_details,
-                    'sell' => $sell_details,
-                    'total_purchase_return' => $total_purchase_return_inc_tax,
-                    'total_sell_return' => $total_sell_return_inc_tax,
-                    'difference' => $difference
-                ];
+                'sell' => $sell_details,
+                'total_purchase_return' => $total_purchase_return_inc_tax,
+                'total_sell_return' => $total_sell_return_inc_tax,
+                'difference' => $difference,
+            ];
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('report.purchase_sell')
-                    ->with(compact('business_locations'));
+            ->with(compact('business_locations'));
     }
 
     /**
@@ -180,13 +180,13 @@ class ReportController extends Controller
      */
     public function getCustomerSuppliers(Request $request)
     {
-        if (!auth()->user()->can('contacts_report.view')) {
+        if (! auth()->user()->can('contacts_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $contacts = Contact::where('contacts.business_id', $business_id)
                 ->join('transactions AS t', 'contacts.id', '=', 't.contact_id')
@@ -209,27 +209,28 @@ class ReportController extends Controller
                     'contacts.type as contact_type'
                 );
             $permitted_locations = auth()->user()->permitted_locations();
-            
+
             if ($permitted_locations != 'all') {
                 $contacts->whereIn('t.location_id', $permitted_locations);
             }
 
-            if (!empty($request->input('customer_group_id'))) {
+            if (! empty($request->input('customer_group_id'))) {
                 $contacts->where('contacts.customer_group_id', $request->input('customer_group_id'));
             }
 
-            if (!empty($request->input('contact_type'))) {
+            if (! empty($request->input('contact_type'))) {
                 $contacts->whereIn('contacts.type', [$request->input('contact_type'), 'both']);
             }
 
             return Datatables::of($contacts)
                 ->editColumn('name', function ($row) {
                     $name = $row->name;
-                    if (!empty($row->supplier_business_name)) {
-                        $name .= ', ' . $row->supplier_business_name;
+                    if (! empty($row->supplier_business_name)) {
+                        $name .= ', '.$row->supplier_business_name;
                     }
-                    return '<a href="' . action('ContactController@show', [$row->id]) . '" target="_blank" class="no-print">' .
-                            $name .
+
+                    return '<a href="'.action('ContactController@show', [$row->id]).'" target="_blank" class="no-print">'.
+                            $name.
                         '</a>';
                 })
                 ->editColumn(
@@ -248,7 +249,7 @@ class ReportController extends Controller
                     'total_invoice',
                     '<span class="total_invoice" data-orig-value="{{$total_invoice}}">@format_currency($total_invoice)</span>'
                 )
-                
+
                 ->addColumn('due', function ($row) {
                     $due = ($row->total_invoice - $row->invoice_received - $row->total_sell_return + $row->sell_return_paid) - ($row->total_purchase - $row->total_purchase_return + $row->purchase_return_received - $row->purchase_paid);
 
@@ -260,7 +261,7 @@ class ReportController extends Controller
 
                     $due_formatted = $this->transactionUtil->num_f($due, true);
 
-                    return '<span class="total_due" data-orig-value="' . $due . '">' . $due_formatted .'</span>';
+                    return '<span class="total_due" data-orig-value="'.$due.'">'.$due_formatted.'</span>';
                 })
                 ->addColumn(
                     'opening_balance_due',
@@ -271,9 +272,9 @@ class ReportController extends Controller
                 ->removeColumn('purchase_paid')
                 ->removeColumn('id')
                 ->filterColumn('name', function ($query, $keyword) {
-                    $query->where( function($q) use ($keyword){
+                    $query->where(function ($q) use ($keyword) {
                         $q->where('contacts.name', 'like', "%{$keyword}%")
-                        ->orWhere('contacts.supplier_business_name', 'like', "%{$keyword}%");
+                            ->orWhere('contacts.supplier_business_name', 'like', "%{$keyword}%");
                     });
                 })
                 ->rawColumns(['total_purchase', 'total_invoice', 'due', 'name', 'total_purchase_return', 'total_sell_return', 'opening_balance_due'])
@@ -284,11 +285,11 @@ class ReportController extends Controller
         $types = [
             '' => __('lang_v1.all'),
             'customer' => __('report.customer'),
-            'supplier' => __('report.supplier')
+            'supplier' => __('report.supplier'),
         ];
 
         return view('report.contact')
-        ->with(compact('customer_group', 'types'));
+            ->with(compact('customer_group', 'types'));
     }
 
     /**
@@ -298,17 +299,17 @@ class ReportController extends Controller
      */
     public function getStockReport(Request $request)
     {
-        if (!auth()->user()->can('stock_report.view')) {
+        if (! auth()->user()->can('stock_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
         $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
-                                                ->get();
+            ->get();
         $allowed_selling_price_group = false;
         foreach ($selling_price_groups as $selling_price_group) {
-            if (auth()->user()->can('selling_price_group.' . $selling_price_group->id)) {
+            if (auth()->user()->can('selling_price_group.'.$selling_price_group->id)) {
                 $allowed_selling_price_group = true;
                 break;
             }
@@ -320,29 +321,30 @@ class ReportController extends Controller
         }
         if ($request->ajax()) {
 
-            $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type', 
+            $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
                 'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state']);
 
             $filters['not_for_selling'] = isset($filters['not_for_selling']) && $filters['not_for_selling'] == 'true' ? 1 : 0;
 
             $filters['show_manufacturing_data'] = $show_manufacturing_data;
 
-            //Return the details in ajax call
-            $for = request()->input('for') == 'view_product' ? 'view_product' :'datatables';
+            // Return the details in ajax call
+            $for = request()->input('for') == 'view_product' ? 'view_product' : 'datatables';
 
             $products = $this->productUtil->getProductStockDetails($business_id, $filters, $for);
-            //To show stock details on view product modal
-            if ($for == 'view_product' && !empty(request()->input('product_id'))) {
+            // To show stock details on view product modal
+            if ($for == 'view_product' && ! empty(request()->input('product_id'))) {
                 $product_stock_details = $products;
 
                 return view('product.partials.product_stock_details')->with(compact('product_stock_details'));
             }
 
-            $datatable =  Datatables::of($products)
+            $datatable = Datatables::of($products)
                 ->editColumn('stock', function ($row) {
                     if ($row->enable_stock) {
-                        $stock = $row->stock ? $row->stock : 0 ;
-                        return  '<span data-is_quantity="true" class="current_stock display_currency" data-orig-value="' . (float)$stock . '" data-unit="' . $row->unit . '" data-currency_symbol=false > ' . (float)$stock . '</span>' . ' ' . $row->unit ;
+                        $stock = $row->stock ? $row->stock : 0;
+
+                        return '<span data-is_quantity="true" class="current_stock display_currency" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'" data-currency_symbol=false > '.(float) $stock.'</span>'.' '.$row->unit;
                     } else {
                         return '--';
                     }
@@ -350,84 +352,86 @@ class ReportController extends Controller
                 ->editColumn('product', function ($row) {
                     $name = $row->product;
                     if ($row->type == 'variable') {
-                        $name .= ' - ' . $row->product_variation . '-' . $row->variation_name;
+                        $name .= ' - '.$row->product_variation.'-'.$row->variation_name;
                     }
+
                     return $name;
                 })
                 ->editColumn('total_sold', function ($row) {
                     $total_sold = 0;
                     if ($row->total_sold) {
-                        $total_sold =  (float)$row->total_sold;
+                        $total_sold = (float) $row->total_sold;
                     }
 
-                    return '<span data-is_quantity="true" class="display_currency total_sold" data-currency_symbol=false data-orig-value="' . $total_sold . '" data-unit="' . $row->unit . '" >' . $total_sold . '</span> ' . $row->unit;
+                    return '<span data-is_quantity="true" class="display_currency total_sold" data-currency_symbol=false data-orig-value="'.$total_sold.'" data-unit="'.$row->unit.'" >'.$total_sold.'</span> '.$row->unit;
                 })
                 ->editColumn('total_transfered', function ($row) {
                     $total_transfered = 0;
                     if ($row->total_transfered) {
-                        $total_transfered =  (float)$row->total_transfered;
+                        $total_transfered = (float) $row->total_transfered;
                     }
 
-                    return '<span data-is_quantity="true" class="display_currency total_transfered" data-currency_symbol=false data-orig-value="' . $total_transfered . '" data-unit="' . $row->unit . '" >' . $total_transfered . '</span> ' . $row->unit;
+                    return '<span data-is_quantity="true" class="display_currency total_transfered" data-currency_symbol=false data-orig-value="'.$total_transfered.'" data-unit="'.$row->unit.'" >'.$total_transfered.'</span> '.$row->unit;
                 })
-                
+
                 ->editColumn('total_adjusted', function ($row) {
                     $total_adjusted = 0;
                     if ($row->total_adjusted) {
-                        $total_adjusted =  (float)$row->total_adjusted;
+                        $total_adjusted = (float) $row->total_adjusted;
                     }
 
-                    return '<span data-is_quantity="true" class="display_currency total_adjusted" data-currency_symbol=false  data-orig-value="' . $total_adjusted . '" data-unit="' . $row->unit . '" >' . $total_adjusted . '</span> ' . $row->unit;
+                    return '<span data-is_quantity="true" class="display_currency total_adjusted" data-currency_symbol=false  data-orig-value="'.$total_adjusted.'" data-unit="'.$row->unit.'" >'.$total_adjusted.'</span> '.$row->unit;
                 })
                 ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group) {
                     $html = '';
                     if (auth()->user()->can('access_default_selling_price')) {
                         $html .= '<span class="display_currency" data-currency_symbol=true >'
-                        . $row->unit_price . '</span>';
+                        .$row->unit_price.'</span>';
                     }
 
                     if ($allowed_selling_price_group) {
-                        $html .= ' <button type="button" class="btn btn-primary btn-xs btn-modal no-print" data-container=".view_modal" data-href="' . action('ProductController@viewGroupPrice', [$row->product_id]) .'">' . __('lang_v1.view_group_prices') . '</button>';
+                        $html .= ' <button type="button" class="btn btn-primary btn-xs btn-modal no-print" data-container=".view_modal" data-href="'.action('ProductController@viewGroupPrice', [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
                     }
 
                     return $html;
                 })
                 ->editColumn('stock_price', function ($row) {
                     $html = '<span class="display_currency total_stock_price" data-currency_symbol=true data-orig-value="'
-                        . $row->stock_price . '">'
-                        . $row->stock_price . '</span>';
+                        .$row->stock_price.'">'
+                        .$row->stock_price.'</span>';
 
                     return $html;
                 })
                 ->editColumn('stock_value_by_sale_price', function ($row) {
-                    $stock = $row->stock ? $row->stock : 0 ;
-                    $unit_selling_price = (float)$row->group_price > 0 ? $row->group_price : $row->unit_price;
+                    $stock = $row->stock ? $row->stock : 0;
+                    $unit_selling_price = (float) $row->group_price > 0 ? $row->group_price : $row->unit_price;
                     $stock_price = $stock * $unit_selling_price;
-                    return  '<span class="stock_value_by_sale_price display_currency" data-orig-value="' . (float)$stock_price . '" data-currency_symbol=true > ' . (float)$stock_price . '</span>';
+
+                    return '<span class="stock_value_by_sale_price display_currency" data-orig-value="'.(float) $stock_price.'" data-currency_symbol=true > '.(float) $stock_price.'</span>';
                 })
                 ->addColumn('potential_profit', function ($row) {
-                    $stock = $row->stock ? $row->stock : 0 ;
-                    $unit_selling_price = (float)$row->group_price > 0 ? $row->group_price : $row->unit_price;
+                    $stock = $row->stock ? $row->stock : 0;
+                    $unit_selling_price = (float) $row->group_price > 0 ? $row->group_price : $row->unit_price;
                     $stock_price_by_sp = $stock * $unit_selling_price;
                     $potential_profit = $stock_price_by_sp - $row->stock_price;
 
-                    return  '<span class="potential_profit display_currency" data-orig-value="' . (float)$potential_profit . '" data-currency_symbol=true > ' . (float)$potential_profit . '</span>';
+                    return '<span class="potential_profit display_currency" data-orig-value="'.(float) $potential_profit.'" data-currency_symbol=true > '.(float) $potential_profit.'</span>';
                 })
                 ->removeColumn('enable_stock')
                 ->removeColumn('unit')
                 ->removeColumn('id');
 
-            $raw_columns  = ['unit_price', 'total_transfered', 'total_sold',
-                    'total_adjusted', 'stock', 'stock_price', 'stock_value_by_sale_price', 'potential_profit'];
+            $raw_columns = ['unit_price', 'total_transfered', 'total_sold',
+                'total_adjusted', 'stock', 'stock_price', 'stock_value_by_sale_price', 'potential_profit'];
 
             if ($show_manufacturing_data) {
                 $datatable->editColumn('total_mfg_stock', function ($row) {
                     $total_mfg_stock = 0;
                     if ($row->total_mfg_stock) {
-                        $total_mfg_stock =  (float)$row->total_mfg_stock;
+                        $total_mfg_stock = (float) $row->total_mfg_stock;
                     }
 
-                    return '<span data-is_quantity="true" class="display_currency total_mfg_stock" data-currency_symbol=false  data-orig-value="' . $total_mfg_stock . '" data-unit="' . $row->unit . '" >' . $total_mfg_stock . '</span> ' . $row->unit;
+                    return '<span data-is_quantity="true" class="display_currency total_mfg_stock" data-currency_symbol=false  data-orig-value="'.$total_mfg_stock.'" data-unit="'.$row->unit.'" >'.$total_mfg_stock.'</span> '.$row->unit;
                 });
                 $raw_columns[] = 'total_mfg_stock';
             }
@@ -438,7 +442,7 @@ class ReportController extends Controller
         $categories = Category::forDropdown($business_id, 'product');
         $brands = Brands::forDropdown($business_id);
         $units = Unit::where('business_id', $business_id)
-                            ->pluck('short_name', 'id');
+            ->pluck('short_name', 'id');
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('report.stock_report')
@@ -452,7 +456,7 @@ class ReportController extends Controller
      */
     public function getStockDetails(Request $request)
     {
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $business_id = $request->session()->get('user.business_id');
             $product_id = $request->input('product_id');
@@ -472,7 +476,7 @@ class ReportController extends Controller
                 $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
             }
 
-            if (!empty($request->input('location_id'))) {
+            if (! empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
 
                 $query->where('vld.location_id', $location_id);
@@ -480,14 +484,14 @@ class ReportController extends Controller
                 $location_filter .= "AND transactions.location_id=$location_id";
             }
 
-            $product_details =  $query->select(
+            $product_details = $query->select(
                 'products.name as product',
                 'u.short_name as unit',
                 'pv.name as product_variation',
                 'v.name as variation',
                 'v.sub_sku as sub_sku',
                 'v.sell_price_inc_tax',
-                DB::raw("SUM(vld.qty_available) as stock"),
+                DB::raw('SUM(vld.qty_available) as stock'),
                 DB::raw("(SELECT SUM(IF(transactions.type='sell', TSL.quantity - TSL.quantity_returned, -1* TPL.quantity) ) FROM transactions 
                         LEFT JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
 
@@ -506,11 +510,11 @@ class ReportController extends Controller
                 // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final' $location_filter AND
                 //     transaction_sell_lines.variation_id=v.id) as total_sold")
             )
-                        ->groupBy('v.id')
-                        ->get();
+                ->groupBy('v.id')
+                ->get();
 
             return view('report.stock_details')
-                        ->with(compact('product_details'));
+                ->with(compact('product_details'));
         }
     }
 
@@ -521,7 +525,7 @@ class ReportController extends Controller
      */
     public function getTaxDetails(Request $request)
     {
-        if (!auth()->user()->can('tax_report.view')) {
+        if (! auth()->user()->can('tax_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -534,158 +538,158 @@ class ReportController extends Controller
             $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
 
             $sells = Transaction::leftJoin('tax_rates as tr', 'transactions.tax_id', '=', 'tr.id')
-                            ->leftJoin('contacts as c', 'transactions.contact_id', '=', 'c.id')
+                ->leftJoin('contacts as c', 'transactions.contact_id', '=', 'c.id')
                 ->where('transactions.business_id', $business_id)
                 ->with(['payment_lines'])
-                ->select('c.name as contact_name', 
-                        'c.supplier_business_name',
-                        'c.tax_number',
-                        'transactions.ref_no',
-                        'transactions.invoice_no',
-                        'transactions.transaction_date',
-                        'transactions.total_before_tax',
-                        'transactions.tax_id',
-                        'transactions.tax_amount',
-                        'transactions.id',
-                        'transactions.type',
-                        'transactions.discount_type',
-                        'transactions.discount_amount'
-                    );
-                if ($type == 'sell') {
-                    $sells->where('transactions.type', 'sell')
+                ->select('c.name as contact_name',
+                    'c.supplier_business_name',
+                    'c.tax_number',
+                    'transactions.ref_no',
+                    'transactions.invoice_no',
+                    'transactions.transaction_date',
+                    'transactions.total_before_tax',
+                    'transactions.tax_id',
+                    'transactions.tax_amount',
+                    'transactions.id',
+                    'transactions.type',
+                    'transactions.discount_type',
+                    'transactions.discount_amount'
+                );
+            if ($type == 'sell') {
+                $sells->where('transactions.type', 'sell')
                     ->where('transactions.status', 'final')
-                    ->where( function($query){
-                        $query->whereHas('sell_lines',function($q){
+                    ->where(function ($query) {
+                        $query->whereHas('sell_lines', function ($q) {
                             $q->whereNotNull('transaction_sell_lines.tax_id');
                         })->orWhereNotNull('transactions.tax_id');
                     })
-                    ->with(['sell_lines' => function($q){
+                    ->with(['sell_lines' => function ($q) {
                         $q->whereNotNull('transaction_sell_lines.tax_id');
                     }, 'sell_lines.line_tax']);
-                }
-                if ($type == 'purchase') {
-                    $sells->where('transactions.type', 'purchase')
+            }
+            if ($type == 'purchase') {
+                $sells->where('transactions.type', 'purchase')
                     ->where('transactions.status', 'received')
-                    ->where( function($query){
-                        $query->whereHas('purchase_lines', function($q){
+                    ->where(function ($query) {
+                        $query->whereHas('purchase_lines', function ($q) {
                             $q->whereNotNull('purchase_lines.tax_id');
                         })->orWhereNotNull('transactions.tax_id');
                     })
-                    ->with(['purchase_lines' => function($q){
+                    ->with(['purchase_lines' => function ($q) {
                         $q->whereNotNull('purchase_lines.tax_id');
                     }, 'purchase_lines.line_tax']);
-                }
+            }
 
-                if ($type == 'expense') {
-                    $sells->where('transactions.type', 'expense')
-                        ->whereNotNull('transactions.tax_id');
-                }
+            if ($type == 'expense') {
+                $sells->where('transactions.type', 'expense')
+                    ->whereNotNull('transactions.tax_id');
+            }
 
-                $permitted_locations = auth()->user()->permitted_locations();
-                if ($permitted_locations != 'all') {
-                    $sells->whereIn('transactions.location_id', $permitted_locations);
-                }
+            $permitted_locations = auth()->user()->permitted_locations();
+            if ($permitted_locations != 'all') {
+                $sells->whereIn('transactions.location_id', $permitted_locations);
+            }
 
-                if (request()->has('location_id')) {
-                    $location_id = request()->get('location_id');
-                    if (!empty($location_id)) {
-                        $sells->where('transactions.location_id', $location_id);
+            if (request()->has('location_id')) {
+                $location_id = request()->get('location_id');
+                if (! empty($location_id)) {
+                    $sells->where('transactions.location_id', $location_id);
+                }
+            }
+            if (! empty(request()->start_date) && ! empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end = request()->end_date;
+                $sells->whereDate('transactions.transaction_date', '>=', $start)
+                    ->whereDate('transactions.transaction_date', '<=', $end);
+            }
+            $datatable = Datatables::of($sells);
+            $raw_cols = ['total_before_tax', 'discount_amount', 'contact_name', 'payment_methods'];
+            $group_taxes_array = TaxRate::groupTaxes($business_id);
+            $group_taxes = [];
+            foreach ($group_taxes_array as $group_tax) {
+                foreach ($group_tax['sub_taxes'] as $sub_tax) {
+                    $group_taxes[$group_tax->id]['sub_taxes'][$sub_tax->id] = $sub_tax;
+                }
+            }
+            foreach ($taxes as $tax) {
+                $col = 'tax_'.$tax['id'];
+                $raw_cols[] = $col;
+                $datatable->addColumn($col, function ($row) use ($tax, $type, $col, $group_taxes) {
+                    $tax_amount = 0;
+                    if ($type == 'sell') {
+                        foreach ($row->sell_lines as $sell_line) {
+                            if ($sell_line->tax_id == $tax['id']) {
+                                $tax_amount += ($sell_line->item_tax * ($sell_line->quantity - $sell_line->quantity_returned));
+                            }
+
+                            // break group tax
+                            if ($sell_line->line_tax->is_tax_group == 1 && array_key_exists($tax['id'], $group_taxes[$sell_line->tax_id]['sub_taxes'])) {
+
+                                $group_tax_details = $this->transactionUtil->groupTaxDetails($sell_line->line_tax, $sell_line->item_tax);
+
+                                $sub_tax_share = 0;
+                                foreach ($group_tax_details as $sub_tax_details) {
+                                    if ($sub_tax_details['id'] == $tax['id']) {
+                                        $sub_tax_share = $sub_tax_details['calculated_tax'];
+                                    }
+                                }
+
+                                $tax_amount += ($sub_tax_share * ($sell_line->quantity - $sell_line->quantity_returned));
+                            }
+                        }
+                    } elseif ($type == 'purchase') {
+                        foreach ($row->purchase_lines as $purchase_line) {
+                            if ($purchase_line->tax_id == $tax['id']) {
+                                $tax_amount += ($purchase_line->item_tax * ($purchase_line->quantity - $purchase_line->quantity_returned));
+                            }
+
+                            // break group tax
+                            if ($purchase_line->line_tax->is_tax_group == 1 && array_key_exists($tax['id'], $group_taxes[$purchase_line->tax_id]['sub_taxes'])) {
+
+                                $group_tax_details = $this->transactionUtil->groupTaxDetails($purchase_line->line_tax, $purchase_line->item_tax);
+
+                                $sub_tax_share = 0;
+                                foreach ($group_tax_details as $sub_tax_details) {
+                                    if ($sub_tax_details['id'] == $tax['id']) {
+                                        $sub_tax_share = $sub_tax_details['calculated_tax'];
+                                    }
+                                }
+
+                                $tax_amount += ($sub_tax_share * ($purchase_line->quantity - $purchase_line->quantity_returned));
+                            }
+                        }
                     }
-                }
-                if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                    $start = request()->start_date;
-                    $end =  request()->end_date;
-                    $sells->whereDate('transactions.transaction_date', '>=', $start)
-                                ->whereDate('transactions.transaction_date', '<=', $end);
-                }
-                $datatable = Datatables::of($sells);
-                $raw_cols = ['total_before_tax', 'discount_amount', 'contact_name', 'payment_methods'];
-                $group_taxes_array = TaxRate::groupTaxes($business_id);
-                $group_taxes = [];
-                foreach ($group_taxes_array as $group_tax) {
-                   foreach ($group_tax['sub_taxes'] as $sub_tax) {
-                       $group_taxes[$group_tax->id]['sub_taxes'][$sub_tax->id] = $sub_tax;
-                   }
-                }
-                foreach ($taxes as $tax) {
-                    $col = 'tax_' . $tax['id'];
-                    $raw_cols[] = $col;
-                    $datatable->addColumn($col, function($row) use($tax, $type, $col, $group_taxes) {
-                        $tax_amount = 0;
-                        if ($type == 'sell') {
-                            foreach ($row->sell_lines as $sell_line) {
-                                if ($sell_line->tax_id == $tax['id']) {
-                                    $tax_amount += ($sell_line->item_tax * ($sell_line->quantity - $sell_line->quantity_returned) );
-                                }
+                    if ($row->tax_id == $tax['id']) {
+                        $tax_amount += $row->tax_amount;
+                    }
 
-                                //break group tax
-                                if ($sell_line->line_tax->is_tax_group == 1 && array_key_exists($tax['id'], $group_taxes[$sell_line->tax_id]['sub_taxes'])) {
+                    // break group tax
+                    if (! empty($group_taxes[$row->tax_id]) && array_key_exists($tax['id'], $group_taxes[$row->tax_id]['sub_taxes'])) {
 
-                                    $group_tax_details = $this->transactionUtil->groupTaxDetails($sell_line->line_tax, $sell_line->item_tax);
-                                    
-                                    $sub_tax_share = 0;
-                                    foreach ($group_tax_details as $sub_tax_details) {
-                                        if ($sub_tax_details['id'] == $tax['id']) {
-                                            $sub_tax_share = $sub_tax_details['calculated_tax'];
-                                        }
-                                    }
+                        $group_tax_details = $this->transactionUtil->groupTaxDetails($row->tax_id, $row->tax_amount);
 
-                                    $tax_amount += ($sub_tax_share * ($sell_line->quantity - $sell_line->quantity_returned) );
-                                }
-                            }
-                        } elseif ($type == 'purchase') {
-                            foreach ($row->purchase_lines as $purchase_line) {
-                                if ($purchase_line->tax_id == $tax['id']) {
-                                    $tax_amount += ($purchase_line->item_tax * ($purchase_line->quantity - $purchase_line->quantity_returned));
-                                }
-
-                                //break group tax
-                                if ($purchase_line->line_tax->is_tax_group == 1 && array_key_exists($tax['id'], $group_taxes[$purchase_line->tax_id]['sub_taxes'])) {
-
-                                    $group_tax_details = $this->transactionUtil->groupTaxDetails($purchase_line->line_tax, $purchase_line->item_tax);
-                                    
-                                    $sub_tax_share = 0;
-                                    foreach ($group_tax_details as $sub_tax_details) {
-                                        if ($sub_tax_details['id'] == $tax['id']) {
-                                            $sub_tax_share = $sub_tax_details['calculated_tax'];
-                                        }
-                                    }
-
-                                    $tax_amount += ($sub_tax_share * ($purchase_line->quantity - $purchase_line->quantity_returned) );
-                                }
+                        $sub_tax_share = 0;
+                        foreach ($group_tax_details as $sub_tax_details) {
+                            if ($sub_tax_details['id'] == $tax['id']) {
+                                $sub_tax_share = $sub_tax_details['calculated_tax'];
                             }
                         }
-                        if ($row->tax_id == $tax['id']) {
-                            $tax_amount += $row->tax_amount;
-                        }
 
-                        //break group tax
-                        if (!empty($group_taxes[$row->tax_id]) && array_key_exists($tax['id'], $group_taxes[$row->tax_id]['sub_taxes'])) {
+                        $tax_amount += $sub_tax_share;
+                    }
 
-                            $group_tax_details = $this->transactionUtil->groupTaxDetails($row->tax_id, $row->tax_amount);
-                                    
-                            $sub_tax_share = 0;
-                            foreach ($group_tax_details as $sub_tax_details) {
-                                if ($sub_tax_details['id'] == $tax['id']) {
-                                    $sub_tax_share = $sub_tax_details['calculated_tax'];
-                                }
-                            }
+                    if ($tax_amount > 0) {
+                        return '<span class="display_currency '.$col.'" data-currency_symbol="true" data-orig-value="'.$tax_amount.'">'.$tax_amount.'</span>';
+                    } else {
+                        return '';
+                    }
+                });
+            }
 
-                            $tax_amount += $sub_tax_share;
-                        }
-
-                        if ($tax_amount > 0) {
-                            return '<span class="display_currency ' . $col . '" data-currency_symbol="true" data-orig-value="' . $tax_amount . '">' . $tax_amount . '</span>';
-                        } else {
-                            return '';
-                        }
-                    });
-                }
-
-                $datatable->editColumn(
-                    'total_before_tax',
-                    '<span class="display_currency total_before_tax" data-currency_symbol="true" data-orig-value="{{$total_before_tax}}">{{$total_before_tax}}</span>'
-                )->editColumn('discount_amount', '@if($discount_amount != 0)<span class="display_currency" data-currency_symbol="true">{{$discount_amount}}</span>@if($discount_type == "percentage")% @endif @endif')
+            $datatable->editColumn(
+                'total_before_tax',
+                '<span class="display_currency total_before_tax" data-currency_symbol="true" data-orig-value="{{$total_before_tax}}">{{$total_before_tax}}</span>'
+            )->editColumn('discount_amount', '@if($discount_amount != 0)<span class="display_currency" data-currency_symbol="true">{{$discount_amount}}</span>@if($discount_type == "percentage")% @endif @endif')
                 ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
                 ->editColumn('contact_name', '@if(!empty($supplier_business_name)) {{$supplier_business_name}},<br>@endif {{$contact_name}}')
                 ->addColumn('payment_methods', function ($row) use ($payment_types) {
@@ -698,13 +702,13 @@ class ReportController extends Controller
                         $payment_method = __('lang_v1.checkout_multi_pay');
                     }
 
-                    $html = !empty($payment_method) ? '<span class="payment-method" data-orig-value="' . $payment_method . '" data-status-name="' . $payment_method . '">' . $payment_method . '</span>' : '';
-                    
+                    $html = ! empty($payment_method) ? '<span class="payment-method" data-orig-value="'.$payment_method.'" data-status-name="'.$payment_method.'">'.$payment_method.'</span>' : '';
+
                     return $html;
                 });
 
-                return $datatable->rawColumns($raw_cols)
-                            ->make(true);
+            return $datatable->rawColumns($raw_cols)
+                ->make(true);
         }
     }
 
@@ -715,13 +719,13 @@ class ReportController extends Controller
      */
     public function getTaxReport(Request $request)
     {
-        if (!auth()->user()->can('tax_report.view')) {
+        if (! auth()->user()->can('tax_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
@@ -741,12 +745,12 @@ class ReportController extends Controller
             }
 
             $total_output_tax = $output_tax_details['total_tax'] + $total_module_output_tax;
-            
+
             $tax_diff = $total_output_tax - $input_tax_details['total_tax'] - $expense_tax_details['total_tax'];
 
             return [
-                    'tax_diff' => $tax_diff
-                ];
+                'tax_diff' => $tax_diff,
+            ];
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
@@ -766,17 +770,17 @@ class ReportController extends Controller
      */
     public function getTrendingProducts(Request $request)
     {
-        if (!auth()->user()->can('trending_product_report.view')) {
+        if (! auth()->user()->can('trending_product_report.view')) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $business_id = $request->session()->get('user.business_id');
 
         $filters = request()->only(['category', 'sub_category', 'brand', 'unit', 'limit', 'location_id', 'product_type']);
 
         $date_range = request()->input('date_range');
-        
-        if (!empty($date_range)) {
+
+        if (! empty($date_range)) {
             $date_range_array = explode('~', $date_range);
             $filters['start_date'] = $this->transactionUtil->uf_date(trim($date_range_array[0]));
             $filters['end_date'] = $this->transactionUtil->uf_date(trim($date_range_array[1]));
@@ -788,7 +792,7 @@ class ReportController extends Controller
         $labels = [];
         foreach ($products as $product) {
             $values[] = (float) $product->total_unit_sold;
-            $labels[] = $product->product . ' (' . $product->unit . ')';
+            $labels[] = $product->product.' ('.$product->unit.')';
         }
 
         $chart = new CommonChart;
@@ -798,17 +802,18 @@ class ReportController extends Controller
         $categories = Category::forDropdown($business_id, 'product');
         $brands = Brands::forDropdown($business_id);
         $units = Unit::where('business_id', $business_id)
-                            ->pluck('short_name', 'id');
+            ->pluck('short_name', 'id');
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('report.trending_products')
-                    ->with(compact('chart', 'categories', 'brands', 'units', 'business_locations'));
+            ->with(compact('chart', 'categories', 'brands', 'units', 'business_locations'));
     }
 
     public function getTrendingProductsAjax()
     {
         $business_id = request()->session()->get('user.business_id');
     }
+
     /**
      * Shows expense report of a business
      *
@@ -816,7 +821,7 @@ class ReportController extends Controller
      */
     public function getExpenseReport(Request $request)
     {
-        if (!auth()->user()->can('expense_report.view')) {
+        if (! auth()->user()->can('expense_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -824,8 +829,8 @@ class ReportController extends Controller
         $filters = $request->only(['category', 'location_id']);
 
         $date_range = $request->input('date_range');
-        
-        if (!empty($date_range)) {
+
+        if (! empty($date_range)) {
             $date_range_array = explode('~', $date_range);
             $filters['start_date'] = $this->transactionUtil->uf_date(trim($date_range_array[0]));
             $filters['end_date'] = $this->transactionUtil->uf_date(trim($date_range_array[1]));
@@ -840,7 +845,7 @@ class ReportController extends Controller
         $labels = [];
         foreach ($expenses as $expense) {
             $values[] = (float) $expense->total_expense;
-            $labels[] = !empty($expense->category) ? $expense->category : __('report.others');
+            $labels[] = ! empty($expense->category) ? $expense->category : __('report.others');
         }
 
         $chart = new CommonChart;
@@ -849,12 +854,12 @@ class ReportController extends Controller
             ->dataset(__('report.total_expense'), 'column', $values);
 
         $categories = ExpenseCategory::where('business_id', $business_id)
-                            ->pluck('name', 'id');
-        
+            ->pluck('name', 'id');
+
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('report.expense_report')
-                    ->with(compact('chart', 'categories', 'business_locations', 'expenses'));
+            ->with(compact('chart', 'categories', 'business_locations', 'expenses'));
     }
 
     /**
@@ -864,18 +869,18 @@ class ReportController extends Controller
      */
     public function getStockAdjustmentReport(Request $request)
     {
-        if (!auth()->user()->can('stock_report.view')) {
+        if (! auth()->user()->can('stock_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
-            $query =  Transaction::where('business_id', $business_id)
-                            ->where('type', 'stock_adjustment');
+            $query = Transaction::where('business_id', $business_id)
+                ->where('type', 'stock_adjustment');
 
-            //Check for permitted locations of a user
+            // Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
                 $query->whereIn('location_id', $permitted_locations);
@@ -883,26 +888,27 @@ class ReportController extends Controller
 
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
             }
             $location_id = $request->get('location_id');
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('location_id', $location_id);
             }
 
             $stock_adjustment_details = $query->select(
-                DB::raw("SUM(final_total) as total_amount"),
-                DB::raw("SUM(total_amount_recovered) as total_recovered"),
+                DB::raw('SUM(final_total) as total_amount'),
+                DB::raw('SUM(total_amount_recovered) as total_recovered'),
                 DB::raw("SUM(IF(adjustment_type = 'normal', final_total, 0)) as total_normal"),
                 DB::raw("SUM(IF(adjustment_type = 'abnormal', final_total, 0)) as total_abnormal")
             )->first();
+
             return $stock_adjustment_details;
         }
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('report.stock_adjustment_report')
-                    ->with(compact('business_locations'));
+            ->with(compact('business_locations'));
     }
 
     /**
@@ -912,12 +918,12 @@ class ReportController extends Controller
      */
     public function getRegisterReport(Request $request)
     {
-        if (!auth()->user()->can('register_report.view')) {
+        if (! auth()->user()->can('register_report.view')) {
             abort(403, 'Unauthorized action.');
         }
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $registers = CashRegister::leftjoin(
                 'cash_register_transactions as ct',
@@ -929,7 +935,7 @@ class ReportController extends Controller
                 'u.id',
                 '=',
                 'cash_registers.user_id'
-                )
+            )
                 ->leftJoin(
                     'business_locations as bl',
                     'bl.id',
@@ -963,58 +969,59 @@ class ReportController extends Controller
                 $registers->whereIn('cash_registers.location_id', $permitted_locations);
             }
 
-            if (!empty($request->input('user_id'))) {
+            if (! empty($request->input('user_id'))) {
                 $registers->where('cash_registers.user_id', $request->input('user_id'));
             }
-            if (!empty($request->input('status'))) {
+            if (! empty($request->input('status'))) {
                 $registers->where('cash_registers.status', $request->input('status'));
             }
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
 
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $registers->whereDate('cash_registers.created_at', '>=', $start_date)
-                        ->whereDate('cash_registers.created_at', '<=', $end_date);
+                    ->whereDate('cash_registers.created_at', '<=', $end_date);
             }
+
             return Datatables::of($registers)
                 ->editColumn('total_card_payment', function ($row) {
-                    return '<span data-orig-value="' . $row->total_card_payment . '" >' . $this->transactionUtil->num_f($row->total_card_payment, true) . ' (' . $row->total_card_slips . ')</span>';
+                    return '<span data-orig-value="'.$row->total_card_payment.'" >'.$this->transactionUtil->num_f($row->total_card_payment, true).' ('.$row->total_card_slips.')</span>';
                 })
                 ->editColumn('total_cheque_payment', function ($row) {
-                    return '<span data-orig-value="' . $row->total_cheque_payment . '" >' . $this->transactionUtil->num_f($row->total_cheque_payment, true) . ' (' . $row->total_cheques . ')</span>';
+                    return '<span data-orig-value="'.$row->total_cheque_payment.'" >'.$this->transactionUtil->num_f($row->total_cheque_payment, true).' ('.$row->total_cheques.')</span>';
                 })
                 ->editColumn('total_cash_payment', function ($row) {
-                    return '<span data-orig-value="' . $row->total_cash_payment . '" >' . $this->transactionUtil->num_f($row->total_cash_payment, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_cash_payment.'" >'.$this->transactionUtil->num_f($row->total_cash_payment, true).'</span>';
                 })
                 ->editColumn('total_bank_transfer_payment', function ($row) {
-                    return '<span data-orig-value="' . $row->total_bank_transfer_payment . '" >' . $this->transactionUtil->num_f($row->total_bank_transfer_payment, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_bank_transfer_payment.'" >'.$this->transactionUtil->num_f($row->total_bank_transfer_payment, true).'</span>';
                 })
                 ->editColumn('total_other_payment', function ($row) {
-                    return '<span data-orig-value="' . $row->total_other_payment . '" >' . $this->transactionUtil->num_f($row->total_other_payment, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_other_payment.'" >'.$this->transactionUtil->num_f($row->total_other_payment, true).'</span>';
                 })
                 ->editColumn('total_advance_payment', function ($row) {
-                    return '<span data-orig-value="' . $row->total_advance_payment . '" >' . $this->transactionUtil->num_f($row->total_advance_payment, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_advance_payment.'" >'.$this->transactionUtil->num_f($row->total_advance_payment, true).'</span>';
                 })
                 ->editColumn('total_custom_pay_1', function ($row) {
-                    return '<span data-orig-value="' . $row->total_custom_pay_1 . '" >' . $this->transactionUtil->num_f($row->total_custom_pay_1, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_custom_pay_1.'" >'.$this->transactionUtil->num_f($row->total_custom_pay_1, true).'</span>';
                 })
                 ->editColumn('total_custom_pay_2', function ($row) {
-                    return '<span data-orig-value="' . $row->total_custom_pay_2 . '" >' . $this->transactionUtil->num_f($row->total_custom_pay_2, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_custom_pay_2.'" >'.$this->transactionUtil->num_f($row->total_custom_pay_2, true).'</span>';
                 })
                 ->editColumn('total_custom_pay_3', function ($row) {
-                    return '<span data-orig-value="' . $row->total_custom_pay_3 . '" >' . $this->transactionUtil->num_f($row->total_custom_pay_3, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_custom_pay_3.'" >'.$this->transactionUtil->num_f($row->total_custom_pay_3, true).'</span>';
                 })
                 ->editColumn('total_custom_pay_4', function ($row) {
-                    return '<span data-orig-value="' . $row->total_custom_pay_4 . '" >' . $this->transactionUtil->num_f($row->total_custom_pay_4, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_custom_pay_4.'" >'.$this->transactionUtil->num_f($row->total_custom_pay_4, true).'</span>';
                 })
                 ->editColumn('total_custom_pay_5', function ($row) {
-                    return '<span data-orig-value="' . $row->total_custom_pay_5 . '" >' . $this->transactionUtil->num_f($row->total_custom_pay_5, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_custom_pay_5.'" >'.$this->transactionUtil->num_f($row->total_custom_pay_5, true).'</span>';
                 })
                 ->editColumn('total_custom_pay_6', function ($row) {
-                    return '<span data-orig-value="' . $row->total_custom_pay_6 . '" >' . $this->transactionUtil->num_f($row->total_custom_pay_6, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_custom_pay_6.'" >'.$this->transactionUtil->num_f($row->total_custom_pay_6, true).'</span>';
                 })
                 ->editColumn('total_custom_pay_7', function ($row) {
-                    return '<span data-orig-value="' . $row->total_custom_pay_7 . '" >' . $this->transactionUtil->num_f($row->total_custom_pay_7, true) . '</span>';
+                    return '<span data-orig-value="'.$row->total_custom_pay_7.'" >'.$this->transactionUtil->num_f($row->total_custom_pay_7, true).'</span>';
                 })
                 ->editColumn('closed_at', function ($row) {
                     if ($row->status == 'close') {
@@ -1028,8 +1035,8 @@ class ReportController extends Controller
                 })
                 ->addColumn('total', function ($row) {
                     $total = $row->total_card_payment + $row->total_cheque_payment + $row->total_cash_payment + $row->total_bank_transfer_payment + $row->total_other_payment + $row->total_advance_payment + $row->total_custom_pay_1 + $row->total_custom_pay_2 + $row->total_custom_pay_3 + $row->total_custom_pay_4 + $row->total_custom_pay_5 + $row->total_custom_pay_6 + $row->total_custom_pay_7;
-                    
-                    return '<span data-orig-value="' . $total . '" >' . $this->transactionUtil->num_f($total, true) . '</span>';
+
+                    return '<span data-orig-value="'.$total.'" >'.$this->transactionUtil->num_f($total, true).'</span>';
                 })
                 ->addColumn('action', '<button type="button" data-href="{{action(\'CashRegisterController@show\', [$id])}}" class="btn btn-xs btn-info btn-modal" 
                     data-container=".view_register"><i class="fas fa-eye" aria-hidden="true"></i> @lang("messages.view")</button> @if($status != "close" && auth()->user()->can("close_cash_register"))<button type="button" data-href="{{action(\'CashRegisterController@getCloseRegister\', [$id])}}" class="btn btn-xs btn-danger btn-modal" 
@@ -1045,7 +1052,7 @@ class ReportController extends Controller
         $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
 
         return view('report.register_report')
-                    ->with(compact('users', 'payment_types'));
+            ->with(compact('users', 'payment_types'));
     }
 
     /**
@@ -1055,7 +1062,7 @@ class ReportController extends Controller
      */
     public function getSalesRepresentativeReport(Request $request)
     {
-        if (!auth()->user()->can('sales_representative.view')) {
+        if (! auth()->user()->can('sales_representative.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1068,7 +1075,7 @@ class ReportController extends Controller
         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
         return view('report.sales_representative')
-                ->with(compact('users', 'business_locations', 'pos_settings'));
+            ->with(compact('users', 'business_locations', 'pos_settings'));
     }
 
     /**
@@ -1078,7 +1085,7 @@ class ReportController extends Controller
      */
     public function getSalesRepresentativeTotalExpense(Request $request)
     {
-        if (!auth()->user()->can('sales_representative.view')) {
+        if (! auth()->user()->can('sales_representative.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1100,13 +1107,13 @@ class ReportController extends Controller
      */
     public function getSalesRepresentativeTotalSell(Request $request)
     {
-        if (!auth()->user()->can('sales_representative.view')) {
+        if (! auth()->user()->can('sales_representative.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
@@ -1116,9 +1123,9 @@ class ReportController extends Controller
 
             $sell_details = $this->transactionUtil->getSellTotals($business_id, $start_date, $end_date, $location_id, $created_by);
 
-            //Get Sell Return details
+            // Get Sell Return details
             $transaction_types = [
-                'sell_return'
+                'sell_return',
             ];
             $sell_return_details = $this->transactionUtil->getTransactionTotals(
                 $business_id,
@@ -1129,13 +1136,13 @@ class ReportController extends Controller
                 $created_by
             );
 
-            $total_sell_return = !empty($sell_return_details['total_sell_return_exc_tax']) ? $sell_return_details['total_sell_return_exc_tax'] : 0;
+            $total_sell_return = ! empty($sell_return_details['total_sell_return_exc_tax']) ? $sell_return_details['total_sell_return_exc_tax'] : 0;
             $total_sell = $sell_details['total_sell_exc_tax'] - $total_sell_return;
 
             return [
                 'total_sell_exc_tax' => $sell_details['total_sell_exc_tax'],
                 'total_sell_return_exc_tax' => $total_sell_return,
-                'total_sell' => $total_sell
+                'total_sell' => $total_sell,
             ];
         }
     }
@@ -1147,13 +1154,13 @@ class ReportController extends Controller
      */
     public function getSalesRepresentativeTotalCommission(Request $request)
     {
-        if (!auth()->user()->can('sales_representative.view')) {
+        if (! auth()->user()->can('sales_representative.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
@@ -1171,26 +1178,24 @@ class ReportController extends Controller
             if ($commsn_calculation_type == 'payment_received') {
                 $payment_details = $this->transactionUtil->getTotalPaymentWithCommission($business_id, $start_date, $end_date, $location_id, $commission_agent);
 
-                //Get Commision
+                // Get Commision
                 $total_commission = $commission_percentage * $payment_details['total_payment_with_commission'] / 100;
 
-                return ['total_payment_with_commission' =>
-                        $payment_details['total_payment_with_commission'] ?? 0,
+                return ['total_payment_with_commission' => $payment_details['total_payment_with_commission'] ?? 0,
                     'total_commission' => $total_commission,
-                    'commission_percentage' => $commission_percentage
+                    'commission_percentage' => $commission_percentage,
                 ];
             }
 
             $sell_details = $this->transactionUtil->getTotalSellCommission($business_id, $start_date, $end_date, $location_id, $commission_agent);
 
-            //Get Commision
+            // Get Commision
             $total_commission = $commission_percentage * $sell_details['total_sales_with_commission'] / 100;
 
-            return ['total_sales_with_commission' =>
-                        $sell_details['total_sales_with_commission'],
-                    'total_commission' => $total_commission,
-                    'commission_percentage' => $commission_percentage
-                ];
+            return ['total_sales_with_commission' => $sell_details['total_sales_with_commission'],
+                'total_commission' => $total_commission,
+                'commission_percentage' => $commission_percentage,
+            ];
         }
     }
 
@@ -1201,15 +1206,15 @@ class ReportController extends Controller
      */
     public function getStockExpiryReport(Request $request)
     {
-        if (!auth()->user()->can('stock_report.view')) {
+        if (! auth()->user()->can('stock_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
-        
-        //TODO:: Need to display reference number and edit expiry date button
 
-        //Return the details in ajax call
+        // TODO:: Need to display reference number and edit expiry date button
+
+        // Return the details in ajax call
         if ($request->ajax()) {
             $query = PurchaseLine::leftjoin(
                 'transactions as t',
@@ -1217,67 +1222,67 @@ class ReportController extends Controller
                 '=',
                 't.id'
             )
-                            ->leftjoin(
-                                'products as p',
-                                'purchase_lines.product_id',
-                                '=',
-                                'p.id'
-                            )
-                            ->leftjoin(
-                                'variations as v',
-                                'purchase_lines.variation_id',
-                                '=',
-                                'v.id'
-                            )
-                            ->leftjoin(
-                                'product_variations as pv',
-                                'v.product_variation_id',
-                                '=',
-                                'pv.id'
-                            )
-                            ->leftjoin('business_locations as l', 't.location_id', '=', 'l.id')
-                            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
-                            ->where('t.business_id', $business_id)
-                            //->whereNotNull('p.expiry_period')
-                            //->whereNotNull('p.expiry_period_type')
-                            //->whereNotNull('exp_date')
-                            ->where('p.enable_stock', 1);
+                ->leftjoin(
+                    'products as p',
+                    'purchase_lines.product_id',
+                    '=',
+                    'p.id'
+                )
+                ->leftjoin(
+                    'variations as v',
+                    'purchase_lines.variation_id',
+                    '=',
+                    'v.id'
+                )
+                ->leftjoin(
+                    'product_variations as pv',
+                    'v.product_variation_id',
+                    '=',
+                    'pv.id'
+                )
+                ->leftjoin('business_locations as l', 't.location_id', '=', 'l.id')
+                ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+                ->where('t.business_id', $business_id)
+                            // ->whereNotNull('p.expiry_period')
+                            // ->whereNotNull('p.expiry_period_type')
+                            // ->whereNotNull('exp_date')
+                ->where('p.enable_stock', 1);
             // ->whereRaw('purchase_lines.quantity > purchase_lines.quantity_sold + quantity_adjusted + quantity_returned');
-                            
+
             $permitted_locations = auth()->user()->permitted_locations();
 
             if ($permitted_locations != 'all') {
                 $query->whereIn('t.location_id', $permitted_locations);
             }
 
-            if (!empty($request->input('location_id'))) {
+            if (! empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
                 $query->where('t.location_id', $location_id)
-                        //If filter by location then hide products not available in that location
-                        ->join('product_locations as pl', 'pl.product_id', '=', 'p.id')
-                        ->where(function ($q) use ($location_id) {
-                            $q->where('pl.location_id', $location_id);
-                        });
+                        // If filter by location then hide products not available in that location
+                    ->join('product_locations as pl', 'pl.product_id', '=', 'p.id')
+                    ->where(function ($q) use ($location_id) {
+                        $q->where('pl.location_id', $location_id);
+                    });
             }
 
-            if (!empty($request->input('category_id'))) {
+            if (! empty($request->input('category_id'))) {
                 $query->where('p.category_id', $request->input('category_id'));
             }
-            if (!empty($request->input('sub_category_id'))) {
+            if (! empty($request->input('sub_category_id'))) {
                 $query->where('p.sub_category_id', $request->input('sub_category_id'));
             }
-            if (!empty($request->input('brand_id'))) {
+            if (! empty($request->input('brand_id'))) {
                 $query->where('p.brand_id', $request->input('brand_id'));
             }
-            if (!empty($request->input('unit_id'))) {
+            if (! empty($request->input('unit_id'))) {
                 $query->where('p.unit_id', $request->input('unit_id'));
             }
-            if (!empty($request->input('exp_date_filter'))) {
+            if (! empty($request->input('exp_date_filter'))) {
                 $query->whereDate('exp_date', '<=', $request->input('exp_date_filter'));
             }
 
             $only_mfg_products = request()->get('only_mfg_products', 0);
-            if (!empty($only_mfg_products)) {
+            if (! empty($only_mfg_products)) {
                 $query->where('t.type', 'production_purchase');
             }
 
@@ -1292,28 +1297,28 @@ class ReportController extends Controller
                 'mfg_date',
                 'exp_date',
                 'u.short_name as unit',
-                DB::raw("SUM(COALESCE(quantity, 0) - COALESCE(quantity_sold, 0) - COALESCE(quantity_adjusted, 0) - COALESCE(quantity_returned, 0)) as stock_left"),
+                DB::raw('SUM(COALESCE(quantity, 0) - COALESCE(quantity_sold, 0) - COALESCE(quantity_adjusted, 0) - COALESCE(quantity_returned, 0)) as stock_left'),
                 't.ref_no',
                 't.id as transaction_id',
                 'purchase_lines.id as purchase_line_id',
                 'purchase_lines.lot_number'
             )
-            ->having('stock_left', '>', 0)
-            ->groupBy('purchase_lines.variation_id')
-            ->groupBy('purchase_lines.exp_date')
-            ->groupBy('purchase_lines.lot_number');
+                ->having('stock_left', '>', 0)
+                ->groupBy('purchase_lines.variation_id')
+                ->groupBy('purchase_lines.exp_date')
+                ->groupBy('purchase_lines.lot_number');
 
             return Datatables::of($report)
                 ->editColumn('product', function ($row) {
                     if ($row->product_type == 'variable') {
-                        return $row->product . ' - ' .
-                        $row->product_variation . ' - ' . $row->variation . ' (' . $row->sub_sku . ')';
+                        return $row->product.' - '.
+                        $row->product_variation.' - '.$row->variation.' ('.$row->sub_sku.')';
                     } else {
-                        return $row->product . ' (' . $row->sku . ')';
+                        return $row->product.' ('.$row->sku.')';
                     }
                 })
                 ->editColumn('mfg_date', function ($row) {
-                    if (!empty($row->mfg_date)) {
+                    if (! empty($row->mfg_date)) {
                         return $this->productUtil->format_date($row->mfg_date);
                     } else {
                         return '--';
@@ -1333,21 +1338,21 @@ class ReportController extends Controller
                 //     }
                 // })
                 ->editColumn('ref_no', function ($row) {
-                    return '<button type="button" data-href="' . action('PurchaseController@show', [$row->transaction_id])
-                            . '" class="btn btn-link btn-modal" data-container=".view_modal"  >' . $row->ref_no . '</button>';
+                    return '<button type="button" data-href="'.action('PurchaseController@show', [$row->transaction_id])
+                            .'" class="btn btn-link btn-modal" data-container=".view_modal"  >'.$row->ref_no.'</button>';
                 })
                 ->editColumn('stock_left', function ($row) {
-                    return '<span data-is_quantity="true" class="display_currency stock_left" data-currency_symbol=false data-orig-value="' . $row->stock_left . '" data-unit="' . $row->unit . '" >' . $row->stock_left . '</span> ' . $row->unit;
+                    return '<span data-is_quantity="true" class="display_currency stock_left" data-currency_symbol=false data-orig-value="'.$row->stock_left.'" data-unit="'.$row->unit.'" >'.$row->stock_left.'</span> '.$row->unit;
                 })
                 ->addColumn('edit', function ($row) {
-                    $html =  '<button type="button" class="btn btn-primary btn-xs stock_expiry_edit_btn" data-transaction_id="' . $row->transaction_id . '" data-purchase_line_id="' . $row->purchase_line_id . '"> <i class="fa fa-edit"></i> ' . __("messages.edit") .
+                    $html = '<button type="button" class="btn btn-primary btn-xs stock_expiry_edit_btn" data-transaction_id="'.$row->transaction_id.'" data-purchase_line_id="'.$row->purchase_line_id.'"> <i class="fa fa-edit"></i> '.__('messages.edit').
                     '</button>';
 
-                    if (!empty($row->exp_date)) {
+                    if (! empty($row->exp_date)) {
                         $carbon_exp = Carbon::createFromFormat('Y-m-d', $row->exp_date);
                         $carbon_now = Carbon::now();
                         if ($carbon_now->diffInDays($carbon_exp, false) < 0) {
-                            $html .=  ' <button type="button" class="btn btn-warning btn-xs remove_from_stock_btn" data-href="' . action('StockAdjustmentController@removeExpiredStock', [$row->purchase_line_id]) . '"> <i class="fa fa-trash"></i> ' . __("lang_v1.remove_from_stock") .
+                            $html .= ' <button type="button" class="btn btn-warning btn-xs remove_from_stock_btn" data-href="'.action('StockAdjustmentController@removeExpiredStock', [$row->purchase_line_id]).'"> <i class="fa fa-trash"></i> '.__('lang_v1.remove_from_stock').
                             '</button>';
                         }
                     }
@@ -1361,7 +1366,7 @@ class ReportController extends Controller
         $categories = Category::forDropdown($business_id, 'product');
         $brands = Brands::forDropdown($business_id);
         $units = Unit::where('business_id', $business_id)
-                            ->pluck('short_name', 'id');
+            ->pluck('short_name', 'id');
         $business_locations = BusinessLocation::forDropdown($business_id, true);
         $view_stock_filter = [
             Carbon::now()->subDay()->format('Y-m-d') => __('report.expired'),
@@ -1370,11 +1375,11 @@ class ReportController extends Controller
             Carbon::now()->addMonth()->format('Y-m-d') => __('report.expiring_in_1_month'),
             Carbon::now()->addMonths(3)->format('Y-m-d') => __('report.expiring_in_3_months'),
             Carbon::now()->addMonths(6)->format('Y-m-d') => __('report.expiring_in_6_months'),
-            Carbon::now()->addYear()->format('Y-m-d') => __('report.expiring_in_1_year')
+            Carbon::now()->addYear()->format('Y-m-d') => __('report.expiring_in_1_year'),
         ];
 
         return view('report.stock_expiry_report')
-                ->with(compact('categories', 'brands', 'units', 'business_locations', 'view_stock_filter'));
+            ->with(compact('categories', 'brands', 'units', 'business_locations', 'view_stock_filter'));
     }
 
     /**
@@ -1384,13 +1389,13 @@ class ReportController extends Controller
      */
     public function getStockExpiryReportEditModal(Request $request, $purchase_line_id)
     {
-        if (!auth()->user()->can('stock_report.view')) {
+        if (! auth()->user()->can('stock_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $purchase_line = PurchaseLine::join(
                 'transactions as t',
@@ -1398,19 +1403,19 @@ class ReportController extends Controller
                 '=',
                 't.id'
             )
-                                ->join(
-                                    'products as p',
-                                    'purchase_lines.product_id',
-                                    '=',
-                                    'p.id'
-                                )
-                                ->where('purchase_lines.id', $purchase_line_id)
-                                ->where('t.business_id', $business_id)
-                                ->select(['purchase_lines.*', 'p.name', 't.ref_no'])
-                                ->first();
+                ->join(
+                    'products as p',
+                    'purchase_lines.product_id',
+                    '=',
+                    'p.id'
+                )
+                ->where('purchase_lines.id', $purchase_line_id)
+                ->where('t.business_id', $business_id)
+                ->select(['purchase_lines.*', 'p.name', 't.ref_no'])
+                ->first();
 
-            if (!empty($purchase_line)) {
-                if (!empty($purchase_line->exp_date)) {
+            if (! empty($purchase_line)) {
+                if (! empty($purchase_line->exp_date)) {
                     $purchase_line->exp_date = date('m/d/Y', strtotime($purchase_line->exp_date));
                 }
             }
@@ -1427,14 +1432,14 @@ class ReportController extends Controller
      */
     public function updateStockExpiryReport(Request $request)
     {
-        if (!auth()->user()->can('stock_report.view')) {
+        if (! auth()->user()->can('stock_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             $business_id = $request->session()->get('user.business_id');
 
-            //Return the details in ajax call
+            // Return the details in ajax call
             if ($request->ajax()) {
                 DB::beginTransaction();
 
@@ -1446,18 +1451,18 @@ class ReportController extends Controller
                     '=',
                     't.id'
                 )
-                                    ->join(
-                                        'products as p',
-                                        'purchase_lines.product_id',
-                                        '=',
-                                        'p.id'
-                                    )
-                                    ->where('purchase_lines.id', $input['purchase_line_id'])
-                                    ->where('t.business_id', $business_id)
-                                    ->select(['purchase_lines.*', 'p.name', 't.ref_no'])
-                                    ->first();
+                    ->join(
+                        'products as p',
+                        'purchase_lines.product_id',
+                        '=',
+                        'p.id'
+                    )
+                    ->where('purchase_lines.id', $input['purchase_line_id'])
+                    ->where('t.business_id', $business_id)
+                    ->select(['purchase_lines.*', 'p.name', 't.ref_no'])
+                    ->first();
 
-                if (!empty($purchase_line) && !empty($input['exp_date'])) {
+                if (! empty($purchase_line) && ! empty($input['exp_date'])) {
                     $purchase_line->exp_date = $this->productUtil->uf_date($input['exp_date']);
                     $purchase_line->save();
                 }
@@ -1465,16 +1470,16 @@ class ReportController extends Controller
                 DB::commit();
 
                 $output = ['success' => 1,
-                            'msg' => __('lang_v1.updated_succesfully')
-                        ];
+                    'msg' => __('lang_v1.updated_succesfully'),
+                ];
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => 0,
-                            'msg' => __('messages.something_went_wrong')
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return $output;
@@ -1487,7 +1492,7 @@ class ReportController extends Controller
      */
     public function getCustomerGroup(Request $request)
     {
-        if (!auth()->user()->can('contacts_report.view')) {
+        if (! auth()->user()->can('contacts_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1495,14 +1500,14 @@ class ReportController extends Controller
 
         if ($request->ajax()) {
             $query = Transaction::leftjoin('customer_groups AS CG', 'transactions.customer_group_id', '=', 'CG.id')
-                        ->where('transactions.business_id', $business_id)
-                        ->where('transactions.type', 'sell')
-                        ->where('transactions.status', 'final')
-                        ->groupBy('transactions.customer_group_id')
-                        ->select(DB::raw("SUM(final_total) as total_sell"), 'CG.name');
+                ->where('transactions.business_id', $business_id)
+                ->where('transactions.type', 'sell')
+                ->where('transactions.status', 'final')
+                ->groupBy('transactions.customer_group_id')
+                ->select(DB::raw('SUM(final_total) as total_sell'), 'CG.name');
 
             $group_id = $request->get('customer_group_id', null);
-            if (!empty($group_id)) {
+            if (! empty($group_id)) {
                 $query->where('transactions.customer_group_id', $group_id);
             }
 
@@ -1512,21 +1517,20 @@ class ReportController extends Controller
             }
 
             $location_id = $request->get('location_id', null);
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('transactions.location_id', $location_id);
             }
 
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            
-            if (!empty($start_date) && !empty($end_date)) {
+
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
             }
-            
 
             return Datatables::of($query)
                 ->editColumn('total_sell', function ($row) {
-                    return '<span class="display_currency" data-currency_symbol = true>' . $row->total_sell . '</span>';
+                    return '<span class="display_currency" data-currency_symbol = true>'.$row->total_sell.'</span>';
                 })
                 ->rawColumns(['total_sell'])
                 ->make(true);
@@ -1546,7 +1550,7 @@ class ReportController extends Controller
      */
     public function getproductPurchaseReport(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1558,43 +1562,43 @@ class ReportController extends Controller
                 'purchase_lines.transaction_id',
                 '=',
                 't.id'
-                    )
-                    ->join(
-                        'variations as v',
-                        'purchase_lines.variation_id',
-                        '=',
-                        'v.id'
-                    )
-                    ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
-                    ->join('contacts as c', 't.contact_id', '=', 'c.id')
-                    ->join('products as p', 'pv.product_id', '=', 'p.id')
-                    ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
-                    ->where('t.business_id', $business_id)
-                    ->where('t.type', 'purchase')
-                    ->select(
-                        'p.name as product_name',
-                        'p.type as product_type',
-                        'pv.name as product_variation',
-                        'v.name as variation_name',
-                        'v.sub_sku',
-                        'c.name as supplier',
-                        'c.supplier_business_name',
-                        't.id as transaction_id',
-                        't.ref_no',
-                        't.transaction_date as transaction_date',
-                        'purchase_lines.purchase_price_inc_tax as unit_purchase_price',
-                        DB::raw('(purchase_lines.quantity - purchase_lines.quantity_returned) as purchase_qty'),
-                        'purchase_lines.quantity_adjusted',
-                        'u.short_name as unit',
-                        DB::raw('((purchase_lines.quantity - purchase_lines.quantity_returned - purchase_lines.quantity_adjusted) * purchase_lines.purchase_price_inc_tax) as subtotal')
-                    )
-                    ->groupBy('purchase_lines.id');
-            if (!empty($variation_id)) {
+            )
+                ->join(
+                    'variations as v',
+                    'purchase_lines.variation_id',
+                    '=',
+                    'v.id'
+                )
+                ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+                ->join('contacts as c', 't.contact_id', '=', 'c.id')
+                ->join('products as p', 'pv.product_id', '=', 'p.id')
+                ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+                ->where('t.business_id', $business_id)
+                ->where('t.type', 'purchase')
+                ->select(
+                    'p.name as product_name',
+                    'p.type as product_type',
+                    'pv.name as product_variation',
+                    'v.name as variation_name',
+                    'v.sub_sku',
+                    'c.name as supplier',
+                    'c.supplier_business_name',
+                    't.id as transaction_id',
+                    't.ref_no',
+                    't.transaction_date as transaction_date',
+                    'purchase_lines.purchase_price_inc_tax as unit_purchase_price',
+                    DB::raw('(purchase_lines.quantity - purchase_lines.quantity_returned) as purchase_qty'),
+                    'purchase_lines.quantity_adjusted',
+                    'u.short_name as unit',
+                    DB::raw('((purchase_lines.quantity - purchase_lines.quantity_returned - purchase_lines.quantity_adjusted) * purchase_lines.purchase_price_inc_tax) as subtotal')
+                )
+                ->groupBy('purchase_lines.id');
+            if (! empty($variation_id)) {
                 $query->where('purchase_lines.variation_id', $variation_id);
             }
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
             }
 
@@ -1604,12 +1608,12 @@ class ReportController extends Controller
             }
 
             $location_id = $request->get('location_id', null);
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
 
             $supplier_id = $request->get('supplier_id', null);
-            if (!empty($supplier_id)) {
+            if (! empty($supplier_id)) {
                 $query->where('t.contact_id', $supplier_id);
             }
 
@@ -1617,27 +1621,27 @@ class ReportController extends Controller
                 ->editColumn('product_name', function ($row) {
                     $product_name = $row->product_name;
                     if ($row->product_type == 'variable') {
-                        $product_name .= ' - ' . $row->product_variation . ' - ' . $row->variation_name;
+                        $product_name .= ' - '.$row->product_variation.' - '.$row->variation_name;
                     }
 
                     return $product_name;
                 })
-                 ->editColumn('ref_no', function ($row) {
-                     return '<a data-href="' . action('PurchaseController@show', [$row->transaction_id])
-                            . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->ref_no . '</a>';
-                 })
-                 ->editColumn('purchase_qty', function ($row) {
-                     return '<span data-is_quantity="true" class="display_currency purchase_qty" data-currency_symbol=false data-orig-value="' . (float)$row->purchase_qty . '" data-unit="' . $row->unit . '" >' . (float) $row->purchase_qty . '</span> ' . $row->unit;
-                 })
-                 ->editColumn('quantity_adjusted', function ($row) {
-                     return '<span data-is_quantity="true" class="display_currency quantity_adjusted" data-currency_symbol=false data-orig-value="' . (float)$row->quantity_adjusted . '" data-unit="' . $row->unit . '" >' . (float) $row->quantity_adjusted . '</span> ' . $row->unit;
-                 })
-                 ->editColumn('subtotal', function ($row) {
-                     return '<span class="display_currency row_subtotal" data-currency_symbol=true data-orig-value="' . $row->subtotal . '">' . $row->subtotal . '</span>';
-                 })
+                ->editColumn('ref_no', function ($row) {
+                    return '<a data-href="'.action('PurchaseController@show', [$row->transaction_id])
+                           .'" href="#" data-container=".view_modal" class="btn-modal">'.$row->ref_no.'</a>';
+                })
+                ->editColumn('purchase_qty', function ($row) {
+                    return '<span data-is_quantity="true" class="display_currency purchase_qty" data-currency_symbol=false data-orig-value="'.(float) $row->purchase_qty.'" data-unit="'.$row->unit.'" >'.(float) $row->purchase_qty.'</span> '.$row->unit;
+                })
+                ->editColumn('quantity_adjusted', function ($row) {
+                    return '<span data-is_quantity="true" class="display_currency quantity_adjusted" data-currency_symbol=false data-orig-value="'.(float) $row->quantity_adjusted.'" data-unit="'.$row->unit.'" >'.(float) $row->quantity_adjusted.'</span> '.$row->unit;
+                })
+                ->editColumn('subtotal', function ($row) {
+                    return '<span class="display_currency row_subtotal" data-currency_symbol=true data-orig-value="'.$row->subtotal.'">'.$row->subtotal.'</span>';
+                })
                 ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
                 ->editColumn('unit_purchase_price', function ($row) {
-                    return '<span class="display_currency" data-currency_symbol = true>' . $row->unit_purchase_price . '</span>';
+                    return '<span class="display_currency" data-currency_symbol = true>'.$row->unit_purchase_price.'</span>';
                 })
                 ->editColumn('supplier', '@if(!empty($supplier_business_name)) {{$supplier_business_name}},<br>@endif {{$supplier}}')
                 ->rawColumns(['ref_no', 'unit_purchase_price', 'subtotal', 'purchase_qty', 'quantity_adjusted', 'supplier'])
@@ -1658,7 +1662,7 @@ class ReportController extends Controller
      */
     public function getproductSellReport(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1709,12 +1713,12 @@ class ReportController extends Controller
                 )
                 ->groupBy('transaction_sell_lines.id');
 
-            if (!empty($variation_id)) {
+            if (! empty($variation_id)) {
                 $query->where('transaction_sell_lines.variation_id', $variation_id);
             }
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->where('t.transaction_date', '>=', $start_date)
                     ->where('t.transaction_date', '<=', $end_date);
             }
@@ -1725,28 +1729,28 @@ class ReportController extends Controller
             }
 
             $location_id = $request->get('location_id', null);
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
 
             $customer_id = $request->get('customer_id', null);
-            if (!empty($customer_id)) {
+            if (! empty($customer_id)) {
                 $query->where('t.contact_id', $customer_id);
             }
 
             $customer_group_id = $request->get('customer_group_id', null);
-            if (!empty($customer_group_id)) {
+            if (! empty($customer_group_id)) {
                 $query->leftjoin('customer_groups AS CG', 'c.customer_group_id', '=', 'CG.id')
-                ->where('CG.id', $customer_group_id);
+                    ->where('CG.id', $customer_group_id);
             }
 
             $category_id = $request->get('category_id', null);
-            if (!empty($category_id)) {
+            if (! empty($category_id)) {
                 $query->where('p.category_id', $category_id);
             }
 
             $brand_id = $request->get('brand_id', null);
-            if (!empty($brand_id)) {
+            if (! empty($brand_id)) {
                 $query->where('p.brand_id', $brand_id);
             }
 
@@ -1754,27 +1758,27 @@ class ReportController extends Controller
                 ->editColumn('product_name', function ($row) {
                     $product_name = $row->product_name;
                     if ($row->product_type == 'variable') {
-                        $product_name .= ' - ' . $row->product_variation . ' - ' . $row->variation_name;
+                        $product_name .= ' - '.$row->product_variation.' - '.$row->variation_name;
                     }
 
                     return $product_name;
                 })
-                 ->editColumn('invoice_no', function ($row) {
-                     return '<a data-href="' . action('SellController@show', [$row->transaction_id])
-                            . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
-                 })
+                ->editColumn('invoice_no', function ($row) {
+                    return '<a data-href="'.action('SellController@show', [$row->transaction_id])
+                           .'" href="#" data-container=".view_modal" class="btn-modal">'.$row->invoice_no.'</a>';
+                })
                 ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
                 ->editColumn('unit_sale_price', function ($row) {
-                    return '<span class="display_currency" data-currency_symbol = true>' . $row->unit_sale_price . '</span>';
+                    return '<span class="display_currency" data-currency_symbol = true>'.$row->unit_sale_price.'</span>';
                 })
                 ->editColumn('sell_qty', function ($row) {
-                    return '<span data-is_quantity="true" class="display_currency sell_qty" data-currency_symbol=false data-orig-value="' . (float)$row->sell_qty . '" data-unit="' . $row->unit . '" >' . (float) $row->sell_qty . '</span> ' .$row->unit;
+                    return '<span data-is_quantity="true" class="display_currency sell_qty" data-currency_symbol=false data-orig-value="'.(float) $row->sell_qty.'" data-unit="'.$row->unit.'" >'.(float) $row->sell_qty.'</span> '.$row->unit;
                 })
-                 ->editColumn('subtotal', function ($row) {
-                     return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="' . $row->subtotal . '">' . $row->subtotal . '</span>';
-                 })
+                ->editColumn('subtotal', function ($row) {
+                    return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="'.$row->subtotal.'">'.$row->subtotal.'</span>';
+                })
                 ->editColumn('unit_price', function ($row) {
-                    return '<span class="display_currency" data-currency_symbol = true>' . $row->unit_price . '</span>';
+                    return '<span class="display_currency" data-currency_symbol = true>'.$row->unit_price.'</span>';
                 })
                 ->editColumn('discount_amount', '
                     @if($discount_type == "percentage")
@@ -1786,7 +1790,7 @@ class ReportController extends Controller
                 ->editColumn('tax', function ($row) {
                     return '<span class="display_currency" data-currency_symbol = true>'.
                             $row->item_tax.
-                       '</span>'.'<br>'.'<span class="tax" data-orig-value="'.(float)$row->item_tax.'" data-unit="'.$row->tax.'"><small>('.$row->tax.')</small></span>';
+                       '</span>'.'<br>'.'<span class="tax" data-orig-value="'.(float) $row->item_tax.'" data-unit="'.$row->tax.'"><small>('.$row->tax.')</small></span>';
                 })
                 ->editColumn('customer', '@if(!empty($supplier_business_name)) {{$supplier_business_name}},<br>@endif {{$customer}}')
                 ->rawColumns(['invoice_no', 'unit_sale_price', 'subtotal', 'sell_qty', 'discount_amount', 'unit_price', 'tax', 'customer'])
@@ -1800,7 +1804,7 @@ class ReportController extends Controller
         $customer_group = CustomerGroup::forDropdown($business_id, false, true);
 
         return view('report.product_sell_report')
-            ->with(compact('business_locations', 'customers', 'categories', 'brands', 
+            ->with(compact('business_locations', 'customers', 'categories', 'brands',
                 'customer_group'));
     }
 
@@ -1811,7 +1815,7 @@ class ReportController extends Controller
      */
     public function getproductSellReportWithPurchase(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1875,12 +1879,12 @@ class ReportController extends Controller
                     'pl.lot_number'
                 );
 
-            if (!empty($variation_id)) {
+            if (! empty($variation_id)) {
                 $query->where('transaction_sell_lines.variation_id', $variation_id);
             }
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->where('t.transaction_date', '>=', $start_date)
                     ->where('t.transaction_date', '<=', $end_date);
             }
@@ -1891,27 +1895,27 @@ class ReportController extends Controller
             }
 
             $location_id = $request->get('location_id', null);
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
 
             $customer_id = $request->get('customer_id', null);
-            if (!empty($customer_id)) {
+            if (! empty($customer_id)) {
                 $query->where('t.contact_id', $customer_id);
             }
             $customer_group_id = $request->get('customer_group_id', null);
-            if (!empty($customer_group_id)) {
+            if (! empty($customer_group_id)) {
                 $query->leftjoin('customer_groups AS CG', 'c.customer_group_id', '=', 'CG.id')
-                ->where('CG.id', $customer_group_id);
+                    ->where('CG.id', $customer_group_id);
             }
 
             $category_id = $request->get('category_id', null);
-            if (!empty($category_id)) {
+            if (! empty($category_id)) {
                 $query->where('p.category_id', $category_id);
             }
 
             $brand_id = $request->get('brand_id', null);
-            if (!empty($brand_id)) {
+            if (! empty($brand_id)) {
                 $query->where('p.brand_id', $brand_id);
             }
 
@@ -1919,21 +1923,21 @@ class ReportController extends Controller
                 ->editColumn('product_name', function ($row) {
                     $product_name = $row->product_name;
                     if ($row->product_type == 'variable') {
-                        $product_name .= ' - ' . $row->product_variation . ' - ' . $row->variation_name;
+                        $product_name .= ' - '.$row->product_variation.' - '.$row->variation_name;
                     }
 
                     return $product_name;
                 })
-                 ->editColumn('invoice_no', function ($row) {
-                     return '<a data-href="' . action('SellController@show', [$row->transaction_id])
-                            . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
-                 })
+                ->editColumn('invoice_no', function ($row) {
+                    return '<a data-href="'.action('SellController@show', [$row->transaction_id])
+                           .'" href="#" data-container=".view_modal" class="btn-modal">'.$row->invoice_no.'</a>';
+                })
                 ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
                 ->editColumn('unit_sale_price', function ($row) {
-                    return '<span class="display_currency" data-currency_symbol = true>' . $row->unit_sale_price . '</span>';
+                    return '<span class="display_currency" data-currency_symbol = true>'.$row->unit_sale_price.'</span>';
                 })
                 ->editColumn('purchase_quantity', function ($row) {
-                    return '<span data-is_quantity="true" class="display_currency purchase_quantity" data-currency_symbol=false data-orig-value="' . (float)$row->purchase_quantity . '" data-unit="' . $row->unit . '" >' . (float) $row->purchase_quantity . '</span> ' .$row->unit;
+                    return '<span data-is_quantity="true" class="display_currency purchase_quantity" data-currency_symbol=false data-orig-value="'.(float) $row->purchase_quantity.'" data-unit="'.$row->unit.'" >'.(float) $row->purchase_quantity.'</span> '.$row->unit;
                 })
                 ->editColumn('ref_no', '
                     @if($purchase_type == "opening_stock")
@@ -1955,25 +1959,25 @@ class ReportController extends Controller
      */
     public function getLotReport(Request $request)
     {
-        if (!auth()->user()->can('stock_report.view')) {
+        if (! auth()->user()->can('stock_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
 
-        //Return the details in ajax call
+        // Return the details in ajax call
         if ($request->ajax()) {
             $query = Product::where('products.business_id', $business_id)
-                    ->leftjoin('units', 'products.unit_id', '=', 'units.id')
-                    ->join('variations as v', 'products.id', '=', 'v.product_id')
-                    ->join('purchase_lines as pl', 'v.id', '=', 'pl.variation_id')
-                    ->leftjoin(
-                        'transaction_sell_lines_purchase_lines as tspl',
-                        'pl.id',
-                        '=',
-                        'tspl.purchase_line_id'
-                    )
-                    ->join('transactions as t', 'pl.transaction_id', '=', 't.id');
+                ->leftjoin('units', 'products.unit_id', '=', 'units.id')
+                ->join('variations as v', 'products.id', '=', 'v.product_id')
+                ->join('purchase_lines as pl', 'v.id', '=', 'pl.variation_id')
+                ->leftjoin(
+                    'transaction_sell_lines_purchase_lines as tspl',
+                    'pl.id',
+                    '=',
+                    'tspl.purchase_line_id'
+                )
+                ->join('transactions as t', 'pl.transaction_id', '=', 't.id');
 
             $permitted_locations = auth()->user()->permitted_locations();
             $location_filter = 'WHERE ';
@@ -1985,33 +1989,33 @@ class ReportController extends Controller
                 $location_filter = " LEFT JOIN transactions as t2 on pls.transaction_id=t2.id WHERE t2.location_id IN ($locations_imploded) AND ";
             }
 
-            if (!empty($request->input('location_id'))) {
+            if (! empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
                 $query->where('t.location_id', $location_id)
-                    //If filter by location then hide products not available in that location
+                    // If filter by location then hide products not available in that location
                     ->ForLocation($location_id);
 
                 $location_filter = "LEFT JOIN transactions as t2 on pls.transaction_id=t2.id WHERE t2.location_id=$location_id AND ";
             }
 
-            if (!empty($request->input('category_id'))) {
+            if (! empty($request->input('category_id'))) {
                 $query->where('products.category_id', $request->input('category_id'));
             }
 
-            if (!empty($request->input('sub_category_id'))) {
+            if (! empty($request->input('sub_category_id'))) {
                 $query->where('products.sub_category_id', $request->input('sub_category_id'));
             }
 
-            if (!empty($request->input('brand_id'))) {
+            if (! empty($request->input('brand_id'))) {
                 $query->where('products.brand_id', $request->input('brand_id'));
             }
 
-            if (!empty($request->input('unit_id'))) {
+            if (! empty($request->input('unit_id'))) {
                 $query->where('products.unit_id', $request->input('unit_id'));
             }
 
             $only_mfg_products = request()->get('only_mfg_products', 0);
-            if (!empty($only_mfg_products)) {
+            if (! empty($only_mfg_products)) {
                 $query->where('t.type', 'production_purchase');
             }
 
@@ -2031,49 +2035,50 @@ class ReportController extends Controller
                 //         WHERE transactions.status='final' AND transactions.type IN ('sell', 'sell_return') $location_filter
                 //         AND (TSL.product_id=products.id OR TPL.product_id=products.id)) as total_sold"),
 
-                DB::raw("COALESCE(SUM(IF(tspl.sell_line_id IS NULL, 0, (tspl.quantity - tspl.qty_returned)) ), 0) as total_sold"),
-                DB::raw("COALESCE(SUM(IF(tspl.stock_adjustment_line_id IS NULL, 0, tspl.quantity ) ), 0) as total_adjusted"),
+                DB::raw('COALESCE(SUM(IF(tspl.sell_line_id IS NULL, 0, (tspl.quantity - tspl.qty_returned)) ), 0) as total_sold'),
+                DB::raw('COALESCE(SUM(IF(tspl.stock_adjustment_line_id IS NULL, 0, tspl.quantity ) ), 0) as total_adjusted'),
                 'products.type',
                 'units.short_name as unit'
             )
-            ->whereNotNull('pl.lot_number')
-            ->groupBy('v.id')
-            ->groupBy('pl.lot_number');
+                ->whereNotNull('pl.lot_number')
+                ->groupBy('v.id')
+                ->groupBy('pl.lot_number');
 
             return Datatables::of($products)
                 ->editColumn('stock', function ($row) {
-                    $stock = $row->stock ? $row->stock : 0 ;
-                    return '<span data-is_quantity="true" class="display_currency total_stock" data-currency_symbol=false data-orig-value="' . (float)$stock . '" data-unit="' . $row->unit . '" >' . (float)$stock . '</span> ' . $row->unit;
+                    $stock = $row->stock ? $row->stock : 0;
+
+                    return '<span data-is_quantity="true" class="display_currency total_stock" data-currency_symbol=false data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'" >'.(float) $stock.'</span> '.$row->unit;
                 })
                 ->editColumn('product', function ($row) {
                     if ($row->variation_name != 'DUMMY') {
-                        return $row->product . ' (' . $row->variation_name . ')';
+                        return $row->product.' ('.$row->variation_name.')';
                     } else {
                         return $row->product;
                     }
                 })
                 ->editColumn('total_sold', function ($row) {
                     if ($row->total_sold) {
-                        return '<span data-is_quantity="true" class="display_currency total_sold" data-currency_symbol=false data-orig-value="' . (float)$row->total_sold . '" data-unit="' . $row->unit . '" >' . (float)$row->total_sold . '</span> ' . $row->unit;
+                        return '<span data-is_quantity="true" class="display_currency total_sold" data-currency_symbol=false data-orig-value="'.(float) $row->total_sold.'" data-unit="'.$row->unit.'" >'.(float) $row->total_sold.'</span> '.$row->unit;
                     } else {
-                        return '0' . ' ' . $row->unit;
+                        return '0'.' '.$row->unit;
                     }
                 })
                 ->editColumn('total_adjusted', function ($row) {
                     if ($row->total_adjusted) {
-                        return '<span data-is_quantity="true" class="display_currency total_adjusted" data-currency_symbol=false data-orig-value="' . (float)$row->total_adjusted . '" data-unit="' . $row->unit . '" >' . (float)$row->total_adjusted . '</span> ' . $row->unit;
+                        return '<span data-is_quantity="true" class="display_currency total_adjusted" data-currency_symbol=false data-orig-value="'.(float) $row->total_adjusted.'" data-unit="'.$row->unit.'" >'.(float) $row->total_adjusted.'</span> '.$row->unit;
                     } else {
-                        return '0' . ' ' . $row->unit;
+                        return '0'.' '.$row->unit;
                     }
                 })
                 ->editColumn('exp_date', function ($row) {
-                    if (!empty($row->exp_date)) {
+                    if (! empty($row->exp_date)) {
                         $carbon_exp = Carbon::createFromFormat('Y-m-d', $row->exp_date);
                         $carbon_now = Carbon::now();
                         if ($carbon_now->diffInDays($carbon_exp, false) >= 0) {
-                            return $this->productUtil->format_date($row->exp_date) . '<br><small>( <span class="time-to-now">' . $row->exp_date . '</span> )</small>';
+                            return $this->productUtil->format_date($row->exp_date).'<br><small>( <span class="time-to-now">'.$row->exp_date.'</span> )</small>';
                         } else {
-                            return $this->productUtil->format_date($row->exp_date) . ' &nbsp; <span class="label label-danger no-print">' . __('report.expired') . '</span><span class="print_section">' . __('report.expired') . '</span><br><small>( <span class="time-from-now">' . $row->exp_date . '</span> )</small>';
+                            return $this->productUtil->format_date($row->exp_date).' &nbsp; <span class="label label-danger no-print">'.__('report.expired').'</span><span class="print_section">'.__('report.expired').'</span><br><small>( <span class="time-from-now">'.$row->exp_date.'</span> )</small>';
                         }
                     } else {
                         return '--';
@@ -2089,7 +2094,7 @@ class ReportController extends Controller
         $categories = Category::forDropdown($business_id, 'product');
         $brands = Brands::forDropdown($business_id);
         $units = Unit::where('business_id', $business_id)
-                            ->pluck('short_name', 'id');
+            ->pluck('short_name', 'id');
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
         return view('report.lot_report')
@@ -2103,19 +2108,19 @@ class ReportController extends Controller
      */
     public function purchasePaymentReport(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
         if ($request->ajax()) {
             $supplier_id = $request->get('supplier_id', null);
-            $contact_filter1 = !empty($supplier_id) ? "AND t.contact_id=$supplier_id" : '';
-            $contact_filter2 = !empty($supplier_id) ? "AND transactions.contact_id=$supplier_id" : '';
+            $contact_filter1 = ! empty($supplier_id) ? "AND t.contact_id=$supplier_id" : '';
+            $contact_filter2 = ! empty($supplier_id) ? "AND transactions.contact_id=$supplier_id" : '';
 
             $location_id = $request->get('location_id', null);
 
-            $parent_payment_query_part = empty($location_id) ? "AND transaction_payments.parent_id IS NULL" : "";
+            $parent_payment_query_part = empty($location_id) ? 'AND transaction_payments.parent_id IS NULL' : '';
 
             $query = TransactionPayment::leftjoin('transactions as t', function ($join) use ($business_id) {
                 $join->on('transaction_payments.transaction_id', '=', 't.id')
@@ -2127,7 +2132,7 @@ class ReportController extends Controller
                     $q->whereRaw("(transaction_payments.transaction_id IS NOT NULL AND t.type IN ('purchase', 'opening_balance')  $parent_payment_query_part $contact_filter1)")
                         ->orWhereRaw("EXISTS(SELECT * FROM transaction_payments as tp JOIN transactions ON tp.transaction_id = transactions.id WHERE transactions.type IN ('purchase', 'opening_balance') AND transactions.business_id = $business_id AND tp.parent_id=transaction_payments.id $contact_filter2)");
                 })
-                              
+
                 ->select(
                     DB::raw("IF(transaction_payments.transaction_id IS NULL, 
                                 (SELECT c.name FROM transactions as ts
@@ -2159,7 +2164,7 @@ class ReportController extends Controller
 
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->whereBetween(DB::raw('date(paid_on)'), [$start_date, $end_date]);
             }
 
@@ -2168,41 +2173,42 @@ class ReportController extends Controller
                 $query->whereIn('t.location_id', $permitted_locations);
             }
 
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
 
             $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
-            
+
             return Datatables::of($query)
-                 ->editColumn('ref_no', function ($row) {
-                     if (!empty($row->ref_no)) {
-                         return '<a data-href="' . action('PurchaseController@show', [$row->transaction_id])
-                            . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->ref_no . '</a>';
-                     } else {
-                         return '';
-                     }
-                 })
+                ->editColumn('ref_no', function ($row) {
+                    if (! empty($row->ref_no)) {
+                        return '<a data-href="'.action('PurchaseController@show', [$row->transaction_id])
+                           .'" href="#" data-container=".view_modal" class="btn-modal">'.$row->ref_no.'</a>';
+                    } else {
+                        return '';
+                    }
+                })
                 ->editColumn('paid_on', '{{@format_datetime($paid_on)}}')
                 ->editColumn('method', function ($row) use ($payment_types) {
-                    $method = !empty($payment_types[$row->method]) ? $payment_types[$row->method] : '';
+                    $method = ! empty($payment_types[$row->method]) ? $payment_types[$row->method] : '';
                     if ($row->method == 'cheque') {
-                        $method .= '<br>(' . __('lang_v1.cheque_no') . ': ' . $row->cheque_number . ')';
+                        $method .= '<br>('.__('lang_v1.cheque_no').': '.$row->cheque_number.')';
                     } elseif ($row->method == 'card') {
-                        $method .= '<br>(' . __('lang_v1.card_transaction_no') . ': ' . $row->card_transaction_number . ')';
+                        $method .= '<br>('.__('lang_v1.card_transaction_no').': '.$row->card_transaction_number.')';
                     } elseif ($row->method == 'bank_transfer') {
-                        $method .= '<br>(' . __('lang_v1.bank_account_no') . ': ' . $row->bank_account_number . ')';
+                        $method .= '<br>('.__('lang_v1.bank_account_no').': '.$row->bank_account_number.')';
                     } elseif ($row->method == 'custom_pay_1') {
-                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                        $method .= '<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
                     } elseif ($row->method == 'custom_pay_2') {
-                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                        $method .= '<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
                     } elseif ($row->method == 'custom_pay_3') {
-                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                        $method .= '<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
                     }
+
                     return $method;
                 })
                 ->editColumn('amount', function ($row) {
-                    return '<span class="display_currency paid-amount" data-currency_symbol = true data-orig-value="' . $row->amount . '">' . $row->amount . '</span>';
+                    return '<span class="display_currency paid-amount" data-currency_symbol = true data-orig-value="'.$row->amount.'">'.$row->amount.'</span>';
                 })
                 ->addColumn('action', '<button type="button" class="btn btn-primary btn-xs view_payment" data-href="{{ action("TransactionPaymentController@viewPayment", [$DT_RowId]) }}">@lang("messages.view")
                     </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="btn btn-success btn-xs" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif')
@@ -2223,7 +2229,7 @@ class ReportController extends Controller
      */
     public function sellPaymentReport(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -2232,11 +2238,11 @@ class ReportController extends Controller
         $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
         if ($request->ajax()) {
             $customer_id = $request->get('supplier_id', null);
-            $contact_filter1 = !empty($customer_id) ? "AND t.contact_id=$customer_id" : '';
-            $contact_filter2 = !empty($customer_id) ? "AND transactions.contact_id=$customer_id" : '';
+            $contact_filter1 = ! empty($customer_id) ? "AND t.contact_id=$customer_id" : '';
+            $contact_filter2 = ! empty($customer_id) ? "AND transactions.contact_id=$customer_id" : '';
 
             $location_id = $request->get('location_id', null);
-            $parent_payment_query_part = empty($location_id) ? "AND transaction_payments.parent_id IS NULL" : "";
+            $parent_payment_query_part = empty($location_id) ? 'AND transaction_payments.parent_id IS NULL' : '';
 
             $query = TransactionPayment::leftjoin('transactions as t', function ($join) use ($business_id) {
                 $join->on('transaction_payments.transaction_id', '=', 't.id')
@@ -2283,7 +2289,7 @@ class ReportController extends Controller
 
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->whereBetween(DB::raw('date(paid_on)'), [$start_date, $end_date]);
             }
 
@@ -2291,55 +2297,57 @@ class ReportController extends Controller
             if ($permitted_locations != 'all') {
                 $query->whereIn('t.location_id', $permitted_locations);
             }
-            
-            if (!empty($request->get('customer_group_id'))) {
+
+            if (! empty($request->get('customer_group_id'))) {
                 $query->where('CG.id', $request->get('customer_group_id'));
             }
 
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
-            if (!empty($request->has('commission_agent'))) {
+            if (! empty($request->has('commission_agent'))) {
                 $query->where('t.commission_agent', $request->get('commission_agent'));
             }
 
-            if (!empty($request->get('payment_types'))) {
+            if (! empty($request->get('payment_types'))) {
                 $query->where('transaction_payments.method', $request->get('payment_types'));
             }
 
             return Datatables::of($query)
-                 ->editColumn('invoice_no', function ($row) {
-                     if (!empty($row->transaction_id)) {
-                         return '<a data-href="' . action('SellController@show', [$row->transaction_id])
-                            . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
-                     } else {
-                         return '';
-                     }
-                 })
+                ->editColumn('invoice_no', function ($row) {
+                    if (! empty($row->transaction_id)) {
+                        return '<a data-href="'.action('SellController@show', [$row->transaction_id])
+                           .'" href="#" data-container=".view_modal" class="btn-modal">'.$row->invoice_no.'</a>';
+                    } else {
+                        return '';
+                    }
+                })
                 ->editColumn('paid_on', '{{@format_datetime($paid_on)}}')
                 ->editColumn('method', function ($row) use ($payment_types) {
-                    $method = !empty($payment_types[$row->method]) ? $payment_types[$row->method] : '';
+                    $method = ! empty($payment_types[$row->method]) ? $payment_types[$row->method] : '';
                     if ($row->method == 'cheque') {
-                        $method .= '<br>(' . __('lang_v1.cheque_no') . ': ' . $row->cheque_number . ')';
+                        $method .= '<br>('.__('lang_v1.cheque_no').': '.$row->cheque_number.')';
                     } elseif ($row->method == 'card') {
-                        $method .= '<br>(' . __('lang_v1.card_transaction_no') . ': ' . $row->card_transaction_number . ')';
+                        $method .= '<br>('.__('lang_v1.card_transaction_no').': '.$row->card_transaction_number.')';
                     } elseif ($row->method == 'bank_transfer') {
-                        $method .= '<br>(' . __('lang_v1.bank_account_no') . ': ' . $row->bank_account_number . ')';
+                        $method .= '<br>('.__('lang_v1.bank_account_no').': '.$row->bank_account_number.')';
                     } elseif ($row->method == 'custom_pay_1') {
-                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                        $method .= '<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
                     } elseif ($row->method == 'custom_pay_2') {
-                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                        $method .= '<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
                     } elseif ($row->method == 'custom_pay_3') {
-                        $method .= '<br>(' . __('lang_v1.transaction_no') . ': ' . $row->transaction_no . ')';
+                        $method .= '<br>('.__('lang_v1.transaction_no').': '.$row->transaction_no.')';
                     }
                     if ($row->is_return == 1) {
-                        $method .= '<br><small>(' . __('lang_v1.change_return') . ')</small>';
+                        $method .= '<br><small>('.__('lang_v1.change_return').')</small>';
                     }
+
                     return $method;
                 })
                 ->editColumn('amount', function ($row) {
                     $amount = $row->is_return == 1 ? -1 * $row->amount : $row->amount;
-                    return '<span class="display_currency paid-amount" data-orig-value="' . $amount . '" data-currency_symbol = true>' . $amount . '</span>';
+
+                    return '<span class="display_currency paid-amount" data-orig-value="'.$amount.'" data-currency_symbol = true>'.$amount.'</span>';
                 })
                 ->addColumn('action', '<button type="button" class="btn btn-primary btn-xs view_payment" data-href="{{ action("TransactionPaymentController@viewPayment", [$DT_RowId]) }}">@lang("messages.view")
                     </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="btn btn-success btn-xs" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif')
@@ -2354,7 +2362,6 @@ class ReportController extends Controller
             ->with(compact('business_locations', 'customers', 'payment_types', 'customer_groups'));
     }
 
-
     /**
      * Shows tables report
      *
@@ -2362,7 +2369,7 @@ class ReportController extends Controller
      */
     public function getTableReport(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -2370,27 +2377,27 @@ class ReportController extends Controller
 
         if ($request->ajax()) {
             $query = ResTable::leftjoin('transactions AS T', 'T.res_table_id', '=', 'res_tables.id')
-                        ->where('T.business_id', $business_id)
-                        ->where('T.type', 'sell')
-                        ->where('T.status', 'final')
-                        ->groupBy('res_tables.id')
-                        ->select(DB::raw("SUM(final_total) as total_sell"), 'res_tables.name as table');
+                ->where('T.business_id', $business_id)
+                ->where('T.type', 'sell')
+                ->where('T.status', 'final')
+                ->groupBy('res_tables.id')
+                ->select(DB::raw('SUM(final_total) as total_sell'), 'res_tables.name as table');
 
             $location_id = $request->get('location_id', null);
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('T.location_id', $location_id);
             }
 
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            
-            if (!empty($start_date) && !empty($end_date)) {
+
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
             }
 
             return Datatables::of($query)
                 ->editColumn('total_sell', function ($row) {
-                    return '<span class="display_currency" data-currency_symbol="true">' . $row->total_sell . '</span>';
+                    return '<span class="display_currency" data-currency_symbol="true">'.$row->total_sell.'</span>';
                 })
                 ->rawColumns(['total_sell'])
                 ->make(true);
@@ -2409,7 +2416,7 @@ class ReportController extends Controller
      */
     public function getServiceStaffReport(Request $request)
     {
-        if (!auth()->user()->can('sales_representative.view')) {
+        if (! auth()->user()->can('sales_representative.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -2430,7 +2437,7 @@ class ReportController extends Controller
      */
     public function getproductSellGroupedReport(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -2438,7 +2445,7 @@ class ReportController extends Controller
         $location_id = $request->get('location_id', null);
 
         $vld_str = '';
-        if (!empty($location_id)) {
+        if (! empty($location_id)) {
             $vld_str = "AND vld.location_id=$location_id";
         }
 
@@ -2480,12 +2487,12 @@ class ReportController extends Controller
                 ->groupBy('v.id')
                 ->groupBy('formated_date');
 
-            if (!empty($variation_id)) {
+            if (! empty($variation_id)) {
                 $query->where('transaction_sell_lines.variation_id', $variation_id);
             }
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->where('t.transaction_date', '>=', $start_date)
                     ->where('t.transaction_date', '<=', $end_date);
             }
@@ -2495,29 +2502,29 @@ class ReportController extends Controller
                 $query->whereIn('t.location_id', $permitted_locations);
             }
 
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
 
             $customer_id = $request->get('customer_id', null);
-            if (!empty($customer_id)) {
+            if (! empty($customer_id)) {
                 $query->where('t.contact_id', $customer_id);
             }
 
             $customer_group_id = $request->get('customer_group_id', null);
-            if (!empty($customer_group_id)) {
+            if (! empty($customer_group_id)) {
                 $query->leftjoin('contacts AS c', 't.contact_id', '=', 'c.id')
                     ->leftjoin('customer_groups AS CG', 'c.customer_group_id', '=', 'CG.id')
-                ->where('CG.id', $customer_group_id);
+                    ->where('CG.id', $customer_group_id);
             }
 
             $category_id = $request->get('category_id', null);
-            if (!empty($category_id)) {
+            if (! empty($category_id)) {
                 $query->where('p.category_id', $category_id);
             }
 
             $brand_id = $request->get('brand_id', null);
-            if (!empty($brand_id)) {
+            if (! empty($brand_id)) {
                 $query->where('p.brand_id', $brand_id);
             }
 
@@ -2525,26 +2532,26 @@ class ReportController extends Controller
                 ->editColumn('product_name', function ($row) {
                     $product_name = $row->product_name;
                     if ($row->product_type == 'variable') {
-                        $product_name .= ' - ' . $row->product_variation . ' - ' . $row->variation_name;
+                        $product_name .= ' - '.$row->product_variation.' - '.$row->variation_name;
                     }
 
                     return $product_name;
                 })
                 ->editColumn('transaction_date', '{{@format_date($formated_date)}}')
                 ->editColumn('total_qty_sold', function ($row) {
-                    return '<span data-is_quantity="true" class="display_currency sell_qty" data-currency_symbol=false data-orig-value="' . (float)$row->total_qty_sold . '" data-unit="' . $row->unit . '" >' . (float) $row->total_qty_sold . '</span> ' .$row->unit;
+                    return '<span data-is_quantity="true" class="display_currency sell_qty" data-currency_symbol=false data-orig-value="'.(float) $row->total_qty_sold.'" data-unit="'.$row->unit.'" >'.(float) $row->total_qty_sold.'</span> '.$row->unit;
                 })
                 ->editColumn('current_stock', function ($row) {
                     if ($row->enable_stock) {
-                        return '<span data-is_quantity="true" class="display_currency current_stock" data-currency_symbol=false data-orig-value="' . (float)$row->current_stock . '" data-unit="' . $row->unit . '" >' . (float) $row->current_stock . '</span> ' .$row->unit;
+                        return '<span data-is_quantity="true" class="display_currency current_stock" data-currency_symbol=false data-orig-value="'.(float) $row->current_stock.'" data-unit="'.$row->unit.'" >'.(float) $row->current_stock.'</span> '.$row->unit;
                     } else {
                         return '';
                     }
                 })
-                 ->editColumn('subtotal', function ($row) {
-                     return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="' . $row->subtotal . '">' . $row->subtotal . '</span>';
-                 })
-                
+                ->editColumn('subtotal', function ($row) {
+                    return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="'.$row->subtotal.'">'.$row->subtotal.'</span>';
+                })
+
                 ->rawColumns(['current_stock', 'subtotal', 'total_qty_sold'])
                 ->make(true);
         }
@@ -2557,7 +2564,7 @@ class ReportController extends Controller
      */
     public function productSellReportBy(Request $request)
     {
-        if (!auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -2566,7 +2573,7 @@ class ReportController extends Controller
         $group_by = $request->get('group_by', null);
 
         $vld_str = '';
-        if (!empty($location_id)) {
+        if (! empty($location_id)) {
             $vld_str = "AND vld.location_id=$location_id";
         }
 
@@ -2604,7 +2611,7 @@ class ReportController extends Controller
 
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
-            if (!empty($start_date) && !empty($end_date)) {
+            if (! empty($start_date) && ! empty($end_date)) {
                 $query->where('t.transaction_date', '>=', $start_date)
                     ->where('t.transaction_date', '<=', $end_date);
             }
@@ -2614,29 +2621,29 @@ class ReportController extends Controller
                 $query->whereIn('t.location_id', $permitted_locations);
             }
 
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
 
             $customer_id = $request->get('customer_id', null);
-            if (!empty($customer_id)) {
+            if (! empty($customer_id)) {
                 $query->where('t.contact_id', $customer_id);
             }
 
             $customer_group_id = $request->get('customer_group_id', null);
-            if (!empty($customer_group_id)) {
+            if (! empty($customer_group_id)) {
                 $query->leftjoin('contacts AS c', 't.contact_id', '=', 'c.id')
                     ->leftjoin('customer_groups AS CG', 'c.customer_group_id', '=', 'CG.id')
-                ->where('CG.id', $customer_group_id);
+                    ->where('CG.id', $customer_group_id);
             }
 
             $category_id = $request->get('category_id', null);
-            if (!empty($category_id)) {
+            if (! empty($category_id)) {
                 $query->where('p.category_id', $category_id);
             }
 
             $brand_id = $request->get('brand_id', null);
-            if (!empty($brand_id)) {
+            if (! empty($brand_id)) {
                 $query->where('p.brand_id', $brand_id);
             }
 
@@ -2644,15 +2651,15 @@ class ReportController extends Controller
                 ->editColumn('category_name', '{{$category_name ?? __("lang_v1.uncategorized")}}')
                 ->editColumn('brand_name', '{{$brand_name ?? __("lang_v1.no_brand")}}')
                 ->editColumn('total_qty_sold', function ($row) {
-                    return '<span data-is_quantity="true" class="display_currency sell_qty" data-currency_symbol=false data-orig-value="' . (float)$row->total_qty_sold . '" data-unit="" >' . (float) $row->total_qty_sold . '</span> ' .$row->unit;
+                    return '<span data-is_quantity="true" class="display_currency sell_qty" data-currency_symbol=false data-orig-value="'.(float) $row->total_qty_sold.'" data-unit="" >'.(float) $row->total_qty_sold.'</span> '.$row->unit;
                 })
                 ->editColumn('current_stock', function ($row) {
-                    return '<span data-is_quantity="true" class="display_currency current_stock" data-currency_symbol=false data-orig-value="' . (float)$row->current_stock . '" data-unit="">' . (float) $row->current_stock . '</span> ';
+                    return '<span data-is_quantity="true" class="display_currency current_stock" data-currency_symbol=false data-orig-value="'.(float) $row->current_stock.'" data-unit="">'.(float) $row->current_stock.'</span> ';
                 })
-                 ->editColumn('subtotal', function ($row) {
-                     return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="' . $row->subtotal . '">' . $row->subtotal . '</span>';
-                 })
-                
+                ->editColumn('subtotal', function ($row) {
+                    return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="'.$row->subtotal.'">'.$row->subtotal.'</span>';
+                })
+
                 ->rawColumns(['current_stock', 'subtotal', 'total_qty_sold', 'category_name'])
                 ->make(true);
         }
@@ -2665,7 +2672,7 @@ class ReportController extends Controller
      */
     public function productStockDetails()
     {
-        if (!auth()->user()->can('report.stock_details')) {
+        if (! auth()->user()->can('report.stock_details')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -2674,21 +2681,21 @@ class ReportController extends Controller
         $stock_details = [];
         $location = null;
         $total_stock_calculated = 0;
-        if (!empty(request()->input('location_id'))) {
+        if (! empty(request()->input('location_id'))) {
             $variation_id = request()->get('variation_id', null);
             $location_id = request()->input('location_id');
 
             $location = BusinessLocation::where('business_id', $business_id)
-                                        ->where('id', $location_id)
-                                        ->first();
+                ->where('id', $location_id)
+                ->first();
 
             $query = Variation::leftjoin('products as p', 'p.id', '=', 'variations.product_id')
-                    ->leftjoin('units', 'p.unit_id', '=', 'units.id')
-                    ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
-                    ->leftjoin('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
-                    ->where('p.business_id', $business_id)
-                    ->where('vld.location_id', $location_id);
-            if (!is_null($variation_id)) {
+                ->leftjoin('units', 'p.unit_id', '=', 'units.id')
+                ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
+                ->leftjoin('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
+                ->where('p.business_id', $business_id)
+                ->where('vld.location_id', $location_id);
+            if (! is_null($variation_id)) {
                 $query->where('variations.id', $variation_id);
             }
 
@@ -2737,7 +2744,7 @@ class ReportController extends Controller
                         LEFT JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                         WHERE transactions.status='final' AND transactions.type='production_sell' AND transactions.location_id=$location_id 
                         AND TSL.variation_id=variations.id) as total_ingredients_used"),
-                DB::raw("SUM(vld.qty_available) as stock"),
+                DB::raw('SUM(vld.qty_available) as stock'),
                 'variations.sub_sku as sub_sku',
                 'p.name as product',
                 'p.id as product_id',
@@ -2750,8 +2757,8 @@ class ReportController extends Controller
                 'variations.name as variation_name',
                 'variations.id as variation_id'
             )
-            ->groupBy('variations.id')
-            ->get();
+                ->groupBy('variations.id')
+                ->get();
 
             foreach ($stock_details as $index => $row) {
                 $total_sold = $row->total_sold ?: 0;
@@ -2775,6 +2782,7 @@ class ReportController extends Controller
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id);
+
         return view('report.product_stock_details')
             ->with(compact('stock_details', 'business_locations', 'location'));
     }
@@ -2786,12 +2794,12 @@ class ReportController extends Controller
      */
     public function adjustProductStock()
     {
-        if (!auth()->user()->can('report.stock_details')) {
+        if (! auth()->user()->can('report.stock_details')) {
             abort(403, 'Unauthorized action.');
         }
 
-        if (!empty(request()->input('variation_id'))
-            && !empty(request()->input('location_id'))
+        if (! empty(request()->input('variation_id'))
+            && ! empty(request()->input('location_id'))
             && request()->has('stock')) {
             $business_id = request()->session()->get('user.business_id');
 
@@ -2801,22 +2809,22 @@ class ReportController extends Controller
                 '=',
                 'variation_location_details.location_id'
             )
-                    ->where('variation_location_details.location_id', request()->input('location_id'))
-                        ->where('variation_id', request()->input('variation_id'))
-                        ->where('bl.business_id', $business_id)
-                        ->select('variation_location_details.*')
-                        ->first();
+                ->where('variation_location_details.location_id', request()->input('location_id'))
+                ->where('variation_id', request()->input('variation_id'))
+                ->where('bl.business_id', $business_id)
+                ->select('variation_location_details.*')
+                ->first();
 
-            if (!empty($vld)) {
+            if (! empty($vld)) {
                 $vld->qty_available = request()->input('stock');
                 $vld->save();
             }
         }
 
         return redirect()->back()->with(['status' => [
-                'success' => 1,
-                'msg' => __('lang_v1.updated_succesfully')
-            ]]);
+            'success' => 1,
+            'msg' => __('lang_v1.updated_succesfully'),
+        ]]);
     }
 
     /**
@@ -2829,41 +2837,40 @@ class ReportController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $query = TransactionSellLine::leftJoin('transactions as t', 't.id', '=', 'transaction_sell_lines.transaction_id')
-                ->leftJoin('variations as v', 'transaction_sell_lines.variation_id', '=', 'v.id')
-                ->leftJoin('products as p', 'v.product_id', '=', 'p.id')
-                ->leftJoin('units as u', 'p.unit_id', '=', 'u.id')
-                ->leftJoin('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
-                ->leftJoin('users as ss', 'ss.id', '=', 'transaction_sell_lines.res_service_staff_id')
-                ->leftjoin(
-                    'business_locations AS bl',
-                    't.location_id',
-                    '=',
-                    'bl.id'
-                )
-                ->where('t.business_id', $business_id)
-                ->where('t.type', 'sell')
-                ->where('t.status', 'final')
-                ->whereNotNull('transaction_sell_lines.res_service_staff_id');
+            ->leftJoin('variations as v', 'transaction_sell_lines.variation_id', '=', 'v.id')
+            ->leftJoin('products as p', 'v.product_id', '=', 'p.id')
+            ->leftJoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->leftJoin('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->leftJoin('users as ss', 'ss.id', '=', 'transaction_sell_lines.res_service_staff_id')
+            ->leftjoin(
+                'business_locations AS bl',
+                't.location_id',
+                '=',
+                'bl.id'
+            )
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->whereNotNull('transaction_sell_lines.res_service_staff_id');
 
-
-        if (!empty(request()->service_staff_id)) {
+        if (! empty(request()->service_staff_id)) {
             $query->where('transaction_sell_lines.res_service_staff_id', request()->service_staff_id);
         }
 
         if (request()->has('location_id')) {
             $location_id = request()->get('location_id');
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
         }
 
-        if (!empty(request()->start_date) && !empty(request()->end_date)) {
+        if (! empty(request()->start_date) && ! empty(request()->end_date)) {
             $start = request()->start_date;
-            $end =  request()->end_date;
+            $end = request()->end_date;
             $query->whereDate('t.transaction_date', '>=', $start)
-                        ->whereDate('t.transaction_date', '<=', $end);
+                ->whereDate('t.transaction_date', '<=', $end);
         }
-                
+
         $query->select(
             'p.name as product_name',
             'p.type as product_type',
@@ -2887,8 +2894,9 @@ class ReportController extends Controller
             ->editColumn('product_name', function ($row) {
                 $name = $row->product_name;
                 if ($row->product_type == 'variable') {
-                    $name .= ' - ' . $row->product_variation_name . ' - ' . $row->variation_name;
+                    $name .= ' - '.$row->product_variation_name.' - '.$row->variation_name;
                 }
+
                 return $name;
             })
             ->editColumn(
@@ -2914,20 +2922,20 @@ class ReportController extends Controller
             ->editColumn(
                 'line_discount_amount',
                 function ($row) {
-                    $discount = !empty($row->line_discount_amount) ? $row->line_discount_amount : 0;
+                    $discount = ! empty($row->line_discount_amount) ? $row->line_discount_amount : 0;
 
-                    if (!empty($discount) && $row->line_discount_type == 'percentage') {
+                    if (! empty($discount) && $row->line_discount_type == 'percentage') {
                         $discount = $row->unit_price_before_discount * ($discount / 100);
                     }
 
-                    return '<span class="display_currency total-discount" data-currency_symbol="true" data-orig-value="' . $discount . '">' . $discount . '</span>';
+                    return '<span class="display_currency total-discount" data-currency_symbol="true" data-orig-value="'.$discount.'">'.$discount.'</span>';
                 }
             )
             ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
 
             ->rawColumns(['line_discount_amount', 'unit_price_before_discount', 'item_tax', 'unit_price_inc_tax', 'item_tax', 'quantity', 'total'])
-                  ->make(true);
-                
+            ->make(true);
+
         return $datatable;
     }
 
@@ -2940,8 +2948,7 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $query = TransactionSellLine
-            ::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
+        $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
             ->leftjoin('transaction_sell_lines_purchase_lines as TSPL', 'transaction_sell_lines.id', '=', 'TSPL.sell_line_id')
             ->leftjoin(
                 'purchase_lines as PL',
@@ -2954,7 +2961,7 @@ class ReportController extends Controller
             ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
             ->where('sale.business_id', $business_id)
             ->where('transaction_sell_lines.children_type', '!=', 'combo');
-        //If type combo: find childrens, sale price parent - get PP of childrens
+        // If type combo: find childrens, sale price parent - get PP of childrens
         $query->select(DB::raw('SUM(IF (TSPL.id IS NULL AND P.type="combo", ( 
             SELECT Sum((tspl2.quantity - tspl2.qty_returned) * (tsl.unit_price_inc_tax - pl2.purchase_price_inc_tax)) AS total
                 FROM transaction_sell_lines AS tsl
@@ -2964,22 +2971,22 @@ class ReportController extends Controller
                 ON tspl2.purchase_line_id = pl2.id 
                 WHERE tsl.parent_sell_line_id = transaction_sell_lines.id), IF(P.enable_stock=0,(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax,   
                 (TSPL.quantity - TSPL.qty_returned) * (transaction_sell_lines.unit_price_inc_tax - PL.purchase_price_inc_tax)) )) AS gross_profit')
-            );
+        );
 
         $permitted_locations = auth()->user()->permitted_locations();
         if ($permitted_locations != 'all') {
             $query->whereIn('sale.location_id', $permitted_locations);
         }
 
-        if (!empty(request()->location_id)) {
+        if (! empty(request()->location_id)) {
             $query->where('sale.location_id', request()->location_id);
         }
 
-        if (!empty(request()->start_date) && !empty(request()->end_date)) {
+        if (! empty(request()->start_date) && ! empty(request()->end_date)) {
             $start = request()->start_date;
-            $end =  request()->end_date;
+            $end = request()->end_date;
             $query->whereDate('sale.transaction_date', '>=', $start)
-                        ->whereDate('sale.transaction_date', '<=', $end);
+                ->whereDate('sale.transaction_date', '<=', $end);
         }
 
         if ($by == 'product') {
@@ -2992,26 +2999,26 @@ class ReportController extends Controller
         if ($by == 'category') {
             $query->join('variations as V', 'transaction_sell_lines.variation_id', '=', 'V.id')
                 ->leftJoin('categories as C', 'C.id', '=', 'P.category_id')
-                ->addSelect("C.name as category")
+                ->addSelect('C.name as category')
                 ->groupBy('C.id');
         }
 
         if ($by == 'brand') {
             $query->join('variations as V', 'transaction_sell_lines.variation_id', '=', 'V.id')
                 ->leftJoin('brands as B', 'B.id', '=', 'P.brand_id')
-                ->addSelect("B.name as brand")
+                ->addSelect('B.name as brand')
                 ->groupBy('B.id');
         }
 
         if ($by == 'location') {
             $query->join('business_locations as L', 'sale.location_id', '=', 'L.id')
-                ->addSelect("L.name as location")
+                ->addSelect('L.name as location')
                 ->groupBy('L.id');
         }
 
         if ($by == 'invoice') {
             $query->addSelect(
-                'sale.invoice_no', 
+                'sale.invoice_no',
                 'sale.id as transaction_id',
                 'sale.discount_type',
                 'sale.discount_amount',
@@ -3021,12 +3028,12 @@ class ReportController extends Controller
         }
 
         if ($by == 'date') {
-            $query->addSelect("sale.transaction_date")
+            $query->addSelect('sale.transaction_date')
                 ->groupBy(DB::raw('DATE(sale.transaction_date)'));
         }
 
         if ($by == 'day') {
-            $results = $query->addSelect(DB::raw("DAYNAME(sale.transaction_date) as day"))
+            $results = $query->addSelect(DB::raw('DAYNAME(sale.transaction_date) as day'))
                 ->groupBy(DB::raw('DAYOFWEEK(sale.transaction_date)'))
                 ->get();
 
@@ -3041,21 +3048,22 @@ class ReportController extends Controller
 
         if ($by == 'customer') {
             $query->join('contacts as CU', 'sale.contact_id', '=', 'CU.id')
-            ->addSelect("CU.name as customer" , "CU.supplier_business_name")
+                ->addSelect('CU.name as customer', 'CU.supplier_business_name')
                 ->groupBy('sale.contact_id');
         }
 
         $datatable = Datatables::of($query);
 
         if (in_array($by, ['invoice'])) {
-            $datatable->editColumn( 'gross_profit', function($row) {
+            $datatable->editColumn('gross_profit', function ($row) {
                 $discount = $row->discount_amount;
                 if ($row->discount_type == 'percentage') {
-                   $discount = ($row->discount_amount * $row->total_before_tax) / 100;
+                    $discount = ($row->discount_amount * $row->total_before_tax) / 100;
                 }
 
                 $profit = $row->gross_profit - $discount;
-                $html = '<span class="display_currency gross-profit" data-currency_symbol="true" data-orig-value="' . $profit . '">' . $profit . '</span>';
+                $html = '<span class="display_currency gross-profit" data-currency_symbol="true" data-orig-value="'.$profit.'">'.$profit.'</span>';
+
                 return $html;
             });
         } else {
@@ -3085,10 +3093,10 @@ class ReportController extends Controller
         if ($by == 'product') {
 
             $datatable->filterColumn(
-                 'product',
-                 function($query, $keyword){
+                'product',
+                function ($query, $keyword) {
                     $query->whereRaw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) LIKE '%{$keyword}%'");
-                 });
+                });
         }
         $raw_columns = ['gross_profit'];
 
@@ -3096,16 +3104,17 @@ class ReportController extends Controller
             $datatable->editColumn('customer', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br> @endif {{$customer}}');
             $raw_columns[] = 'customer';
         }
-        
+
         if ($by == 'invoice') {
             $datatable->editColumn('invoice_no', function ($row) {
-                return '<a data-href="' . action('SellController@show', [$row->transaction_id])
-                            . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->invoice_no . '</a>';
+                return '<a data-href="'.action('SellController@show', [$row->transaction_id])
+                            .'" href="#" data-container=".view_modal" class="btn-modal">'.$row->invoice_no.'</a>';
             });
             $raw_columns[] = 'invoice_no';
         }
+
         return $datatable->rawColumns($raw_columns)
-                  ->make(true);
+            ->make(true);
     }
 
     /**
@@ -3132,7 +3141,7 @@ class ReportController extends Controller
                     'PL.variation_id',
                     '=',
                     'v.id'
-                    )
+                )
                 ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
                 ->join('products as p', 'PL.product_id', '=', 'p.id')
                 ->join('units as u', 'p.unit_id', '=', 'u.id')
@@ -3175,43 +3184,43 @@ class ReportController extends Controller
                 $query->whereIn('purchase.location_id', $permitted_locations);
             }
 
-            if (!empty(request()->purchase_start) && !empty(request()->purchase_end)) {
+            if (! empty(request()->purchase_start) && ! empty(request()->purchase_end)) {
                 $start = request()->purchase_start;
-                $end =  request()->purchase_end;
+                $end = request()->purchase_end;
                 $query->whereDate('purchase.transaction_date', '>=', $start)
-                            ->whereDate('purchase.transaction_date', '<=', $end);
+                    ->whereDate('purchase.transaction_date', '<=', $end);
             }
-            if (!empty(request()->sale_start) && !empty(request()->sale_end)) {
+            if (! empty(request()->sale_start) && ! empty(request()->sale_end)) {
                 $start = request()->sale_start;
-                $end =  request()->sale_end;
+                $end = request()->sale_end;
                 $query->where(function ($q) use ($start, $end) {
                     $q->where(function ($qr) use ($start, $end) {
                         $qr->whereDate('sale.transaction_date', '>=', $start)
-                           ->whereDate('sale.transaction_date', '<=', $end);
+                            ->whereDate('sale.transaction_date', '<=', $end);
                     })->orWhere(function ($qr) use ($start, $end) {
                         $qr->whereDate('stock_adjustment.transaction_date', '>=', $start)
-                           ->whereDate('stock_adjustment.transaction_date', '<=', $end);
+                            ->whereDate('stock_adjustment.transaction_date', '<=', $end);
                     });
                 });
             }
 
             $supplier_id = request()->get('supplier_id', null);
-            if (!empty($supplier_id)) {
+            if (! empty($supplier_id)) {
                 $query->where('suppliers.id', $supplier_id);
             }
 
             $customer_id = request()->get('customer_id', null);
-            if (!empty($customer_id)) {
+            if (! empty($customer_id)) {
                 $query->where('customers.id', $customer_id);
             }
 
             $location_id = request()->get('location_id', null);
-            if (!empty($location_id)) {
+            if (! empty($location_id)) {
                 $query->where('purchase.location_id', $location_id);
             }
 
             $only_mfg_products = request()->get('only_mfg_products', 0);
-            if (!empty($only_mfg_products)) {
+            if (! empty($only_mfg_products)) {
                 $query->where('purchase.type', 'production_purchase');
             }
 
@@ -3219,58 +3228,59 @@ class ReportController extends Controller
                 ->editColumn('product_name', function ($row) {
                     $product_name = $row->product_name;
                     if ($row->product_type == 'variable') {
-                        $product_name .= ' - ' . $row->product_variation . ' - ' . $row->variation_name;
+                        $product_name .= ' - '.$row->product_variation.' - '.$row->variation_name;
                     }
 
                     return $product_name;
                 })
                 ->editColumn('purchase_date', '{{@format_datetime($purchase_date)}}')
                 ->editColumn('purchase_ref_no', function ($row) {
-                    $html = $row->purchase_type == 'purchase' ? '<a data-href="' . action('PurchaseController@show', [$row->purchase_id])
-                            . '" href="#" data-container=".view_modal" class="btn-modal">' . $row->purchase_ref_no . '</a>' : $row->purchase_ref_no;
+                    $html = $row->purchase_type == 'purchase' ? '<a data-href="'.action('PurchaseController@show', [$row->purchase_id])
+                            .'" href="#" data-container=".view_modal" class="btn-modal">'.$row->purchase_ref_no.'</a>' : $row->purchase_ref_no;
                     if ($row->purchase_type == 'opening_stock') {
-                        $html .= '(' . __('lang_v1.opening_stock') . ')';
+                        $html .= '('.__('lang_v1.opening_stock').')';
                     }
+
                     return $html;
                 })
                 ->editColumn('purchase_price', function ($row) {
-                    return '<span class="display_currency purchase_price" data-currency_symbol=true data-orig-value="' . $row->purchase_price . '">' . $row->purchase_price . '</span>';
+                    return '<span class="display_currency purchase_price" data-currency_symbol=true data-orig-value="'.$row->purchase_price.'">'.$row->purchase_price.'</span>';
                 })
                 ->editColumn('sell_date', '@if(!empty($sell_line_id)) {{@format_datetime($sell_date)}} @else {{@format_datetime($stock_adjustment_date)}} @endif')
 
                 ->editColumn('sale_invoice_no', function ($row) {
-                    $invoice_no = !empty($row->sell_line_id) ? $row->sale_invoice_no : $row->stock_adjustment_ref_no . '<br><small>(' . __('stock_adjustment.stock_adjustment') . '</small>' ;
+                    $invoice_no = ! empty($row->sell_line_id) ? $row->sale_invoice_no : $row->stock_adjustment_ref_no.'<br><small>('.__('stock_adjustment.stock_adjustment').'</small>';
 
                     return $invoice_no;
                 })
                 ->editColumn('quantity', function ($row) {
-                    $html = '<span data-is_quantity="true" class="display_currency quantity" data-currency_symbol=false data-orig-value="' . (float)$row->quantity . '" data-unit="' . $row->unit . '" >' . (float) $row->quantity . '</span> ' . $row->unit;
+                    $html = '<span data-is_quantity="true" class="display_currency quantity" data-currency_symbol=false data-orig-value="'.(float) $row->quantity.'" data-unit="'.$row->unit.'" >'.(float) $row->quantity.'</span> '.$row->unit;
                     if ($row->qty_returned > 0) {
-                        $html .= '<small><i>(<span data-is_quantity="true" class="display_currency" data-currency_symbol=false>' . (float) $row->quantity . '</span> ' . $row->unit . ' ' . __('lang_v1.returned') . ')</i></small>';
+                        $html .= '<small><i>(<span data-is_quantity="true" class="display_currency" data-currency_symbol=false>'.(float) $row->quantity.'</span> '.$row->unit.' '.__('lang_v1.returned').')</i></small>';
                     }
 
                     return $html;
                 })
-                 ->editColumn('selling_price', function ($row) {
-                     $selling_price = !empty($row->sell_line_id) ? $row->selling_price : $row->stock_adjustment_price;
+                ->editColumn('selling_price', function ($row) {
+                    $selling_price = ! empty($row->sell_line_id) ? $row->selling_price : $row->stock_adjustment_price;
 
-                     return '<span class="display_currency row_selling_price" data-currency_symbol=true data-orig-value="' . $selling_price . '">' . $selling_price . '</span>';
-                 })
+                    return '<span class="display_currency row_selling_price" data-currency_symbol=true data-orig-value="'.$selling_price.'">'.$selling_price.'</span>';
+                })
+                ->addColumn('subtotal', function ($row) {
+                    $selling_price = ! empty($row->sell_line_id) ? $row->selling_price : $row->stock_adjustment_price;
+                    $subtotal = $selling_price * $row->quantity;
 
-                 ->addColumn('subtotal', function ($row) {
-                     $selling_price = !empty($row->sell_line_id) ? $row->selling_price : $row->stock_adjustment_price;
-                     $subtotal = $selling_price * $row->quantity;
-                     return '<span class="display_currency row_subtotal" data-currency_symbol=true data-orig-value="' . $subtotal . '">' . $subtotal . '</span>';
-                 })
-                 ->editColumn('supplier', '@if(!empty($supplier_business_name))
+                    return '<span class="display_currency row_subtotal" data-currency_symbol=true data-orig-value="'.$subtotal.'">'.$subtotal.'</span>';
+                })
+                ->editColumn('supplier', '@if(!empty($supplier_business_name))
                  {{$supplier_business_name}},<br> @endif {{$supplier}}')
-                 ->editColumn('customer', '@if(!empty($customer_business_name))
+                ->editColumn('customer', '@if(!empty($customer_business_name))
                  {{$customer_business_name}},<br> @endif {{$customer}}')
                 ->filterColumn('sale_invoice_no', function ($query, $keyword) {
                     $query->where('sale.invoice_no', 'like', ["%{$keyword}%"])
-                          ->orWhere('stock_adjustment.ref_no', 'like', ["%{$keyword}%"]);
+                        ->orWhere('stock_adjustment.ref_no', 'like', ["%{$keyword}%"]);
                 })
-                
+
                 ->rawColumns(['subtotal', 'selling_price', 'quantity', 'purchase_price', 'sale_invoice_no', 'purchase_ref_no', 'supplier', 'customer'])
                 ->make(true);
         }
@@ -3278,6 +3288,7 @@ class ReportController extends Controller
         $suppliers = Contact::suppliersDropdown($business_id, false);
         $customers = Contact::customersDropdown($business_id, false);
         $business_locations = BusinessLocation::forDropdown($business_id);
+
         return view('report.items_report')->with(compact('suppliers', 'customers', 'business_locations'));
     }
 
@@ -3288,55 +3299,55 @@ class ReportController extends Controller
      */
     public function purchaseReport()
     {
-        if ((!auth()->user()->can('purchase.view') && !auth()->user()->can('purchase.create') && !auth()->user()->can('view_own_purchase')) || empty(config('constants.show_report_606'))) {
+        if ((! auth()->user()->can('purchase.view') && ! auth()->user()->can('purchase.create') && ! auth()->user()->can('view_own_purchase')) || empty(config('constants.show_report_606'))) {
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
         if (request()->ajax()) {
             $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
             $purchases = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
-                    ->join(
-                        'business_locations AS BS',
-                        'transactions.location_id',
-                        '=',
-                        'BS.id'
-                    )
-                    ->leftJoin(
-                        'transaction_payments AS TP',
-                        'transactions.id',
-                        '=',
-                        'TP.transaction_id'
-                    )
-                    ->where('transactions.business_id', $business_id)
-                    ->where('transactions.type', 'purchase')
-                    ->with(['payment_lines'])
-                    ->select(
-                        'transactions.id',
-                        'transactions.ref_no',
-                        'contacts.name',
-                        'contacts.contact_id',
-                        'final_total',
-                        'total_before_tax',
-                        'discount_amount',
-                        'discount_type',
-                        'tax_amount',
-                        DB::raw('DATE_FORMAT(transaction_date, "%Y/%m") as purchase_year_month'),
-                        DB::raw('DATE_FORMAT(transaction_date, "%d") as purchase_day')
-                    )
-                    ->groupBy('transactions.id');
+                ->join(
+                    'business_locations AS BS',
+                    'transactions.location_id',
+                    '=',
+                    'BS.id'
+                )
+                ->leftJoin(
+                    'transaction_payments AS TP',
+                    'transactions.id',
+                    '=',
+                    'TP.transaction_id'
+                )
+                ->where('transactions.business_id', $business_id)
+                ->where('transactions.type', 'purchase')
+                ->with(['payment_lines'])
+                ->select(
+                    'transactions.id',
+                    'transactions.ref_no',
+                    'contacts.name',
+                    'contacts.contact_id',
+                    'final_total',
+                    'total_before_tax',
+                    'discount_amount',
+                    'discount_type',
+                    'tax_amount',
+                    DB::raw('DATE_FORMAT(transaction_date, "%Y/%m") as purchase_year_month'),
+                    DB::raw('DATE_FORMAT(transaction_date, "%d") as purchase_day')
+                )
+                ->groupBy('transactions.id');
 
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
                 $purchases->whereIn('transactions.location_id', $permitted_locations);
             }
 
-            if (!empty(request()->supplier_id)) {
+            if (! empty(request()->supplier_id)) {
                 $purchases->where('contacts.id', request()->supplier_id);
             }
-            if (!empty(request()->location_id)) {
+            if (! empty(request()->location_id)) {
                 $purchases->where('transactions.location_id', request()->location_id);
             }
-            if (!empty(request()->input('payment_status')) && request()->input('payment_status') != 'overdue') {
+            if (! empty(request()->input('payment_status')) && request()->input('payment_status') != 'overdue') {
                 $purchases->where('transactions.payment_status', request()->input('payment_status'));
             } elseif (request()->input('payment_status') == 'overdue') {
                 $purchases->whereIn('transactions.payment_status', ['due', 'partial'])
@@ -3345,18 +3356,18 @@ class ReportController extends Controller
                     ->whereRaw("IF(transactions.pay_term_type='days', DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number DAY) < CURDATE(), DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number MONTH) < CURDATE())");
             }
 
-            if (!empty(request()->status)) {
+            if (! empty(request()->status)) {
                 $purchases->where('transactions.status', request()->status);
             }
-            
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+
+            if (! empty(request()->start_date) && ! empty(request()->end_date)) {
                 $start = request()->start_date;
-                $end =  request()->end_date;
+                $end = request()->end_date;
                 $purchases->whereDate('transactions.transaction_date', '>=', $start)
-                            ->whereDate('transactions.transaction_date', '<=', $end);
+                    ->whereDate('transactions.transaction_date', '<=', $end);
             }
 
-            if (!auth()->user()->can('purchase.view') && auth()->user()->can('view_own_purchase')) {
+            if (! auth()->user()->can('purchase.view') && auth()->user()->can('view_own_purchase')) {
                 $purchases->where('transactions.created_by', request()->session()->get('user.id'));
             }
 
@@ -3377,27 +3388,29 @@ class ReportController extends Controller
                 ->editColumn(
                     'discount_amount',
                     function ($row) {
-                        $discount = !empty($row->discount_amount) ? $row->discount_amount : 0;
+                        $discount = ! empty($row->discount_amount) ? $row->discount_amount : 0;
 
-                        if (!empty($discount) && $row->discount_type == 'percentage') {
+                        if (! empty($discount) && $row->discount_type == 'percentage') {
                             $discount = $row->total_before_tax * ($discount / 100);
                         }
 
-                        return '<span class="display_currency total-discount" data-currency_symbol="true" data-orig-value="' . $discount . '">' . $discount . '</span>';
+                        return '<span class="display_currency total-discount" data-currency_symbol="true" data-orig-value="'.$discount.'">'.$discount.'</span>';
                     }
                 )
                 ->addColumn('payment_year_month', function ($row) {
                     $year_month = '';
-                    if (!empty($row->payment_lines->first())) {
+                    if (! empty($row->payment_lines->first())) {
                         $year_month = Carbon::parse($row->payment_lines->first()->paid_on)->format('Y/m');
                     }
+
                     return $year_month;
                 })
                 ->addColumn('payment_day', function ($row) {
                     $payment_day = '';
-                    if (!empty($row->payment_lines->first())) {
+                    if (! empty($row->payment_lines->first())) {
                         $payment_day = Carbon::parse($row->payment_lines->first()->paid_on)->format('d');
                     }
+
                     return $payment_day;
                 })
                 ->addColumn('payment_method', function ($row) use ($payment_types) {
@@ -3410,14 +3423,14 @@ class ReportController extends Controller
                         $payment_method = __('lang_v1.checkout_multi_pay');
                     }
 
-                    $html = !empty($payment_method) ? '<span class="payment-method" data-orig-value="' . $payment_method . '" data-status-name="' . $payment_method . '">' . $payment_method . '</span>' : '';
-                    
+                    $html = ! empty($payment_method) ? '<span class="payment-method" data-orig-value="'.$payment_method.'" data-status-name="'.$payment_method.'">'.$payment_method.'</span>' : '';
+
                     return $html;
                 })
                 ->setRowAttr([
                     'data-href' => function ($row) {
-                        if (auth()->user()->can("purchase.view")) {
-                            return  action('PurchaseController@show', [$row->id]) ;
+                        if (auth()->user()->can('purchase.view')) {
+                            return action('PurchaseController@show', [$row->id]);
                         } else {
                             return '';
                         }
@@ -3441,7 +3454,7 @@ class ReportController extends Controller
      */
     public function saleReport()
     {
-        if ((!auth()->user()->can('sell.view') && !auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access') && !auth()->user()->can('view_own_sell_only')) ||empty(config('constants.show_report_607'))) {
+        if ((! auth()->user()->can('sell.view') && ! auth()->user()->can('sell.create') && ! auth()->user()->can('direct_sell.access') && ! auth()->user()->can('view_own_sell_only')) || empty(config('constants.show_report_607'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -3464,7 +3477,7 @@ class ReportController extends Controller
         $end_date = Carbon::now()->format('Y-m-d');
         $location_id = request()->input('location_id');
         $filters = request()->only(['category_id', 'sub_category_id', 'brand_id', 'unit_id']);
-        //Get Closing stock
+        // Get Closing stock
         $closing_stock_by_pp = $this->transactionUtil->getOpeningClosingStock(
             $business_id,
             $end_date,
@@ -3488,7 +3501,7 @@ class ReportController extends Controller
             'closing_stock_by_pp' => $closing_stock_by_pp,
             'closing_stock_by_sp' => $closing_stock_by_sp,
             'potential_profit' => $potential_profit,
-            'profit_margin' => $profit_margin
+            'profit_margin' => $profit_margin,
         ];
     }
 
@@ -3506,39 +3519,39 @@ class ReportController extends Controller
             'purchase_return' => __('lang_v1.purchase_return'),
             'sell_transfer' => __('lang_v1.stock_transfer'),
             'stock_adjustment' => __('stock_adjustment.stock_adjustment'),
-            'expense' => __('lang_v1.expense')
+            'expense' => __('lang_v1.expense'),
         ];
 
         if (request()->ajax()) {
             $activities = Activity::with(['subject'])
-                                ->leftjoin('users as u', 'u.id', '=', 'activity_log.causer_id')
-                                ->where('activity_log.business_id', $business_id)
-                                ->select(
-                                    'activity_log.*',
-                                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as created_by")
-                                );
+                ->leftjoin('users as u', 'u.id', '=', 'activity_log.causer_id')
+                ->where('activity_log.business_id', $business_id)
+                ->select(
+                    'activity_log.*',
+                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as created_by")
+                );
 
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            if (! empty(request()->start_date) && ! empty(request()->end_date)) {
                 $start = request()->start_date;
-                $end =  request()->end_date;
+                $end = request()->end_date;
                 $activities->whereDate('activity_log.created_at', '>=', $start)
-                            ->whereDate('activity_log.created_at', '<=', $end);
+                    ->whereDate('activity_log.created_at', '<=', $end);
             }
 
-            if (!empty(request()->user_id)) {
+            if (! empty(request()->user_id)) {
                 $activities->where('causer_id', request()->user_id);
             }
 
             $subject_type = request()->subject_type;
-            if (!empty($subject_type)) {
+            if (! empty($subject_type)) {
                 if ($subject_type == 'contact') {
                     $activities->where('subject_type', \App\Models\Contact::class);
-                } else if($subject_type == 'user') {
+                } elseif ($subject_type == 'user') {
                     $activities->where('subject_type', \App\Models\User::class);
-                } else if(in_array($subject_type, ['sell', 'purchase', 
+                } elseif (in_array($subject_type, ['sell', 'purchase',
                     'sales_order', 'purchase_order', 'sell_return', 'purchase_return', 'sell_transfer', 'expense', 'purchase_order'])) {
                     $activities->where('subject_type', \App\Models\Transaction::class);
-                    $activities->whereHasMorph('subject', Transaction::class, function($q) use($subject_type){
+                    $activities->whereHasMorph('subject', Transaction::class, function ($q) use ($subject_type) {
                         $q->where('type', $subject_type);
                     });
                 }
@@ -3550,74 +3563,75 @@ class ReportController extends Controller
             $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
             $statuses = array_merge($sell_statuses, $sales_order_statuses, $purchase_statuses);
+
             return Datatables::of($activities)
-                            ->editColumn('created_at', '{{@format_datetime($created_at)}}')
-                            ->addColumn('subject_type', function($row) use($transaction_types) {
-                                    $subject_type = '';
-                                    if ($row->subject_type == \App\Models\Contact::class) {
-                                        $subject_type = __('contact.contact');
-                                    } else if ($row->subject_type == \App\Models\User::class) {
-                                        $subject_type = __('report.user');
-                                    } else if ($row->subject_type == \App\Models\Transaction::class && !empty($row->subject->type)) {
-                                        $subject_type = isset($transaction_types[$row->subject->type]) ? $transaction_types[$row->subject->type] : '';
-                                    } elseif (($row->subject_type == \App\Models\TransactionPayment::class)) {
-                                       $subject_type = __('lang_v1.payment');
-                                    }
-                                return $subject_type;
-                            })
-                            ->addColumn('note', function($row) use ($statuses, $shipping_statuses){
-                                $html = '';
-                                if (!empty($row->subject->ref_no)) {
-                                    $html .= __('purchase.ref_no') . ': ' . $row->subject->ref_no . '<br>';
-                                }
-                                if (!empty($row->subject->invoice_no)) {
-                                    $html .= __('sale.invoice_no') . ': ' . $row->subject->invoice_no . '<br>';
-                                }
-                                if($row->subject_type == \App\Models\Transaction::class && !empty($row->subject) && in_array($row->subject->type, ['sell', 'purchase'])) {
-                                    $html .= view('sale_pos.partials.activity_row', ['activity' => $row, 'statuses' => $statuses, 'shipping_statuses' => $shipping_statuses])->render();
-                                } else {
-                                    $update_note = $row->getExtraProperty('update_note');
-                                    if(!empty($update_note) && !is_array($update_note)) {
-                                        $html .= $update_note;
-                                    }
-                                }
+                ->editColumn('created_at', '{{@format_datetime($created_at)}}')
+                ->addColumn('subject_type', function ($row) use ($transaction_types) {
+                    $subject_type = '';
+                    if ($row->subject_type == \App\Models\Contact::class) {
+                        $subject_type = __('contact.contact');
+                    } elseif ($row->subject_type == \App\Models\User::class) {
+                        $subject_type = __('report.user');
+                    } elseif ($row->subject_type == \App\Models\Transaction::class && ! empty($row->subject->type)) {
+                        $subject_type = isset($transaction_types[$row->subject->type]) ? $transaction_types[$row->subject->type] : '';
+                    } elseif (($row->subject_type == \App\Models\TransactionPayment::class)) {
+                        $subject_type = __('lang_v1.payment');
+                    }
 
-                                if ($row->description == 'contact_deleted') {
-                                    $html .= $row->getExtraProperty('supplier_business_name') ?? ''; 
-                                    $html .= '<br>'; 
-                                }
+                    return $subject_type;
+                })
+                ->addColumn('note', function ($row) use ($statuses, $shipping_statuses) {
+                    $html = '';
+                    if (! empty($row->subject->ref_no)) {
+                        $html .= __('purchase.ref_no').': '.$row->subject->ref_no.'<br>';
+                    }
+                    if (! empty($row->subject->invoice_no)) {
+                        $html .= __('sale.invoice_no').': '.$row->subject->invoice_no.'<br>';
+                    }
+                    if ($row->subject_type == \App\Models\Transaction::class && ! empty($row->subject) && in_array($row->subject->type, ['sell', 'purchase'])) {
+                        $html .= view('sale_pos.partials.activity_row', ['activity' => $row, 'statuses' => $statuses, 'shipping_statuses' => $shipping_statuses])->render();
+                    } else {
+                        $update_note = $row->getExtraProperty('update_note');
+                        if (! empty($update_note) && ! is_array($update_note)) {
+                            $html .= $update_note;
+                        }
+                    }
 
-                                if (!empty($row->getExtraProperty('name'))) {
-                                    $html .= __('user.name') . ': ' . $row->getExtraProperty('name') . '<br>';
-                                }
+                    if ($row->description == 'contact_deleted') {
+                        $html .= $row->getExtraProperty('supplier_business_name') ?? '';
+                        $html .= '<br>';
+                    }
 
-                                if (!empty($row->getExtraProperty('id'))) {
-                                    $html .= 'id: ' . $row->getExtraProperty('id') . '<br>';
-                                }
-                                if (!empty($row->getExtraProperty('invoice_no'))) {
-                                    $html .= __('sale.invoice_no') . ': ' . $row->getExtraProperty('invoice_no');
-                                }
+                    if (! empty($row->getExtraProperty('name'))) {
+                        $html .= __('user.name').': '.$row->getExtraProperty('name').'<br>';
+                    }
 
-                                if (!empty($row->getExtraProperty('ref_no'))) {
-                                    $html .= __('purchase.ref_no') . ': ' . $row->getExtraProperty('ref_no');
-                                }
+                    if (! empty($row->getExtraProperty('id'))) {
+                        $html .= 'id: '.$row->getExtraProperty('id').'<br>';
+                    }
+                    if (! empty($row->getExtraProperty('invoice_no'))) {
+                        $html .= __('sale.invoice_no').': '.$row->getExtraProperty('invoice_no');
+                    }
 
-                                return $html;
-                            })
-                            ->filterColumn('created_by', function ($query, $keyword) {
-                                $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
-                            })
-                            ->editColumn('description', function($row) {
-                                return __('lang_v1.' . $row->description);
-                            })
-                            ->rawColumns(['note'])
-                            ->make(true);
+                    if (! empty($row->getExtraProperty('ref_no'))) {
+                        $html .= __('purchase.ref_no').': '.$row->getExtraProperty('ref_no');
+                    }
+
+                    return $html;
+                })
+                ->filterColumn('created_by', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->editColumn('description', function ($row) {
+                    return __('lang_v1.'.$row->description);
+                })
+                ->rawColumns(['note'])
+                ->make(true);
         }
 
         $users = User::allUsersDropdown($business_id, false);
 
         return view('report.activity_log')->with(compact('users', 'transaction_types'));
 
-                           
     }
 }

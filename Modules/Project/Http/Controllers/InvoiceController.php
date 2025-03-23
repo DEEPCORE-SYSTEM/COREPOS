@@ -2,6 +2,7 @@
 
 namespace Modules\Project\Http\Controllers;
 
+use App\Models\BusinessLocation;
 use App\Models\Contact;
 use App\Models\InvoiceScheme;
 use App\Models\TaxRate;
@@ -16,16 +17,18 @@ use Modules\Project\Entities\InvoiceLine;
 use Modules\Project\Entities\Project;
 use Modules\Project\Entities\ProjectTransaction;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\BusinessLocation;
+
 class InvoiceController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $commonUtil;
+
     protected $transactionUtil;
+
     protected $moduleUtil;
+
     /**
      * Constructor
      *
@@ -41,6 +44,7 @@ class InvoiceController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function index()
@@ -50,94 +54,94 @@ class InvoiceController extends Controller
             $project_id = request()->get('project_id');
 
             $transactions = ProjectTransaction::where('business_id', $business_id)
-                    ->where('pjt_project_id', $project_id)
-                    ->with('contact')
-                    ->select('invoice_no', 'transaction_date', 'contact_id', 'pjt_title', 'payment_status', 'final_total', 'status', 'id', 'pjt_project_id');
+                ->where('pjt_project_id', $project_id)
+                ->with('contact')
+                ->select('invoice_no', 'transaction_date', 'contact_id', 'pjt_title', 'payment_status', 'final_total', 'status', 'id', 'pjt_project_id');
 
             return Datatables::of($transactions)
-                        ->addColumn('action', function ($row) {
-                            $html = '<div class="btn-group">
+                ->addColumn('action', function ($row) {
+                    $html = '<div class="btn-group">
                                 <button class="btn btn-info dropdown-toggle btn-xs" type="button"  data-toggle="dropdown" aria-expanded="false">
-                                    '.__("messages.action").'
+                                    '.__('messages.action').'
                                     <span class="caret"></span>
                                     <span class="sr-only">
-                                    '.__("messages.action").'
+                                    '.__('messages.action').'
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
-                            if ($row->payment_status != "paid") {
-                                $html .= '<li>
-                                    <a href="' . action('TransactionPaymentController@addPayment', ['id' => $row->id]) . '" class="add_payment_modal">
+                    if ($row->payment_status != 'paid') {
+                        $html .= '<li>
+                                    <a href="'.action('TransactionPaymentController@addPayment', ['id' => $row->id]).'" class="add_payment_modal">
                                         <i class="fas fa-credit-card"></i>
-                                        '.__("purchase.add_payment").'
+                                        '.__('purchase.add_payment').'
                                     </a>
                                 </li>';
-                            }
+                    }
 
-                            $html .= '
+                    $html .= '
                                     <li>
-                                        <a href="' . action('TransactionPaymentController@show', [$row->id]) . '" class="view_payment_modal">
-                                            <i class="fas fa-money-check"></i> ' . __("purchase.view_payments") . '
+                                        <a href="'.action('TransactionPaymentController@show', [$row->id]).'" class="view_payment_modal">
+                                            <i class="fas fa-money-check"></i> '.__('purchase.view_payments').'
                                         </a>
                                     </li>
                                     <li>
-                                        <a data-href="' . action('\Modules\Project\Http\Controllers\InvoiceController@show', ['id' => $row->id, 'project_id' => $row->pjt_project_id]) . '" class="cursor-pointer view_a_project_invoice">
+                                        <a data-href="'.action('\Modules\Project\Http\Controllers\InvoiceController@show', ['id' => $row->id, 'project_id' => $row->pjt_project_id]).'" class="cursor-pointer view_a_project_invoice">
                                             <i class="fa fa-eye"></i>
-                                            '.__("messages.view").'
+                                            '.__('messages.view').'
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="' . action('\Modules\Project\Http\Controllers\InvoiceController@edit', ['id' => $row->id, 'project_id' => $row->pjt_project_id]) . '" class="cursor-pointer edit_a_invoice">
+                                        <a href="'.action('\Modules\Project\Http\Controllers\InvoiceController@edit', ['id' => $row->id, 'project_id' => $row->pjt_project_id]).'" class="cursor-pointer edit_a_invoice">
                                             <i class="fa fa-edit"></i>
-                                            '.__("messages.edit").'
+                                            '.__('messages.edit').'
                                         </a>
                                     </li>
                                     <li>
-                                        <a data-href="' . action('\Modules\Project\Http\Controllers\InvoiceController@destroy', ['id' => $row->id, 'project_id' => $row->pjt_project_id]) . '" class="cursor-pointer delete_a_invoice">
+                                        <a data-href="'.action('\Modules\Project\Http\Controllers\InvoiceController@destroy', ['id' => $row->id, 'project_id' => $row->pjt_project_id]).'" class="cursor-pointer delete_a_invoice">
                                             <i class="fas fa-trash"></i>
-                                            '.__("messages.delete").'
+                                            '.__('messages.delete').'
                                         </a>
                                     </li>';
-                            $html .= '</ul>
+                    $html .= '</ul>
                                     </div>';
 
-                            return $html;
-                        })
-                        ->editColumn('transaction_date', '
+                    return $html;
+                })
+                ->editColumn('transaction_date', '
                                 {{@format_date($transaction_date)}}
                         ')
-                        ->editColumn('contact_id', function ($row) {
-                            return $row->contact->name;
-                        })
-                        ->editColumn('invoice_no', '
+                ->editColumn('contact_id', function ($row) {
+                    return $row->contact->name;
+                })
+                ->editColumn('invoice_no', '
                             <a data-href="{{action("\Modules\Project\Http\Controllers\InvoiceController@show", ["id" => $id, "project_id" => $pjt_project_id])}}" class="cursor-pointer view_a_project_invoice text-black">
                                 {{$invoice_no}}
                             </a>
                         ')
-                        ->editColumn('pjt_title', '
+                ->editColumn('pjt_title', '
                             <a data-href="{{action("\Modules\Project\Http\Controllers\InvoiceController@show", ["id" => $id, "project_id" => $pjt_project_id])}}" class="cursor-pointer view_a_project_invoice text-black">
                                 {{$pjt_title}}
                             </a>
                         ')
-                        ->editColumn(
-                            'payment_status',
-                            '<a href="{{ action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal payment-status-label" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}">
+                ->editColumn(
+                    'payment_status',
+                    '<a href="{{ action("TransactionPaymentController@show", [$id])}}" class="view_payment_modal payment-status-label" data-orig-value="{{$payment_status}}" data-status-name="{{__(\'lang_v1.\' . $payment_status)}}">
                                     <span class="label @payment_status($payment_status)">{{__(\'lang_v1.\' . $payment_status)}}
                                     </span>
                             </a>'
-                        )
-                        ->editColumn('final_total', function ($row) {
-                            $html = '<span class="display_currency" data-currency_symbol="true" data-orig-value="' . $row->final_total . '">' . $row->final_total . '</span>';
+                )
+                ->editColumn('final_total', function ($row) {
+                    $html = '<span class="display_currency" data-currency_symbol="true" data-orig-value="'.$row->final_total.'">'.$row->final_total.'</span>';
 
-                            return $html;
-                        })
-                        ->editColumn('status', function ($row) {
-                            return __('sale.'.$row->status);
-                        })
-                        ->removeColumn('id')
-                        ->rawColumns(['action', 'invoice_no', 'transaction_date', 'contact_id', 'pjt_title', 'payment_status', 'final_total', 'status'])
-                        ->make(true);
+                    return $html;
+                })
+                ->editColumn('status', function ($row) {
+                    return __('sale.'.$row->status);
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action', 'invoice_no', 'transaction_date', 'contact_id', 'pjt_title', 'payment_status', 'final_total', 'status'])
+                ->make(true);
         }
 
         return view('project::invoice.index');
@@ -145,20 +149,21 @@ class InvoiceController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'project_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'project_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
         $project_id = request()->get('project_id');
 
         $project = Project::where('business_id', $business_id)
-                        ->findOrFail($project_id);
+            ->findOrFail($project_id);
 
         $customers = Contact::customersDropdown($business_id, false);
         $invoice_schemes = InvoiceScheme::forDropdown($business_id);
@@ -176,14 +181,14 @@ class InvoiceController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param  Request $request
+     *
      * @return Response
      */
     public function store(Request $request)
     {
         try {
             DB::beginTransaction();
-            
+
             $input = $request->only('pjt_project_id', 'pjt_title', 'contact_id', 'pay_term_number', 'pay_term_type', 'status', 'discount_type', 'staff_note', 'additional_notes', 'location_id');
 
             $input['business_id'] = $request->session()->get('user.business_id');
@@ -219,11 +224,11 @@ class InvoiceController extends Controller
                         'tax_rate_id' => $tax_rate_id,
                         'quantity' => $this->commonUtil->num_uf($quantity),
                         'total' => $this->commonUtil->num_uf($total),
-                        'description' => $description
+                        'description' => $description,
                     ];
                 }
             }
-            
+
             $transaction = ProjectTransaction::create($input);
 
             $transaction->invoiceLines()->createMany($invoice_lines);
@@ -232,26 +237,27 @@ class InvoiceController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.success')
+                'msg' => __('lang_v1.success'),
             ];
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong')
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
-        
+
         return redirect()->action(
             '\Modules\Project\Http\Controllers\ProjectController@show',
             ['id' => $input['pjt_project_id']]
-            )->with('status', $output);
+        )->with('status', $output);
     }
 
     /**
      * Show the specified resource.
+     *
      * @return Response
      */
     public function show($id)
@@ -261,10 +267,10 @@ class InvoiceController extends Controller
             $project_id = request()->get('project_id');
 
             $transaction = ProjectTransaction::where('business_id', $business_id)
-                    ->where('pjt_project_id', $project_id)
-                    ->with('contact', 'invoiceLines', 'invoiceLines.tax', 'project', 'payment_lines')
-                    ->findOrFail($id);
-                                
+                ->where('pjt_project_id', $project_id)
+                ->with('contact', 'invoiceLines', 'invoiceLines.tax', 'project', 'payment_lines')
+                ->findOrFail($id);
+
             return view('project::invoice.show')
                 ->with(compact('transaction'));
         }
@@ -272,24 +278,25 @@ class InvoiceController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
      * @return Response
      */
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'project_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'project_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $project_id = request()->get('project_id');
 
         $transaction = ProjectTransaction::with('invoiceLines')
-                            ->where('business_id', $business_id)
-                            ->where('pjt_project_id', $project_id)
-                            ->findOrFail($id);
+            ->where('business_id', $business_id)
+            ->where('pjt_project_id', $project_id)
+            ->findOrFail($id);
         $project = Project::where('business_id', $business_id)
-                        ->findOrFail($project_id);
+            ->findOrFail($project_id);
         $customers = Contact::customersDropdown($business_id, false);
         $tax_dropdown = TaxRate::forBusinessDropdown($business_id, true, true);
         $taxes = $tax_dropdown['tax_rates'];
@@ -297,13 +304,14 @@ class InvoiceController extends Controller
         $statuses = ProjectTransaction::invoiceStatuses();
         $discount_types = ProjectTransaction::discountTypes();
         $business_locations = BusinessLocation::forDropdown($business_id);
+
         return view('project::invoice.edit')
             ->with(compact('project', 'customers', 'statuses', 'discount_types', 'transaction', 'taxes', 'tax_attributes', 'business_locations'));
     }
 
     /**
      * Update the specified resource in storage.
-     * @param  Request $request
+     *
      * @return Response
      */
     public function update(Request $request, $id)
@@ -321,8 +329,8 @@ class InvoiceController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $transaction = ProjectTransaction::where('business_id', $business_id)
-                    ->where('pjt_project_id', $project_id)
-                    ->findOrFail($id);
+                ->where('pjt_project_id', $project_id)
+                ->findOrFail($id);
 
             $transaction->update($input);
 
@@ -339,7 +347,7 @@ class InvoiceController extends Controller
             foreach ($invoice_line_ids as $key => $invoice_line_id) {
                 $existing_line_id[] = $invoice_line_id;
                 $invoice_line = InvoiceLine::where('transaction_id', $id)
-                                    ->findOrFail($invoice_line_id);
+                    ->findOrFail($invoice_line_id);
                 $invoice_line->task = $existing_task[$key];
                 $invoice_line->tax_rate_id = $existing_tax_rate_ids[$key];
                 $invoice_line->description = $existing_description[$key];
@@ -351,17 +359,17 @@ class InvoiceController extends Controller
 
             // remove line which is not present in existing line id
             InvoiceLine::where('transaction_id', $id)
-                        ->whereNotIn('id', $existing_line_id)
-                        ->delete();
+                ->whereNotIn('id', $existing_line_id)
+                ->delete();
 
-            //add new invoice line
+            // add new invoice line
             $tasks = $request->input('task');
             $rates = $request->input('rate');
             $tax_rate_ids = $request->input('tax_rate_id');
             $quantities = $request->input('quantity');
             $totals = $request->input('total');
             $descriptions = $request->input('description');
-            
+
             $invoice_lines = [];
             foreach ($tasks as $key => $value) {
                 $rate = $rates[$key];
@@ -388,26 +396,27 @@ class InvoiceController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.success')
+                'msg' => __('lang_v1.success'),
             ];
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong')
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
-        
+
         return redirect()->action(
             '\Modules\Project\Http\Controllers\ProjectController@show',
             ['id' => $project_id]
-            )->with('status', $output);
+        )->with('status', $output);
     }
 
     /**
      * Remove the specified resource from storage.
+     *
      * @return Response
      */
     public function destroy($id)
@@ -426,14 +435,14 @@ class InvoiceController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.success')
+                'msg' => __('lang_v1.success'),
             ];
         } catch (Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong')
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -448,7 +457,7 @@ class InvoiceController extends Controller
      */
     public function getProjectInvoiceTaxReport(Request $request)
     {
-        if (!auth()->user()->can('tax_report.view')) {
+        if (! auth()->user()->can('tax_report.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -462,26 +471,26 @@ class InvoiceController extends Controller
                 ->where('transactions.type', 'sell')
                 ->where('transactions.sub_type', 'project_invoice')
                 ->where('transactions.status', 'final')
-                ->with(['invoiceLines' => function($q){
+                ->with(['invoiceLines' => function ($q) {
                     $q->whereNotNull('pjt_invoice_lines.tax_rate_id');
                 }])
-                ->select('c.name as contact_name', 
-                        'c.tax_number',
-                        'transactions.ref_no',
-                        'transactions.invoice_no',
-                        'transactions.transaction_date',
-                        'transactions.total_before_tax',
-                        'transactions.tax_id',
-                        'transactions.tax_amount',
-                        'transactions.id',
-                        'transactions.type',
-                        'transactions.discount_type',
-                        'transactions.discount_amount'
-                    );
+                ->select('c.name as contact_name',
+                    'c.tax_number',
+                    'transactions.ref_no',
+                    'transactions.invoice_no',
+                    'transactions.transaction_date',
+                    'transactions.total_before_tax',
+                    'transactions.tax_id',
+                    'transactions.tax_amount',
+                    'transactions.id',
+                    'transactions.type',
+                    'transactions.discount_type',
+                    'transactions.discount_amount'
+                );
 
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            if (! empty(request()->start_date) && ! empty(request()->end_date)) {
                 $start = request()->start_date;
-                $end =  request()->end_date;
+                $end = request()->end_date;
                 $transactions->whereDate('transactions.transaction_date', '>=', $start)
                     ->whereDate('transactions.transaction_date', '<=', $end);
             }
@@ -489,9 +498,9 @@ class InvoiceController extends Controller
             $datatable = Datatables::of($transactions);
             $raw_cols = ['total_before_tax', 'discount_amount'];
             foreach ($taxes as $tax) {
-                $col = 'tax_' . $tax['id'];
+                $col = 'tax_'.$tax['id'];
                 $raw_cols[] = $col;
-                $datatable->addColumn($col, function($row) use($tax, $col) {
+                $datatable->addColumn($col, function ($row) use ($tax, $col) {
                     $tax_amount = 0;
                     foreach ($row->invoiceLines as $invoiceLine) {
                         if ($invoiceLine->tax_rate_id == $tax['id']) {
@@ -502,7 +511,7 @@ class InvoiceController extends Controller
                     }
 
                     if ($tax_amount > 0) {
-                        return '<span class="display_currency ' . $col . '" data-currency_symbol="true" data-orig-value="' . $tax_amount . '">' . $tax_amount . '</span>';
+                        return '<span class="display_currency '.$col.'" data-currency_symbol="true" data-orig-value="'.$tax_amount.'">'.$tax_amount.'</span>';
                     } else {
                         return '';
                     }
@@ -513,7 +522,7 @@ class InvoiceController extends Controller
                 'total_before_tax',
                 '<span class="display_currency total_before_tax" data-currency_symbol="true" data-orig-value="{{$total_before_tax}}">{{$total_before_tax}}</span>'
             )->editColumn('discount_amount', '@if($discount_amount != 0)<span class="display_currency" data-currency_symbol="true">{{$discount_amount}}</span>@if($discount_type == "percentage")% @endif @endif')
-            ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}');
+                ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}');
 
             return $datatable->rawColumns($raw_cols)
                 ->make(true);

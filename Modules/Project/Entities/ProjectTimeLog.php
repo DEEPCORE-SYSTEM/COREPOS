@@ -8,7 +8,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class ProjectTimeLog extends Model
 {
     use LogsActivity;
-    
+
     /**
      * The table associated with the model.
      *
@@ -17,13 +17,14 @@ class ProjectTimeLog extends Model
     protected $table = 'pjt_project_time_logs';
 
     /**
-    * The attributes that aren't mass assignable.
-    *
-    * @var array
-    */
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
     protected $guarded = ['id'];
 
     protected static $logUnguarded = true;
+
     protected static $logOnlyDirty = true;
 
     /**

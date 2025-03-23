@@ -3,33 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\BusinessLocation;
-
 use App\Models\Product;
 use App\Models\PurchaseLine;
 use App\Models\Transaction;
 use App\Utils\ProductUtil;
-
 use App\Utils\TransactionUtil;
-use Illuminate\Http\Request;
-
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OpeningStockController extends Controller
 {
-
     /**
      * All Utils instance.
-     *
      */
     protected $productUtil;
+
     protected $transactionUtil;
 
     /**
      * Constructor
      *
-     * @param ProductUtils $product
+     * @param  ProductUtils  $product
      * @return void
      */
     public function __construct(ProductUtil $productUtil, TransactionUtil $transactionUtil)
@@ -46,42 +42,42 @@ class OpeningStockController extends Controller
      */
     public function add($product_id)
     {
-        if (!auth()->user()->can('product.opening_stock')) {
+        if (! auth()->user()->can('product.opening_stock')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-        //Get the product
+        // Get the product
         $product = Product::where('business_id', $business_id)
-                            ->where('id', $product_id)
-                            ->with(['variations',
-                                    'variations.product_variation',
-                                    'unit',
-                                    'product_locations'
-                                ])
-                            ->first();
-        if (!empty($product) && $product->enable_stock == 1) {
-            //Get Opening Stock Transactions for the product if exists
+            ->where('id', $product_id)
+            ->with(['variations',
+                'variations.product_variation',
+                'unit',
+                'product_locations',
+            ])
+            ->first();
+        if (! empty($product) && $product->enable_stock == 1) {
+            // Get Opening Stock Transactions for the product if exists
             $transactions = Transaction::where('business_id', $business_id)
-                                ->where('opening_stock_product_id', $product_id)
-                                ->where('type', 'opening_stock')
-                                ->with(['purchase_lines'])
-                                ->get();
-                                
+                ->where('opening_stock_product_id', $product_id)
+                ->where('type', 'opening_stock')
+                ->with(['purchase_lines'])
+                ->get();
+
             $purchases = [];
             foreach ($transactions as $transaction) {
                 $purchase_lines = [];
 
                 foreach ($transaction->purchase_lines as $purchase_line) {
-                    if (!empty($purchase_lines[$purchase_line->variation_id])) {
+                    if (! empty($purchase_lines[$purchase_line->variation_id])) {
                         $k = count($purchase_lines[$purchase_line->variation_id]);
                     } else {
                         $k = 0;
                         $purchase_lines[$purchase_line->variation_id] = [];
                     }
 
-                    //Show only remaining quantity for editing opening stock.
+                    // Show only remaining quantity for editing opening stock.
                     $purchase_lines[$purchase_line->variation_id][$k]['quantity'] = $purchase_line->quantity_remaining;
                     $purchase_lines[$purchase_line->variation_id][$k]['purchase_price'] = $purchase_line->purchase_price;
                     $purchase_lines[$purchase_line->variation_id][$k]['purchase_line_id'] = $purchase_line->id;
@@ -93,14 +89,13 @@ class OpeningStockController extends Controller
 
             $locations = BusinessLocation::forDropdown($business_id);
 
-            //Unset locations where product is not available
+            // Unset locations where product is not available
             $available_locations = $product->product_locations->pluck('id')->toArray();
             foreach ($locations as $key => $value) {
-                if (!in_array($key, $available_locations)) {
+                if (! in_array($key, $available_locations)) {
                     unset($locations[$key]);
                 }
             }
-            
 
             $enable_expiry = request()->session()->get('business.enable_product_expiry');
             $enable_lot = request()->session()->get('business.enable_lot_number');
@@ -117,26 +112,25 @@ class OpeningStockController extends Controller
             }
 
             return view('opening_stock.add')
-                    ->with(compact(
-                        'product',
-                        'locations',
-                        'purchases',
-                        'enable_expiry',
-                        'enable_lot'
-                    ));
+                ->with(compact(
+                    'product',
+                    'locations',
+                    'purchases',
+                    'enable_expiry',
+                    'enable_lot'
+                ));
         }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function save(Request $request)
     {
-        if (!auth()->user()->can('product.opening_stock')) {
+        if (! auth()->user()->can('product.opening_stock')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -148,33 +142,33 @@ class OpeningStockController extends Controller
             $user_id = $request->session()->get('user.id');
 
             $product = Product::where('business_id', $business_id)
-                                ->where('id', $product_id)
-                                ->with(['variations', 'product_tax'])
-                                ->first();
+                ->where('id', $product_id)
+                ->with(['variations', 'product_tax'])
+                ->first();
 
             $locations = BusinessLocation::forDropdown($business_id)->toArray();
 
-            if (!empty($product) && $product->enable_stock == 1) {
-                //Get product tax
-                $tax_percent = !empty($product->product_tax->amount) ? $product->product_tax->amount : 0;
-                $tax_id = !empty($product->product_tax->id) ? $product->product_tax->id : null;
+            if (! empty($product) && $product->enable_stock == 1) {
+                // Get product tax
+                $tax_percent = ! empty($product->product_tax->amount) ? $product->product_tax->amount : 0;
+                $tax_id = ! empty($product->product_tax->id) ? $product->product_tax->id : null;
 
-                //Get start date for financial year.
-                $transaction_date = request()->session()->get("financial_year.start");
+                // Get start date for financial year.
+                $transaction_date = request()->session()->get('financial_year.start');
                 $transaction_date = Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
 
                 DB::beginTransaction();
-                //$key is the location_id
+                // $key is the location_id
                 foreach ($opening_stocks as $key_os => $value) {
                     $location_id = $key_os;
                     $purchase_total = 0;
-                    //Check if valid location
+                    // Check if valid location
                     if (array_key_exists($location_id, $locations)) {
                         $purchase_lines = [];
                         $updated_purchase_line_ids = [];
 
-                        //create purchase_lines array
-                        //$k is the variation id
+                        // create purchase_lines array
+                        // $k is the variation id
                         foreach ($value as $k => $rows) {
                             foreach ($rows as $key => $v) {
                                 $purchase_price = $this->productUtil->num_uf(trim($v['purchase_price']));
@@ -183,12 +177,12 @@ class OpeningStockController extends Controller
                                 $qty_remaining = $this->productUtil->num_uf(trim($v['quantity']));
 
                                 $exp_date = null;
-                                if (!empty($v['exp_date'])) {
+                                if (! empty($v['exp_date'])) {
                                     $exp_date = $this->productUtil->uf_date($v['exp_date']);
                                 }
 
                                 $lot_number = null;
-                                if (!empty($v['lot_number'])) {
+                                if (! empty($v['lot_number'])) {
                                     $lot_number = $v['lot_number'];
                                 }
 
@@ -196,11 +190,11 @@ class OpeningStockController extends Controller
 
                                 if (isset($v['purchase_line_id'])) {
                                     $purchase_line = PurchaseLine::findOrFail($v['purchase_line_id']);
-                                    //Quantity = remaining + used
+                                    // Quantity = remaining + used
                                     $qty_remaining = $qty_remaining + $purchase_line->quantity_used;
 
                                     if ($qty_remaining != 0) {
-                                        //Calculate transaction total
+                                        // Calculate transaction total
                                         $purchase_total += ($purchase_price_inc_tax * $qty_remaining);
 
                                         $updated_purchase_line_ids[] = $purchase_line->id;
@@ -212,18 +206,18 @@ class OpeningStockController extends Controller
                                 } else {
                                     if ($qty_remaining != 0) {
 
-                                        //create newly added purchase lines
-                                        $purchase_line = new PurchaseLine();
+                                        // create newly added purchase lines
+                                        $purchase_line = new PurchaseLine;
                                         $purchase_line->product_id = $product->id;
                                         $purchase_line->variation_id = $k;
 
                                         $this->productUtil->updateProductQuantity($location_id, $product->id, $k, $qty_remaining, 0, null, false);
 
-                                        //Calculate transaction total
+                                        // Calculate transaction total
                                         $purchase_total += ($purchase_price_inc_tax * $qty_remaining);
                                     }
                                 }
-                                if (!is_null($purchase_line)) {
+                                if (! is_null($purchase_line)) {
                                     $purchase_line->item_tax = $item_tax;
                                     $purchase_line->tax_id = $tax_id;
                                     $purchase_line->quantity = $qty_remaining;
@@ -238,16 +232,16 @@ class OpeningStockController extends Controller
                             }
                         }
 
-                        //create transaction & purchase lines
-                        if (!empty($purchase_lines)) {
+                        // create transaction & purchase lines
+                        if (! empty($purchase_lines)) {
                             $is_new_transaction = false;
 
                             $transaction = Transaction::where('type', 'opening_stock')
-                                    ->where('business_id', $business_id)
-                                    ->where('opening_stock_product_id', $product->id)
-                                    ->where('location_id', $location_id)
-                                    ->first();
-                            if (!empty($transaction)) {
+                                ->where('business_id', $business_id)
+                                ->where('opening_stock_product_id', $product->id)
+                                ->where('location_id', $location_id)
+                                ->first();
+                            if (! empty($transaction)) {
                                 $transaction->total_before_tax = $purchase_total;
                                 $transaction->final_total = $purchase_total;
                                 $transaction->update();
@@ -265,23 +259,23 @@ class OpeningStockController extends Controller
                                         'location_id' => $location_id,
                                         'final_total' => $purchase_total,
                                         'payment_status' => 'paid',
-                                        'created_by' => $user_id
+                                        'created_by' => $user_id,
                                     ]
                                 );
                             }
 
-                            //unset deleted purchase lines
+                            // unset deleted purchase lines
                             $delete_purchase_line_ids = [];
                             $delete_purchase_lines = null;
                             $delete_purchase_lines = PurchaseLine::where('transaction_id', $transaction->id)
-                                        ->whereNotIn('id', $updated_purchase_line_ids)
-                                        ->get();
+                                ->whereNotIn('id', $updated_purchase_line_ids)
+                                ->get();
 
                             if ($delete_purchase_lines->count()) {
                                 foreach ($delete_purchase_lines as $delete_purchase_line) {
                                     $delete_purchase_line_ids[] = $delete_purchase_line->id;
 
-                                    //decrease deleted only if previous status was received
+                                    // decrease deleted only if previous status was received
                                     $this->productUtil->decreaseProductQuantity(
                                         $delete_purchase_line->product_id,
                                         $delete_purchase_line->variation_id,
@@ -289,30 +283,30 @@ class OpeningStockController extends Controller
                                         $delete_purchase_line->quantity
                                     );
                                 }
-                                //Delete deleted purchase lines
+                                // Delete deleted purchase lines
                                 PurchaseLine::where('transaction_id', $transaction->id)
-                                            ->whereIn('id', $delete_purchase_line_ids)
-                                            ->delete();
+                                    ->whereIn('id', $delete_purchase_line_ids)
+                                    ->delete();
                             }
                             $transaction->purchase_lines()->saveMany($purchase_lines);
 
-                            //Update mapping of purchase & Sell.
-                            if (!$is_new_transaction) {
+                            // Update mapping of purchase & Sell.
+                            if (! $is_new_transaction) {
                                 $this->transactionUtil->adjustMappingPurchaseSellAfterEditingPurchase('received', $transaction, $delete_purchase_lines);
                             }
 
-                            //Adjust stock over selling if found
+                            // Adjust stock over selling if found
                             $this->productUtil->adjustStockOverSelling($transaction);
                         } else {
-                            //Delete transaction if all purchase line quantity is 0 (Only if transaction exists)
+                            // Delete transaction if all purchase line quantity is 0 (Only if transaction exists)
                             $delete_transaction = Transaction::where('type', 'opening_stock')
                                 ->where('business_id', $business_id)
                                 ->where('opening_stock_product_id', $product->id)
                                 ->where('location_id', $location_id)
                                 ->with(['purchase_lines'])
                                 ->first();
-                            
-                            if (!empty($delete_transaction)) {
+
+                            if (! empty($delete_transaction)) {
                                 $delete_purchase_lines = $delete_transaction->purchase_lines;
 
                                 foreach ($delete_purchase_lines as $delete_purchase_line) {
@@ -320,7 +314,7 @@ class OpeningStockController extends Controller
                                     $delete_purchase_line->delete();
                                 }
 
-                                //Update mapping of purchase & Sell.
+                                // Update mapping of purchase & Sell.
                                 $this->transactionUtil->adjustMappingPurchaseSellAfterEditingPurchase('received', $delete_transaction, $delete_purchase_lines);
 
                                 $delete_transaction->delete();
@@ -333,15 +327,16 @@ class OpeningStockController extends Controller
             }
 
             $output = ['success' => 1,
-                             'msg' => __('lang_v1.opening_stock_added_successfully')
-                        ];
+                'msg' => __('lang_v1.opening_stock_added_successfully'),
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => 0,
-                            'msg' => $e->getMessage()
-                        ];
+                'msg' => $e->getMessage(),
+            ];
+
             return back()->with('status', $output);
         }
 

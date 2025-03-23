@@ -2,16 +2,14 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Models\Unit;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Transformers\CommonResource;
 
-use App\Models\Unit;
-
 /**
  * @group Unit management
+ *
  * @authenticated
  *
  * APIs for managing units
@@ -20,6 +18,7 @@ class UnitController extends ApiController
 {
     /**
      * List units
+     *
      * @response {
         "data": [
             {
@@ -84,10 +83,10 @@ class UnitController extends ApiController
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        
+
         $units = Unit::where('business_id', $business_id)
-                    ->with(['base_unit'])
-                    ->get();
+            ->with(['base_unit'])
+            ->get();
 
         return CommonResource::collection($units);
     }
@@ -96,6 +95,7 @@ class UnitController extends ApiController
      * Get the specified unit
      *
      * @urlParam unit required comma separated ids of the units Example: 1
+     *
      * @response {
         "data": [
             {
@@ -123,9 +123,9 @@ class UnitController extends ApiController
         $unit_ids = explode(',', $unit_ids);
 
         $units = Unit::where('business_id', $business_id)
-                        ->whereIn('id', $unit_ids)
-                        ->with(['base_unit'])
-                        ->get();
+            ->whereIn('id', $unit_ids)
+            ->with(['base_unit'])
+            ->get();
 
         return CommonResource::collection($units);
     }
