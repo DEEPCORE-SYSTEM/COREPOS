@@ -20,7 +20,6 @@ class DeviceModel extends Model
      */
     protected $table = 'repair_device_models';
 
-    
     /**
      * The attributes that should be cast to native types.
      *
@@ -57,7 +56,7 @@ class DeviceModel extends Model
     public static function forDropdown($business_id)
     {
         $device_models = DeviceModel::where('business_id', $business_id)
-                            ->pluck('name', 'id');
+            ->pluck('name', 'id');
 
         return $device_models;
     }

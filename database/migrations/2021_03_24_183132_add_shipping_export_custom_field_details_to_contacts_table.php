@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AddShippingExportCustomFieldDetailsToContactsTable extends Migration
 {
@@ -48,7 +48,7 @@ class AddShippingExportCustomFieldDetailsToContactsTable extends Migration
                 ->after('export_custom_field_5');
         });
 
-        DB::statement("ALTER TABLE contacts MODIFY COLUMN name VARCHAR(191) DEFAULT NULL");
+        DB::statement('ALTER TABLE contacts MODIFY COLUMN name VARCHAR(191) DEFAULT NULL');
     }
 
     /**

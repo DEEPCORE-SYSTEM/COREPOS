@@ -27,7 +27,5 @@ class AddDefaultSellingPriceGroupIdColumnToBusinessLocationsTable extends Migrat
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 }

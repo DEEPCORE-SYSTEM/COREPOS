@@ -2,17 +2,14 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-
-use Modules\Connector\Transformers\BusinessLocationResource;
-
 use App\Models\BusinessLocation;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Modules\Connector\Transformers\BusinessLocationResource;
 
 /**
  * @group Business Location management
+ *
  * @authenticated
  *
  * APIs for managing business locations
@@ -21,6 +18,7 @@ class BusinessLocationController extends ApiController
 {
     /**
      * List business locations
+     *
      * @response {
             "data": [
                 {
@@ -108,7 +106,7 @@ class BusinessLocationController extends ApiController
         $business_id = $user->business_id;
 
         $permitted_locations = $user->permitted_locations();
-        
+
         $query = BusinessLocation::where('business_id', $business_id);
 
         if ($permitted_locations != 'all') {
@@ -121,8 +119,9 @@ class BusinessLocationController extends ApiController
 
     /**
      * Get the specified business location
-     * 
+     *
      * @urlParam location required  comma separated ids of the business location Example: 1
+     *
      * @response {
             "data": [
                 {
@@ -211,8 +210,8 @@ class BusinessLocationController extends ApiController
         $location_ids = explode(',', $location_ids);
 
         $locations = BusinessLocation::where('business_id', $business_id)
-                        ->whereIn('id', $location_ids)
-                        ->get();
+            ->whereIn('id', $location_ids)
+            ->get();
 
         return BusinessLocationResource::collection($locations);
     }

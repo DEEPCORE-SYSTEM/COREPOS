@@ -3,8 +3,8 @@
 namespace Modules\Essentials\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Notifications\Notification;
 
 class NewTaskNotification extends Notification
 {
@@ -25,7 +25,7 @@ class NewTaskNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -34,32 +34,30 @@ class NewTaskNotification extends Notification
         if (isPusherEnabled()) {
             $channels[] = 'broadcast';
         }
-        
+
         return $channels;
     }
 
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
-    {
-    }
+    public function toMail($notifiable) {}
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            "assigned_by" => $this->task->created_by,
-            "task_id" => $this->task->task_id,
-            'id' => $this->task->id
+            'assigned_by' => $this->task->created_by,
+            'task_id' => $this->task->task_id,
+            'id' => $this->task->id,
         ];
     }
 
@@ -73,8 +71,8 @@ class NewTaskNotification extends Notification
     {
         return new BroadcastMessage([
             'title' => __('essentials::lang.new_task_added'),
-            'body' => strip_tags(__('essentials::lang.new_task_notification', ['assigned_by' => $this->task->assigned_by->user_full_name, 'task_id' => $this->task->task_id]) ),
-            'link' => action('\Modules\Essentials\Http\Controllers\ToDoController@show', $this->task->id)
+            'body' => strip_tags(__('essentials::lang.new_task_notification', ['assigned_by' => $this->task->assigned_by->user_full_name, 'task_id' => $this->task->task_id])),
+            'link' => action('\Modules\Essentials\Http\Controllers\ToDoController@show', $this->task->id),
         ]);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddCustomPermissionsToPackagesTable extends Migration
 {
@@ -26,7 +26,6 @@ class AddCustomPermissionsToPackagesTable extends Migration
      */
     public function down()
     {
-        Schema::table('packages', function (Blueprint $table) {
-        });
+        Schema::table('packages', function (Blueprint $table) {});
     }
 }

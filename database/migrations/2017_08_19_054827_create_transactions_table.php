@@ -40,7 +40,7 @@ class CreateTransactionsTable extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
 
-            //Indexing
+            // Indexing
             $table->index('business_id');
             $table->index('type');
             $table->index('contact_id');

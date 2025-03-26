@@ -3,16 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Models\Business;
-use App\Models\Transaction;
-use App\Models\TransactionSellLinesPurchaseLines;
 use App\Models\PurchaseLine;
-
-use Illuminate\Console\Command;
-
-use App\Utils\TransactionUtil;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
+use App\Models\Transaction;
 use App\Utils\BusinessUtil;
+use App\Utils\TransactionUtil;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MapPurchaseSell extends Command
 {
@@ -31,6 +28,7 @@ class MapPurchaseSell extends Command
     protected $description = 'Delete existing mapping and Add mapping for purchase & Sell for all transactions of all businesses.';
 
     protected $transactionUtil;
+
     protected $businessUtil;
 
     /**
@@ -66,57 +64,57 @@ class MapPurchaseSell extends Command
             // 3. Reset mapping table.
             // 4. map the purchase to sales.
 
-            //STEP1
-            //DB::statement('Update variation_location_details set qty_available = 0');
+            // STEP1
+            // DB::statement('Update variation_location_details set qty_available = 0');
 
-            //Step 2
+            // Step 2
             // $qty_sums = DB::select('Select SUM(pl.quantity) as qty, pl.product_id, pl.variation_id, transactions.location_id from purchase_lines as pl join transactions on pl.transaction_id = transactions.id group by transactions.location_id, pl.product_id, pl.variation_id');
             // foreach ($qty_sums as $key => $value) {
             //     DB::statement('update variation_location_details set qty_available = qty_available + ? where variation_id = ? and product_id = ? and location_id = ?', [$value->qty, $value->variation_id, $value->product_id, $value->location_id]);
             // }
 
-            //Step 3: Delete existing mapping and sold quantity.
+            // Step 3: Delete existing mapping and sold quantity.
             DB::table('transaction_sell_lines_purchase_lines')->delete();
 
             PurchaseLine::whereNotNull('created_at')
                 ->update(['quantity_sold' => 0]);
 
-            //Get all business
+            // Get all business
             $businesses = Business::all();
 
             foreach ($businesses as $business) {
-                //Get all transactions
+                // Get all transactions
                 $transactions = Transaction::where('business_id', $business->id)
-                                    ->with('sell_lines')
-                                    ->where('type', 'sell')
-                                    ->where('status', 'final')
-                                    ->orderBy('created_at', 'asc')
-                                    ->get();
+                    ->with('sell_lines')
+                    ->where('type', 'sell')
+                    ->where('status', 'final')
+                    ->orderBy('created_at', 'asc')
+                    ->get();
 
                 $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business->pos_settings, true);
 
-                //Iterate through all transaction and add mapping. First go throught sell_lines having lot number.
+                // Iterate through all transaction and add mapping. First go throught sell_lines having lot number.
                 foreach ($transactions as $transaction) {
                     $business_formatted = ['id' => $business->id,
-                                'accounting_method' => $business->accounting_method,
-                                'location_id' => $transaction->location_id,
-                                'pos_settings' => $pos_settings
-                            ];
+                        'accounting_method' => $business->accounting_method,
+                        'location_id' => $transaction->location_id,
+                        'pos_settings' => $pos_settings,
+                    ];
 
                     foreach ($transaction->sell_lines as $line) {
-                        if (!empty($line->lot_no_line_id)) {
+                        if (! empty($line->lot_no_line_id)) {
                             $this->transactionUtil->mapPurchaseSell($business_formatted, [$line], 'purchase', false);
                         }
                     }
                 }
 
-                //Then through sell_lines not having lot number
+                // Then through sell_lines not having lot number
                 foreach ($transactions as $transaction) {
                     $business_formatted = ['id' => $business->id,
-                                'accounting_method' => $business->accounting_method,
-                                'location_id' => $transaction->location_id,
-                                'pos_settings' => $pos_settings
-                            ];
+                        'accounting_method' => $business->accounting_method,
+                        'location_id' => $transaction->location_id,
+                        'pos_settings' => $pos_settings,
+                    ];
 
                     foreach ($transaction->sell_lines as $line) {
                         if (empty($line->lot_no_line_id)) {
@@ -129,9 +127,9 @@ class MapPurchaseSell extends Command
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
-            die($e->getMessage());
+            exit($e->getMessage());
         }
     }
 }

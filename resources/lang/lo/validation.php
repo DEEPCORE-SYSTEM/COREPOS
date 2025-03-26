@@ -148,7 +148,7 @@ return [
     'attributes' => [],
     'custom-messages' => [
         'quantity_not_available' => 'Only :qty :unit available',
-        'this_field_is_required' => 'This field is required'
+        'this_field_is_required' => 'This field is required',
     ],
 
 ];

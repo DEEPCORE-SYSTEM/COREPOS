@@ -2,38 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BusinessLocation;
-
 use App\Charts\CommonChart;
+use App\Models\BusinessLocation;
 use App\Models\Currency;
-use App\Models\Transaction;
-use App\Utils\BusinessUtil;
-
-use App\Utils\ModuleUtil;
-use App\Utils\TransactionUtil;
-use App\Models\VariationLocationDetails;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use App\Utils\Util;
-use App\Utils\RestaurantUtil;
-use App\Models\User;
-use Illuminate\Notifications\DatabaseNotification;
 use App\Models\Media;
+use App\Models\Transaction;
+use App\Models\User;
+use App\Models\VariationLocationDetails;
+use App\Utils\BusinessUtil;
+use App\Utils\ModuleUtil;
+use App\Utils\RestaurantUtil;
+use App\Utils\TransactionUtil;
+use App\Utils\Util;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class HomeController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $businessUtil;
+
     protected $transactionUtil;
+
     protected $moduleUtil;
+
     protected $commonUtil;
+
     protected $restUtil;
 
     /**
@@ -66,7 +67,7 @@ class HomeController extends Controller
 
         $is_admin = $this->businessUtil->is_admin(auth()->user());
 
-        if (!auth()->user()->can('dashboard.data')) {
+        if (! auth()->user()->can('dashboard.data')) {
             return view('home.index');
         }
 
@@ -78,8 +79,8 @@ class HomeController extends Controller
         $date_filters['this_week']['end'] = date('Y-m-d', strtotime('sunday this week'));
 
         $currency = Currency::where('id', request()->session()->get('business.currency_id'))->first();
-        
-        //Chart for sells last 30 days
+
+        // Chart for sells last 30 days
         $sells_last_30_days = $this->transactionUtil->getSellsLast30Days($business_id);
         $labels = [];
         $all_sell_values = [];
@@ -90,14 +91,14 @@ class HomeController extends Controller
 
             $labels[] = date('j M Y', strtotime($date));
 
-            if (!empty($sells_last_30_days[$date])) {
+            if (! empty($sells_last_30_days[$date])) {
                 $all_sell_values[] = (float) $sells_last_30_days[$date];
             } else {
                 $all_sell_values[] = 0;
             }
         }
 
-        //Get sell for indivisual locations
+        // Get sell for indivisual locations
         $all_locations = BusinessLocation::forDropdown($business_id);
         $location_sells = [];
         $sells_by_location = $this->transactionUtil->getSellsLast30Days($business_id, true);
@@ -108,8 +109,8 @@ class HomeController extends Controller
                     return $item->date == $date &&
                         $item->location_id == $loc_id;
                 });
-                
-                if (!empty($sell)) {
+
+                if (! empty($sell)) {
                     $values[] = (float) $sell->total_sells;
                 } else {
                     $values[] = 0;
@@ -122,12 +123,12 @@ class HomeController extends Controller
         $sells_chart_1 = new CommonChart;
 
         $sells_chart_1->labels($labels)
-                        ->options($this->__chartOptions(__(
-                            'home.total_sells',
-                            ['currency' => $currency->code]
-                            )));
+            ->options($this->__chartOptions(__(
+                'home.total_sells',
+                ['currency' => $currency->code]
+            )));
 
-        if (!empty($location_sells)) {
+        if (! empty($location_sells)) {
             foreach ($location_sells as $location_sell) {
                 $sells_chart_1->dataset($location_sell['loc_label'], 'line', $location_sell['values']);
             }
@@ -137,7 +138,7 @@ class HomeController extends Controller
             $sells_chart_1->dataset(__('report.all_locations'), 'line', $all_sell_values);
         }
 
-        //Chart for sells this financial year
+        // Chart for sells this financial year
         $sells_this_fy = $this->transactionUtil->getSellsCurrentFy($business_id, $fy['start'], $fy['end']);
 
         $labels = [];
@@ -145,7 +146,7 @@ class HomeController extends Controller
 
         $months = [];
         $date = strtotime($fy['start']);
-        $last   = date('m-Y', strtotime($fy['end']));
+        $last = date('m-Y', strtotime($fy['end']));
 
         $fy_months = [];
         do {
@@ -155,10 +156,10 @@ class HomeController extends Controller
             $month_number = date('m', $date);
 
             $labels[] = Carbon::createFromFormat('m-Y', $month_year)
-                            ->format('M-Y');
+                ->format('M-Y');
             $date = strtotime('+1 month', $date);
 
-            if (!empty($sells_this_fy[$month_year])) {
+            if (! empty($sells_this_fy[$month_year])) {
                 $values[] = (float) $sells_this_fy[$month_year];
             } else {
                 $values[] = 0;
@@ -175,8 +176,8 @@ class HomeController extends Controller
                     return $item->yearmonth == $month &&
                         $item->location_id == $loc_id;
                 });
-                
-                if (!empty($sell)) {
+
+                if (! empty($sell)) {
                     $values_data[] = (float) $sell->total_sells;
                 } else {
                     $values_data[] = 0;
@@ -188,11 +189,11 @@ class HomeController extends Controller
 
         $sells_chart_2 = new CommonChart;
         $sells_chart_2->labels($labels)
-                    ->options($this->__chartOptions(__(
-                        'home.total_sells',
-                        ['currency' => $currency->code]
-                            )));
-        if (!empty($fy_sells_by_location_data)) {
+            ->options($this->__chartOptions(__(
+                'home.total_sells',
+                ['currency' => $currency->code]
+            )));
+        if (! empty($fy_sells_by_location_data)) {
             foreach ($fy_sells_by_location_data as $location_sell) {
                 $sells_chart_2->dataset($location_sell['loc_label'], 'line', $location_sell['values']);
             }
@@ -201,18 +202,18 @@ class HomeController extends Controller
             $sells_chart_2->dataset(__('report.all_locations'), 'line', $values);
         }
 
-        //Get Dashboard widgets from module
+        // Get Dashboard widgets from module
         $module_widgets = $this->moduleUtil->getModuleData('dashboard_widget');
 
         $widgets = [];
 
         foreach ($module_widgets as $widget_array) {
-            if (!empty($widget_array['position'])) {
+            if (! empty($widget_array['position'])) {
                 $widgets[$widget_array['position']][] = $widget_array['widget'];
             }
         }
 
-        $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+        $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         return view('home.index', compact('date_filters', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
     }
@@ -235,7 +236,7 @@ class HomeController extends Controller
             $sell_details = $this->transactionUtil->getSellTotals($business_id, $start, $end, $location_id);
 
             $transaction_types = [
-                'purchase_return', 'sell_return', 'expense'
+                'purchase_return', 'sell_return', 'expense',
             ];
 
             $transaction_totals = $this->transactionUtil->getTransactionTotals(
@@ -246,21 +247,21 @@ class HomeController extends Controller
                 $location_id
             );
 
-            $total_purchase_inc_tax = !empty($purchase_details['total_purchase_inc_tax']) ? $purchase_details['total_purchase_inc_tax'] : 0;
+            $total_purchase_inc_tax = ! empty($purchase_details['total_purchase_inc_tax']) ? $purchase_details['total_purchase_inc_tax'] : 0;
             $total_purchase_return_inc_tax = $transaction_totals['total_purchase_return_inc_tax'];
 
             $total_purchase = $total_purchase_inc_tax - $total_purchase_return_inc_tax;
             $output = $purchase_details;
             $output['total_purchase'] = $total_purchase;
 
-            $total_sell_inc_tax = !empty($sell_details['total_sell_inc_tax']) ? $sell_details['total_sell_inc_tax'] : 0;
-            $total_sell_return_inc_tax = !empty($transaction_totals['total_sell_return_inc_tax']) ? $transaction_totals['total_sell_return_inc_tax'] : 0;
+            $total_sell_inc_tax = ! empty($sell_details['total_sell_inc_tax']) ? $sell_details['total_sell_inc_tax'] : 0;
+            $total_sell_return_inc_tax = ! empty($transaction_totals['total_sell_return_inc_tax']) ? $transaction_totals['total_sell_return_inc_tax'] : 0;
 
             $output['total_sell'] = $total_sell_inc_tax - $total_sell_return_inc_tax;
 
             $output['invoice_due'] = $sell_details['invoice_due'];
             $output['total_expense'] = $transaction_totals['total_expense'];
-            
+
             return $output;
         }
     }
@@ -281,32 +282,32 @@ class HomeController extends Controller
                 '=',
                 'pv.id'
             )
-                    ->join(
-                        'variations as v',
-                        'variation_location_details.variation_id',
-                        '=',
-                        'v.id'
-                    )
-                    ->join(
-                        'products as p',
-                        'variation_location_details.product_id',
-                        '=',
-                        'p.id'
-                    )
-                    ->leftjoin(
-                        'business_locations as l',
-                        'variation_location_details.location_id',
-                        '=',
-                        'l.id'
-                    )
-                    ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
-                    ->where('p.business_id', $business_id)
-                    ->where('p.enable_stock', 1)
-                    ->where('p.is_inactive', 0)
-                    ->whereNull('v.deleted_at')
-                    ->whereRaw('variation_location_details.qty_available <= p.alert_quantity');
+                ->join(
+                    'variations as v',
+                    'variation_location_details.variation_id',
+                    '=',
+                    'v.id'
+                )
+                ->join(
+                    'products as p',
+                    'variation_location_details.product_id',
+                    '=',
+                    'p.id'
+                )
+                ->leftjoin(
+                    'business_locations as l',
+                    'variation_location_details.location_id',
+                    '=',
+                    'l.id'
+                )
+                ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+                ->where('p.business_id', $business_id)
+                ->where('p.enable_stock', 1)
+                ->where('p.is_inactive', 0)
+                ->whereNull('v.deleted_at')
+                ->whereRaw('variation_location_details.qty_available <= p.alert_quantity');
 
-            //Check for permitted locations of a user
+            // Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
                 $query->whereIn('variation_location_details.location_id', $permitted_locations);
@@ -323,20 +324,21 @@ class HomeController extends Controller
                 'variation_location_details.qty_available as stock',
                 'u.short_name as unit'
             )
-                    ->groupBy('variation_location_details.id')
-                    ->orderBy('stock', 'asc');
+                ->groupBy('variation_location_details.id')
+                ->orderBy('stock', 'asc');
 
             return Datatables::of($products)
                 ->editColumn('product', function ($row) {
                     if ($row->type == 'single') {
-                        return $row->product . ' (' . $row->sku . ')';
+                        return $row->product.' ('.$row->sku.')';
                     } else {
-                        return $row->product . ' - ' . $row->product_variation . ' - ' . $row->variation . ' (' . $row->sub_sku . ')';
+                        return $row->product.' - '.$row->product_variation.' - '.$row->variation.' ('.$row->sub_sku.')';
                     }
                 })
                 ->editColumn('stock', function ($row) {
-                    $stock = $row->stock ? $row->stock : 0 ;
-                    return '<span data-is_quantity="true" class="display_currency" data-currency_symbol=false>'. (float)$stock . '</span> ' . $row->unit;
+                    $stock = $row->stock ? $row->stock : 0;
+
+                    return '<span data-is_quantity="true" class="display_currency" data-currency_symbol=false>'.(float) $stock.'</span> '.$row->unit;
                 })
                 ->removeColumn('sku')
                 ->removeColumn('sub_sku')
@@ -358,7 +360,7 @@ class HomeController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $today = Carbon::now()->format("Y-m-d H:i:s");
+            $today = Carbon::now()->format('Y-m-d H:i:s');
 
             $query = Transaction::join(
                 'contacts as c',
@@ -366,24 +368,24 @@ class HomeController extends Controller
                 '=',
                 'c.id'
             )
-                    ->leftJoin(
-                        'transaction_payments as tp',
-                        'transactions.id',
-                        '=',
-                        'tp.transaction_id'
-                    )
-                    ->where('transactions.business_id', $business_id)
-                    ->where('transactions.type', 'purchase')
-                    ->where('transactions.payment_status', '!=', 'paid')
-                    ->whereRaw("DATEDIFF( DATE_ADD( transaction_date, INTERVAL IF(transactions.pay_term_type = 'days', transactions.pay_term_number, 30 * transactions.pay_term_number) DAY), '$today') <= 7");
+                ->leftJoin(
+                    'transaction_payments as tp',
+                    'transactions.id',
+                    '=',
+                    'tp.transaction_id'
+                )
+                ->where('transactions.business_id', $business_id)
+                ->where('transactions.type', 'purchase')
+                ->where('transactions.payment_status', '!=', 'paid')
+                ->whereRaw("DATEDIFF( DATE_ADD( transaction_date, INTERVAL IF(transactions.pay_term_type = 'days', transactions.pay_term_number, 30 * transactions.pay_term_number) DAY), '$today') <= 7");
 
-            //Check for permitted locations of a user
+            // Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
                 $query->whereIn('transactions.location_id', $permitted_locations);
             }
 
-            $dues =  $query->select(
+            $dues = $query->select(
                 'transactions.id as id',
                 'c.name as supplier',
                 'c.supplier_business_name',
@@ -391,23 +393,25 @@ class HomeController extends Controller
                 'final_total',
                 DB::raw('SUM(tp.amount) as total_paid')
             )
-                        ->groupBy('transactions.id');
+                ->groupBy('transactions.id');
 
             return Datatables::of($dues)
                 ->addColumn('due', function ($row) {
-                    $total_paid = !empty($row->total_paid) ? $row->total_paid : 0;
+                    $total_paid = ! empty($row->total_paid) ? $row->total_paid : 0;
                     $due = $row->final_total - $total_paid;
-                    return '<span class="display_currency" data-currency_symbol="true">' .
-                    $due . '</span>';
+
+                    return '<span class="display_currency" data-currency_symbol="true">'.
+                    $due.'</span>';
                 })
                 ->addColumn('action', '@can("purchase.create") <a href="{{action("TransactionPaymentController@addPayment", [$id])}}" class="btn btn-xs btn-success add_payment_modal"><i class="fas fa-money-bill-alt"></i> @lang("purchase.add_payment")</a> @endcan')
                 ->removeColumn('supplier_business_name')
                 ->editColumn('supplier', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br> @endif {{$supplier}}')
                 ->editColumn('ref_no', function ($row) {
                     if (auth()->user()->can('purchase.view')) {
-                        return  '<a href="#" data-href="' . action('PurchaseController@show', [$row->id]) . '"
-                                    class="btn-modal" data-container=".view_modal">' . $row->ref_no . '</a>';
+                        return '<a href="#" data-href="'.action('PurchaseController@show', [$row->id]).'"
+                                    class="btn-modal" data-container=".view_modal">'.$row->ref_no.'</a>';
                     }
+
                     return $row->ref_no;
                 })
                 ->removeColumn('id')
@@ -427,7 +431,7 @@ class HomeController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $today = Carbon::now()->format("Y-m-d H:i:s");
+            $today = Carbon::now()->format('Y-m-d H:i:s');
 
             $query = Transaction::join(
                 'contacts as c',
@@ -435,26 +439,26 @@ class HomeController extends Controller
                 '=',
                 'c.id'
             )
-                    ->leftJoin(
-                        'transaction_payments as tp',
-                        'transactions.id',
-                        '=',
-                        'tp.transaction_id'
-                    )
-                    ->where('transactions.business_id', $business_id)
-                    ->where('transactions.type', 'sell')
-                    ->where('transactions.payment_status', '!=', 'paid')
-                    ->whereNotNull('transactions.pay_term_number')
-                    ->whereNotNull('transactions.pay_term_type')
-                    ->whereRaw("DATEDIFF( DATE_ADD( transaction_date, INTERVAL IF(transactions.pay_term_type = 'days', transactions.pay_term_number, 30 * transactions.pay_term_number) DAY), '$today') <= 7");
+                ->leftJoin(
+                    'transaction_payments as tp',
+                    'transactions.id',
+                    '=',
+                    'tp.transaction_id'
+                )
+                ->where('transactions.business_id', $business_id)
+                ->where('transactions.type', 'sell')
+                ->where('transactions.payment_status', '!=', 'paid')
+                ->whereNotNull('transactions.pay_term_number')
+                ->whereNotNull('transactions.pay_term_type')
+                ->whereRaw("DATEDIFF( DATE_ADD( transaction_date, INTERVAL IF(transactions.pay_term_type = 'days', transactions.pay_term_number, 30 * transactions.pay_term_number) DAY), '$today') <= 7");
 
-            //Check for permitted locations of a user
+            // Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
                 $query->whereIn('transactions.location_id', $permitted_locations);
             }
 
-            $dues =  $query->select(
+            $dues = $query->select(
                 'transactions.id as id',
                 'c.name as customer',
                 'c.supplier_business_name',
@@ -462,20 +466,22 @@ class HomeController extends Controller
                 'final_total',
                 DB::raw('SUM(tp.amount) as total_paid')
             )
-                        ->groupBy('transactions.id');
+                ->groupBy('transactions.id');
 
             return Datatables::of($dues)
                 ->addColumn('due', function ($row) {
-                    $total_paid = !empty($row->total_paid) ? $row->total_paid : 0;
+                    $total_paid = ! empty($row->total_paid) ? $row->total_paid : 0;
                     $due = $row->final_total - $total_paid;
-                    return '<span class="display_currency" data-currency_symbol="true">' .
-                    $due . '</span>';
+
+                    return '<span class="display_currency" data-currency_symbol="true">'.
+                    $due.'</span>';
                 })
                 ->editColumn('invoice_no', function ($row) {
                     if (auth()->user()->can('sell.view')) {
-                        return  '<a href="#" data-href="' . action('SellController@show', [$row->id]) . '"
-                                    class="btn-modal" data-container=".view_modal">' . $row->invoice_no . '</a>';
+                        return '<a href="#" data-href="'.action('SellController@show', [$row->id]).'"
+                                    class="btn-modal" data-container=".view_modal">'.$row->invoice_no.'</a>';
                     }
+
                     return $row->invoice_no;
                 })
                 ->addColumn('action', '@if(auth()->user()->can("sell.create") || auth()->user()->can("direct_sell.access")) <a href="{{action("TransactionPaymentController@addPayment", [$id])}}" class="btn btn-xs btn-success add_payment_modal"><i class="fas fa-money-bill-alt"></i> @lang("purchase.add_payment")</a> @endif')
@@ -519,13 +525,13 @@ class HomeController extends Controller
                 $unread_notification->markAsRead();
             }
         }
-        if (!empty($modal_notifications)) {
+        if (! empty($modal_notifications)) {
             $notification_html = view('home.notification_modal')->with(['notifications' => $modal_notifications])->render();
         }
 
         return [
             'total_unread' => $total_unread,
-            'notification_html' => $notification_html
+            'notification_html' => $notification_html,
         ];
     }
 
@@ -533,15 +539,15 @@ class HomeController extends Controller
     {
         return [
             'yAxis' => [
-                    'title' => [
-                        'text' => $title
-                    ]
+                'title' => [
+                    'text' => $title,
                 ],
+            ],
             'legend' => [
                 'align' => 'right',
                 'verticalAlign' => 'top',
                 'floating' => true,
-                'layout' => 'vertical'
+                'layout' => 'vertical',
             ],
         ];
     }
@@ -555,23 +561,23 @@ class HomeController extends Controller
             $data = [
                 'start_date' => request()->start,
                 'end_date' => request()->end,
-                'user_id' => ($is_admin || $is_superadmin) && !empty(request()->user_id) ? request()->user_id : auth()->user()->id,
-                'location_id' => !empty(request()->location_id) ? request()->location_id : null,
+                'user_id' => ($is_admin || $is_superadmin) && ! empty(request()->user_id) ? request()->user_id : auth()->user()->id,
+                'location_id' => ! empty(request()->location_id) ? request()->location_id : null,
                 'business_id' => $business_id,
                 'events' => request()->events ?? [],
-                'color' => '#007FFF'
+                'color' => '#007FFF',
             ];
             $events = [];
 
             if (in_array('bookings', $data['events'])) {
                 $events = $this->restUtil->getBookingsForCalendar($data);
             }
-            
+
             $module_events = $this->moduleUtil->getModuleData('calendarEvents', $data);
 
             foreach ($module_events as $module_event) {
                 $events = array_merge($events, $module_event);
-            }  
+            }
 
             return $events;
         }
@@ -585,14 +591,14 @@ class HomeController extends Controller
         $event_types = [
             'bookings' => [
                 'label' => __('restaurant.bookings'),
-                'color' => '#007FFF'
-            ]
+                'color' => '#007FFF',
+            ],
         ];
         $module_event_types = $this->moduleUtil->getModuleData('eventTypes');
         foreach ($module_event_types as $module_event_type) {
             $event_types = array_merge($event_types, $module_event_type);
         }
-        
+
         return view('home.calendar')->with(compact('all_locations', 'users', 'event_types'));
     }
 
@@ -605,15 +611,15 @@ class HomeController extends Controller
         $notification->markAsRead();
 
         return view('home.notification_modal')->with([
-                'notifications' => [$notification]
-            ]);
+            'notifications' => [$notification],
+        ]);
     }
 
     public function attachMediasToGivenModel(Request $request)
-    {   
+    {
         if ($request->ajax()) {
             try {
-                
+
                 $business_id = request()->session()->get('user.business_id');
 
                 $model_id = $request->input('model_id');
@@ -622,9 +628,9 @@ class HomeController extends Controller
 
                 DB::beginTransaction();
 
-                //find model to which medias are to be attached
+                // find model to which medias are to be attached
                 $model_to_be_attached = $model::where('business_id', $business_id)
-                                        ->findOrFail($model_id);
+                    ->findOrFail($model_id);
 
                 Media::uploadMedia($business_id, $model_to_be_attached, $request, 'file', false, $model_media_type);
 
@@ -632,17 +638,17 @@ class HomeController extends Controller
 
                 $output = [
                     'success' => true,
-                    'msg' => __('lang_v1.success')
+                    'msg' => __('lang_v1.success'),
                 ];
             } catch (Exception $e) {
 
                 DB::rollBack();
 
-                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+                Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
                 $output = [
                     'success' => false,
-                    'msg' => __('messages.something_went_wrong')
+                    'msg' => __('messages.something_went_wrong'),
                 ];
             }
 

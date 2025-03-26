@@ -35,7 +35,7 @@ return [
     'header_text' => 'Văn bản tiêu đề',
     'invoice_no_prefix' => 'Hóa đơn không có. nhãn',
     'invoice_heading' => 'Tiêu đề hóa đơn',
-    'sub_total_label' =>'Nhãn phụ',
+    'sub_total_label' => 'Nhãn phụ',
     'discount_label' => 'Nhãn giảm giá',
     'tax_label' => 'Nhãn thuế',
     'total_label' => 'Tổng nhãn',
@@ -64,5 +64,5 @@ return [
     'show_payments' => 'Hiển thị thông tin thanh toán',
     'show_customer' => 'Hiển thị thông tin khách hàng',
     'paid_label' => 'Số tiền được trả nhãn',
-    'customer_label' => 'Nhãn khách hàng'
+    'customer_label' => 'Nhãn khách hàng',
 ];

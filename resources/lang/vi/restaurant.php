@@ -86,7 +86,7 @@ return [
     'delete_booking' => 'Xóa đặt phòng',
     'click_on_any_booking_to_view_or_change_status' => 'Nhấp vào bất kỳ đặt phòng để xem chi tiết hoặc thay đổi trạng thái',
     'double_click_on_any_day_to_add_new_booking' => 'Nhấp đúp chuột vào bất kỳ ngày nào để thêm đặt chổ mới',
-    'todays_bookings' => "Đặt phòng hôm nay",
+    'todays_bookings' => 'Đặt phòng hôm nay',
     'hello_name' => 'Chào :name!',
     'booking_confirmed' => 'Đặt phòng của bạn đã được xác nhận.',
     'table_info' => 'Bàn: :table',

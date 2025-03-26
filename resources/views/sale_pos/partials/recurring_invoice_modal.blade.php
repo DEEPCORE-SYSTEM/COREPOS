@@ -1,50 +1,79 @@
 <!-- Edit discount Modal -->
 <div class="modal fade" tabindex="-1" role="dialog" id="recurringInvoiceModal">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title">@lang('lang_v1.subscribe') @if(!empty($transaction->subscription_no)) - {{$transaction->subscription_no}} @endif</h4>
-			</div>
-			<div class="modal-body">
-				<div class="row">
-					<div class="col-md-6">
-				        <div class="form-group">
-				        	{!! Form::label('recur_interval', __('lang_v1.subscription_interval') . ':*' ) !!}
-				        	<div class="input-group">
-				               {!! Form::number('recur_interval', !empty($transaction->recur_interval) ? $transaction->recur_interval : null, ['class' => 'form-control', 'required', 'style' => 'width: 50%;']); !!}
-				               
-				                {!! Form::select('recur_interval_type', ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')], !empty($transaction->recur_interval_type) ? $transaction->recur_interval_type : 'days', ['class' => 'form-control', 'required', 'style' => 'width: 50%;', 'id' => 'recur_interval_type']); !!}
-				                
-				            </div>
-				        </div>
-				    </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    @lang('lang_v1.subscribe') 
+                    @if(!empty($transaction->subscription_no)) - {{ $transaction->subscription_no }} @endif
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="recur_interval">@lang('lang_v1.subscription_interval') :*</label>
+                            <div class="input-group">
+                                <input type="number" name="recur_interval" id="recur_interval"
+                                    class="form-control"
+                                    style="width: 50%;" required
+                                    value="{{ $transaction->recur_interval ?? '' }}">
 
-				    <div class="col-md-6">
-				        <div class="form-group">
-				        	{!! Form::label('recur_repetitions', __('lang_v1.no_of_repetitions') . ':' ) !!}
-				        	{!! Form::number('recur_repetitions', !empty($transaction->recur_repetitions) ? $transaction->recur_repetitions : null, ['class' => 'form-control']); !!}
-					        <p class="help-block">@lang('lang_v1.recur_repetition_help')</p>
-				        </div>
-				    </div>
-				    @php
-				    	$repetitions = [];
-				    	for ($i=1; $i <= 30; $i++) { 
-				    		$repetitions[$i] = str_ordinal($i);
-				        }
-				    @endphp
-				    <div class="subscription_repeat_on_div col-md-6 @if(empty($transaction->recur_interval_type)) hide @elseif(!empty($transaction->recur_interval_type) && $transaction->recur_interval_type != 'months') hide @endif">
-				        <div class="form-group">
-				        	{!! Form::label('subscription_repeat_on', __('lang_v1.repeat_on') . ':' ) !!}
-				        	{!! Form::select('subscription_repeat_on', $repetitions, !empty($transaction->subscription_repeat_on) ? $transaction->subscription_repeat_on : null, ['class' => 'form-control', 'placeholder' => __('messages.please_select')]); !!}
-				        </div>
-				    </div>
+                                <select name="recur_interval_type" id="recur_interval_type" class="form-control" style="width: 50%;" required>
+                                    <option value="days" {{ !empty($transaction->recur_interval_type) && $transaction->recur_interval_type == 'days' ? 'selected' : '' }}>
+                                        @lang('lang_v1.days')
+                                    </option>
+                                    <option value="months" {{ !empty($transaction->recur_interval_type) && $transaction->recur_interval_type == 'months' ? 'selected' : '' }}>
+                                        @lang('lang_v1.months')
+                                    </option>
+                                    <option value="years" {{ !empty($transaction->recur_interval_type) && $transaction->recur_interval_type == 'years' ? 'selected' : '' }}>
+                                        @lang('lang_v1.years')
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-				</div>
-			</div>
-			<div class="modal-footer">
-			    <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="recur_repetitions">@lang('lang_v1.no_of_repetitions') :</label>
+                            <input type="number" name="recur_repetitions" id="recur_repetitions"
+                                class="form-control"
+                                value="{{ $transaction->recur_repetitions ?? '' }}">
+                            <p class="help-block">@lang('lang_v1.recur_repetition_help')</p>
+                        </div>
+                    </div>
+
+                    @php
+                        $repetitions = [];
+                        for ($i = 1; $i <= 30; $i++) { 
+                            $repetitions[$i] = str_ordinal($i);
+                        }
+                    @endphp
+
+                    <div class="subscription_repeat_on_div col-md-6 
+                        @if(empty($transaction->recur_interval_type) || $transaction->recur_interval_type != 'months') hide @endif">
+                        <div class="form-group">
+                            <label for="subscription_repeat_on">@lang('lang_v1.repeat_on') :</label>
+                            <select name="subscription_repeat_on" id="subscription_repeat_on" class="form-control">
+                                <option value="">@lang('messages.please_select')</option>
+                                @foreach ($repetitions as $key => $value)
+                                    <option value="{{ $key }}" {{ (!empty($transaction->subscription_repeat_on) && $transaction->subscription_repeat_on == $key) ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

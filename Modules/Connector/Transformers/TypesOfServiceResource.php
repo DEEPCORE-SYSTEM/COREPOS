@@ -17,6 +17,7 @@ class TypesOfServiceResource extends Resource
         $array = parent::toArray($request);
 
         $array['location_price_group'] = (object) $this->location_price_group;
+
         return $array;
     }
 }

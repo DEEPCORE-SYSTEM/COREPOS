@@ -24,17 +24,18 @@ class ProductResource extends Resource
 
         foreach ($array['product_variations'] as $key => $value) {
             foreach ($value['variations'] as $k => $v) {
-               if (isset($v['group_prices'])) {
+                if (isset($v['group_prices'])) {
                     $array['product_variations'][$key]['variations'][$k]['selling_price_group'] = $v['group_prices'];
                     unset($array['product_variations'][$key]['variations'][$k]['group_prices']);
                 }
             }
         }
-        
+
         return array_diff_key($array, array_flip($this->__excludeFields()));
     }
 
-    private function __excludeFields(){
+    private function __excludeFields()
+    {
         return [
             'created_at',
             'updated_at',

@@ -76,12 +76,12 @@ return [
 
     'tax_groups' => 'Tarif Grup Pajak - ditentukan di atas, untuk digunakan dalam kombinasi di bagian Pembelian/Jual.',
 
-    'unit_allow_decimal' => "Desimal memungkinkan Anda untuk menjual produk terkait dalam pecahan.",
+    'unit_allow_decimal' => 'Desimal memungkinkan Anda untuk menjual produk terkait dalam pecahan.',
 
     'print_label' => 'Tambahkan produk -> Pilih informasi untuk ditampilkan dalam Label -> Pilih Pengaturan Barcode -> Tampilkan Label -> Cetak',
 
     'expense_for' => 'Pilih pengguna yang terkait dengan pengeluaran. <i>(Optional)</i><br/><small>Contoh: Gaji karyawan.</small>',
-    
+
     'all_location_permission' => 'Jika <b> Semua Lokasi </b> dipilih, peran ini akan memiliki izin untuk mengakses semua lokasi bisnis',
 
     'dashboard_permission' => 'Jika tidak dicentang, hanya pesan Selamat Datang yang akan ditampilkan di Beranda.',
@@ -90,7 +90,7 @@ return [
 
     'print_receipt_on_invoice' => 'Aktifkan atau Nonaktifkan pencetakan otomatis faktur pada penyelesaian',
 
-    'receipt_printer_type' => "<i> Pencetakan Berbasis Browser </i>: Tampilkan kotak dialog cetak di browser dengan melihat faktur <br/> <br/> <i> Gunakan Printer Receipt yang Dikonfigurasi </i>: Pilih printer receipt/termal yang dikonfigurasi untuk pencetakan",
+    'receipt_printer_type' => '<i> Pencetakan Berbasis Browser </i>: Tampilkan kotak dialog cetak di browser dengan melihat faktur <br/> <br/> <i> Gunakan Printer Receipt yang Dikonfigurasi </i>: Pilih printer receipt/termal yang dikonfigurasi untuk pencetakan',
 
     'adjustment_type' => '<i>Normal</i>: Penyesuaian untuk alasan normal seperti Kebocoran, Kerusakan dll. <br/><br/> <i>Abnormal</i>: Penyesuaian untuk alasan seperti Kebakaran, Kecelakaan, dll.',
 
@@ -110,6 +110,6 @@ return [
 
     'transaction_edit_days' => 'Jumlah hari dari Tanggal Transaksi hingga transaksi masih dapat diedit.',
     'stock_expiry_alert' => "Daftar stok yang berakhir pada :days hari <br> <small class='text-muted'>Anda dapat mengatur no. hari pada Pengaturan Bisnis </small>",
-    'sub_sku' => "SKU adalah opsional. <br><br><small>Biarkan kosong untuk membuat SKU secara otomatis.<small>",
-    'shipping' => "Tetapkan detail pengiriman dan biaya pengiriman. Klik ikon edit di bawah untuk menambah/memperbarui rincian dan biaya pengiriman."
+    'sub_sku' => 'SKU adalah opsional. <br><br><small>Biarkan kosong untuk membuat SKU secara otomatis.<small>',
+    'shipping' => 'Tetapkan detail pengiriman dan biaya pengiriman. Klik ikon edit di bawah untuk menambah/memperbarui rincian dan biaya pengiriman.',
 ];

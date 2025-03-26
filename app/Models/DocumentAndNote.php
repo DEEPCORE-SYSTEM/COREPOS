@@ -17,17 +17,17 @@ class DocumentAndNote extends Model
     protected $guarded = ['id'];
 
     protected static $logUnguarded = true;
+
     protected static $logOnlyDirty = true;
 
-
     /**
-    * Get all of the owning notable models.
-    */
+     * Get all of the owning notable models.
+     */
     public function notable()
     {
         return $this->morphTo();
     }
-    
+
     public function media()
     {
         return $this->morphMany(\App\Models\Media::class, 'model');

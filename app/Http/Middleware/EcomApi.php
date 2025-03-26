@@ -11,7 +11,6 @@ class EcomApi
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -19,11 +18,12 @@ class EcomApi
         $token = $request->header('API-TOKEN');
         $is_api_settings_exists = EcomApiSetting::where('api_token', $token)
                                             // ->where('shop_domain', $shop_domain)
-                                            ->exists();
+            ->exists();
 
-        if (!$is_api_settings_exists) {
-            die('Invalid Request');
+        if (! $is_api_settings_exists) {
+            exit('Invalid Request');
         }
+
         return $next($request);
     }
 }

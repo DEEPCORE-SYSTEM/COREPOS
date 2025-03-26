@@ -15,43 +15,49 @@
 		$is_discount_enabled = $pos_settings['disable_discount'] != 1 ? true : false;
 		$is_rp_enabled = session('business.enable_rp') == 1 ? true : false;
 	@endphp
-	{!! Form::open(['url' => action('SellPosController@store'), 'method' => 'post', 'id' => 'add_pos_sell_form' ]) !!}
-	<div class="row mb-12">
-		<div class="col-md-12">
-			<div class="row">
-				<div class="@if(empty($pos_settings['hide_product_suggestion'])) col-md-7 @else col-md-10 col-md-offset-1 @endif no-padding pr-12">
-					<div class="box box-solid mb-12">
-						<div class="box-body pb-0">
-							{!! Form::hidden('location_id', $default_location->id ?? null , ['id' => 'location_id', 'data-receipt_printer_type' => !empty($default_location->receipt_printer_type) ? $default_location->receipt_printer_type : 'browser', 'data-default_payment_accounts' => $default_location->default_payment_accounts ?? '']); !!}
-							<!-- sub_type -->
-							{!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
-							<input type="hidden" id="item_addition_method" value="{{$business_details->item_addition_method}}">
-								@include('sale_pos.partials.pos_form')
+<form action="{{ action('SellPosController@store') }}" method="post" id="add_pos_sell_form">
+    @csrf
+    <div class="row mb-12">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="@if(empty($pos_settings['hide_product_suggestion'])) col-md-7 @else col-md-10 col-md-offset-1 @endif no-padding pr-12">
+                    <div class="box box-solid mb-12">
+                        <div class="box-body pb-0">
+                            <input type="hidden" name="location_id" id="location_id" 
+                                value="{{ $default_location->id ?? '' }}" 
+                                data-receipt_printer_type="{{ $default_location->receipt_printer_type ?? 'browser' }}" 
+                                data-default_payment_accounts="{{ $default_location->default_payment_accounts ?? '' }}">
 
-								@include('sale_pos.partials.pos_form_totals')
+                            <input type="hidden" name="sub_type" value="{{ $sub_type ?? '' }}">
+                            <input type="hidden" id="item_addition_method" value="{{ $business_details->item_addition_method }}">
 
-								@include('sale_pos.partials.payment_modal')
+                            @include('sale_pos.partials.pos_form')
+                            @include('sale_pos.partials.pos_form_totals')
+                            @include('sale_pos.partials.payment_modal')
 
-								@if(empty($pos_settings['disable_suspend']))
-									@include('sale_pos.partials.suspend_note_modal')
-								@endif
+                            @if(empty($pos_settings['disable_suspend']))
+                                @include('sale_pos.partials.suspend_note_modal')
+                            @endif
 
-								@if(empty($pos_settings['disable_recurring_invoice']))
-									@include('sale_pos.partials.recurring_invoice_modal')
-								@endif
-							</div>
-						</div>
-					</div>
-				@if(empty($pos_settings['hide_product_suggestion']) && !isMobile())
-				<div class="col-md-5 no-padding">
-					@include('sale_pos.partials.pos_sidebar')
-				</div>
-				@endif
-			</div>
-		</div>
-	</div>
-	@include('sale_pos.partials.pos_form_actions')
-	{!! Form::close() !!}
+                            @if(empty($pos_settings['disable_recurring_invoice']))
+                                @include('sale_pos.partials.recurring_invoice_modal')
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                
+                @if(empty($pos_settings['hide_product_suggestion']) && !isMobile())
+                    <div class="col-md-5 no-padding">
+                        @include('sale_pos.partials.pos_sidebar')
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    
+    @include('sale_pos.partials.pos_form_actions')
+</form>
+
 </section>
 
 <!-- This will be printed -->

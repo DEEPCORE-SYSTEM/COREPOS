@@ -2,26 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Unit;
 use App\Models\Product;
-
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Http\Request;
-
+use App\Models\Unit;
 use App\Utils\Util;
+use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class UnitController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $commonUtil;
 
     /**
      * Constructor
      *
-     * @param ProductUtils $product
+     * @param  ProductUtils  $product
      * @return void
      */
     public function __construct(Util $commonUtil)
@@ -36,7 +33,7 @@ class UnitController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('unit.view') && !auth()->user()->can('unit.create')) {
+        if (! auth()->user()->can('unit.view') && ! auth()->user()->can('unit.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -44,9 +41,9 @@ class UnitController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $unit = Unit::where('business_id', $business_id)
-                        ->with(['base_unit'])
-                        ->select(['actual_name', 'short_name', 'allow_decimal', 'id',
-                            'base_unit_id', 'base_unit_multiplier']);
+                ->with(['base_unit'])
+                ->select(['actual_name', 'short_name', 'allow_decimal', 'id',
+                    'base_unit_id', 'base_unit_multiplier']);
 
             return Datatables::of($unit)
                 ->addColumn(
@@ -67,10 +64,11 @@ class UnitController extends Controller
                     }
                 })
                 ->editColumn('actual_name', function ($row) {
-                    if (!empty($row->base_unit_id)) {
-                        return  $row->actual_name . ' (' . (float)$row->base_unit_multiplier . $row->base_unit->short_name . ')';
+                    if (! empty($row->base_unit_id)) {
+                        return $row->actual_name.' ('.(float) $row->base_unit_multiplier.$row->base_unit->short_name.')';
                     }
-                    return  $row->actual_name;
+
+                    return $row->actual_name;
                 })
                 ->removeColumn('id')
                 ->rawColumns(['action'])
@@ -87,32 +85,31 @@ class UnitController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('unit.create')) {
+        if (! auth()->user()->can('unit.create')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
         $quick_add = false;
-        if (!empty(request()->input('quick_add'))) {
+        if (! empty(request()->input('quick_add'))) {
             $quick_add = true;
         }
 
         $units = Unit::forDropdown($business_id);
 
         return view('unit.create')
-                ->with(compact('quick_add', 'units'));
+            ->with(compact('quick_add', 'units'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('unit.create')) {
+        if (! auth()->user()->can('unit.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -122,7 +119,7 @@ class UnitController extends Controller
             $input['created_by'] = $request->session()->get('user.id');
 
             if ($request->has('define_base_unit')) {
-                if (!empty($request->input('base_unit_id')) && !empty($request->input('base_unit_multiplier'))) {
+                if (! empty($request->input('base_unit_id')) && ! empty($request->input('base_unit_multiplier'))) {
                     $base_unit_multiplier = $this->commonUtil->num_uf($request->input('base_unit_multiplier'));
                     if ($base_unit_multiplier != 0) {
                         $input['base_unit_id'] = $request->input('base_unit_id');
@@ -133,15 +130,15 @@ class UnitController extends Controller
 
             $unit = Unit::create($input);
             $output = ['success' => true,
-                        'data' => $unit,
-                        'msg' => __("unit.added_success")
-                    ];
+                'data' => $unit,
+                'msg' => __('unit.added_success'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                        'msg' => __("messages.something_went_wrong")
-                    ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return $output;
@@ -166,7 +163,7 @@ class UnitController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('unit.update')) {
+        if (! auth()->user()->can('unit.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -184,13 +181,12 @@ class UnitController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('unit.update')) {
+        if (! auth()->user()->can('unit.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -204,7 +200,7 @@ class UnitController extends Controller
                 $unit->short_name = $input['short_name'];
                 $unit->allow_decimal = $input['allow_decimal'];
                 if ($request->has('define_base_unit')) {
-                    if (!empty($request->input('base_unit_id')) && !empty($request->input('base_unit_multiplier'))) {
+                    if (! empty($request->input('base_unit_id')) && ! empty($request->input('base_unit_multiplier'))) {
                         $base_unit_multiplier = $this->commonUtil->num_uf($request->input('base_unit_multiplier'));
                         if ($base_unit_multiplier != 0) {
                             $unit->base_unit_id = $request->input('base_unit_id');
@@ -219,14 +215,14 @@ class UnitController extends Controller
                 $unit->save();
 
                 $output = ['success' => true,
-                            'msg' => __("unit.updated_success")
-                            ];
+                    'msg' => __('unit.updated_success'),
+                ];
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;
@@ -241,7 +237,7 @@ class UnitController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('unit.delete')) {
+        if (! auth()->user()->can('unit.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -251,25 +247,25 @@ class UnitController extends Controller
 
                 $unit = Unit::where('business_id', $business_id)->findOrFail($id);
 
-                //check if any product associated with the unit
+                // check if any product associated with the unit
                 $exists = Product::where('unit_id', $unit->id)
-                                ->exists();
-                if (!$exists) {
+                    ->exists();
+                if (! $exists) {
                     $unit->delete();
                     $output = ['success' => true,
-                            'msg' => __("unit.deleted_success")
-                            ];
+                        'msg' => __('unit.deleted_success'),
+                    ];
                 } else {
                     $output = ['success' => false,
-                            'msg' => __("lang_v1.unit_cannot_be_deleted")
-                            ];
+                        'msg' => __('lang_v1.unit_cannot_be_deleted'),
+                    ];
                 }
             } catch (\Exception $e) {
-                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => '__("messages.something_went_wrong")'
-                        ];
+                    'msg' => '__("messages.something_went_wrong")',
+                ];
             }
 
             return $output;

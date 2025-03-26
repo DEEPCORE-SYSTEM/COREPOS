@@ -24,5 +24,5 @@ return [
     'receipt_settings_mgs' => 'Semua pengaturan terkait penerimaan untuk lokasi ini',
     'print_receipt_on_invoice' => 'Cetak faktur otomatis setelah selesai',
     'receipt_printer_type' => 'Jenis Printer Penerimaan',
-    'receipt_settings_updated' => 'Pengaturan Penerimaan berhasil diperbarui'
+    'receipt_settings_updated' => 'Pengaturan Penerimaan berhasil diperbarui',
 ];

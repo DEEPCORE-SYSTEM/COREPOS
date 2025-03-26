@@ -17,7 +17,7 @@ return [
     'supplier' => 'ຜູ້ສະໜອງ',
     'customer' => 'ລູກຄ້າ',
     'purchase' => 'ການຊື້ & ການປັບສະຕັອກ',
-    'report' =>'ລາຍງານ',
+    'report' => 'ລາຍງານ',
 
     'user.view' => 'ເບິ່ງຜູ້ໃຊ້',
     'user.create' => 'ເພີ່ມຜູ້ໃຊ້',
@@ -86,7 +86,7 @@ return [
     'brand' => 'ຍີ່ຫໍ້',
     'tax_rate' => 'ອັດຕາອາກອນ',
     'unit' => 'ຫົວໜ່ວຍ',
-    'access_locations' =>'ເຂົ້າເຖິງສະຖານທີ່',
+    'access_locations' => 'ເຂົ້າເຖິງສະຖານທີ່',
     'all_locations' => 'ສະຖານທີ່ທັງໝົດ',
     'dashboard' => 'ໜ້າທຳອິດ',
     'dashboard.data' => 'ເບິ່ງຂໍ້ມູນໜ້າທຳອິດ',

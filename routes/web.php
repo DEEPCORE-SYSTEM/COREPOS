@@ -1,25 +1,21 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ShellController;
-use App\Http\Controllers\SellController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\BusinessController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\TaxRateController;
-use App\Http\Controllers\UnitController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\TaxonomyController;
-use App\Http\Controllers\VariationTemplateController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\AttributeController;
-use Illuminate\Support\Facades\Auth;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+use App\Http\Controllers\SellingPriceGroupController;
 
 
+
+include_once('install_r.php');
 
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
@@ -43,6 +39,11 @@ Route::middleware(['setData'])->group(function () {
     Route::post('/confirm-payment/{id}', 'SellPosController@confirmPayment')
         ->name('confirm_payment');
 });
+
+
+
+Route::post('/selling-price-group/import', [SellingPriceGroupController::class, 'import'])
+    ->name('selling_price_group.import');
 
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {

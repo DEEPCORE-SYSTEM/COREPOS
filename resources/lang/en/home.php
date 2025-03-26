@@ -28,4 +28,4 @@ return [
     'due_amount' => 'Due Amount',
     'stock_expiry_alert' => 'Stock Expiry Alert',
     'todays_profit' => "Today's profit",
-    ];
+];

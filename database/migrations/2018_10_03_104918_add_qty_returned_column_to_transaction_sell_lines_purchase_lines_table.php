@@ -23,7 +23,5 @@ class AddQtyReturnedColumnToTransactionSellLinesPurchaseLinesTable extends Migra
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 }

@@ -14,8 +14,8 @@ class TrimStrings extends BaseTrimmer
     protected $except = [
         'password',
         'password_confirmation',
-        'prefix', //Invoice scheme prefix
-        'ref_no_prefixes.purchase', //Business settings prefixes
+        'prefix', // Invoice scheme prefix
+        'ref_no_prefixes.purchase', // Business settings prefixes
         'ref_no_prefixes.purchase_return',
         'ref_no_prefixes.stock_transfer',
         'ref_no_prefixes.stock_adjustment',
@@ -28,6 +28,6 @@ class TrimStrings extends BaseTrimmer
         'ref_no_prefixes.business_location',
         'ref_no_prefixes.username',
         'ref_no_prefixes.subscription',
-        'ref_no_prefixes.draft'
+        'ref_no_prefixes.draft',
     ];
 }

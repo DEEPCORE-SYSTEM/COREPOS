@@ -21,14 +21,13 @@ class UserController extends Controller
 
     /**
      * All Utils instance.
-     *
      */
     protected $moduleUtil;
 
     /**
      * Constructor
      *
-     * @param ProductUtils $product
+     * @param  ProductUtils  $product
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil)
@@ -61,9 +60,9 @@ class UserController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        //Disable in demo
+        // Disable in demo
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
-        if (!empty($notAllowed)) {
+        if (! empty($notAllowed)) {
             return $notAllowed;
         }
 
@@ -75,10 +74,10 @@ class UserController extends Controller
                 'guardian_name', 'custom_field_1', 'custom_field_2',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'gender', 'family_number', 'alt_number']);
 
-            if (!empty($request->input('dob'))) {
+            if (! empty($request->input('dob'))) {
                 $input['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
             }
-            if (!empty($request->input('bank_details'))) {
+            if (! empty($request->input('bank_details'))) {
                 $input['bank_details'] = json_encode($request->input('bank_details'));
             }
 
@@ -87,25 +86,26 @@ class UserController extends Controller
 
             Media::uploadMedia($user->business_id, $user, request(), 'profile_photo', true);
 
-            //update session
+            // update session
             $input['id'] = $user_id;
             $business_id = request()->session()->get('user.business_id');
             $input['business_id'] = $business_id;
             session()->put('user', $input);
 
             $output = ['success' => 1,
-                        'msg' => __('lang_v1.profile_updated_successfully')
-                    ];
+                'msg' => __('lang_v1.profile_updated_successfully'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => 0,
-                        'msg' => __('messages.something_went_wrong')
-                    ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
+
         return redirect('user/profile')->with('status', $output);
     }
-    
+
     /**
      * updates user password
      *
@@ -113,34 +113,35 @@ class UserController extends Controller
      */
     public function updatePassword(Request $request)
     {
-        //Disable in demo
+        // Disable in demo
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
-        if (!empty($notAllowed)) {
+        if (! empty($notAllowed)) {
             return $notAllowed;
         }
 
         try {
             $user_id = $request->session()->get('user.id');
             $user = User::where('id', $user_id)->first();
-            
+
             if (Hash::check($request->input('current_password'), $user->password)) {
                 $user->password = Hash::make($request->input('new_password'));
                 $user->save();
                 $output = ['success' => 1,
-                            'msg' => __('lang_v1.password_updated_successfully')
-                        ];
+                    'msg' => __('lang_v1.password_updated_successfully'),
+                ];
             } else {
                 $output = ['success' => 0,
-                            'msg' => __('lang_v1.u_have_entered_wrong_password')
-                        ];
+                    'msg' => __('lang_v1.u_have_entered_wrong_password'),
+                ];
             }
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => 0,
-                            'msg' => __('messages.something_went_wrong')
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
+
         return redirect('user/profile')->with('status', $output);
     }
 }

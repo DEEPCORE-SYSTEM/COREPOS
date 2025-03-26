@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateJobSheetsTable extends Migration
 {
@@ -18,23 +18,23 @@ class CreateJobSheetsTable extends Migration
 
             $table->integer('business_id')->unsigned();
             $table->foreign('business_id')
-                    ->references('id')->on('business')
-                    ->onDelete('cascade');
+                ->references('id')->on('business')
+                ->onDelete('cascade');
 
             $table->integer('location_id')
                 ->nullable()->unsigned();
 
             $table->integer('contact_id')->unsigned();
             $table->foreign('contact_id')
-                    ->references('id')->on('contacts')
-                    ->onDelete('cascade');
+                ->references('id')->on('contacts')
+                ->onDelete('cascade');
 
             $table->string('job_sheet_no');
             $table->enum('service_type', ['carry_in', 'pick_up', 'on_site']);
 
             $table->text('pick_up_on_site_addr')
                 ->nullable();
-                
+
             $table->integer('brand_id')
                 ->nullable()->unsigned();
             $table->foreign('brand_id')
@@ -64,7 +64,7 @@ class CreateJobSheetsTable extends Migration
 
             $table->dateTime('delivery_date')
                 ->nullable();
-            
+
             $table->text('product_configuration')
                 ->nullable();
 

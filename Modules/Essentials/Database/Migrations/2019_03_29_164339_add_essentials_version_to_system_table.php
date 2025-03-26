@@ -15,8 +15,8 @@ class AddEssentialsVersionToSystemTable extends Migration
     public function up()
     {
         DB::table('system')->insert([
-            'key'=>'essentials_version',
-            'value' => config('essentials.module_version')
+            'key' => 'essentials_version',
+            'value' => config('essentials.module_version'),
         ]);
     }
 
@@ -27,7 +27,6 @@ class AddEssentialsVersionToSystemTable extends Migration
      */
     public function down()
     {
-        Schema::table('system', function (Blueprint $table) {
-        });
+        Schema::table('system', function (Blueprint $table) {});
     }
 }

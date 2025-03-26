@@ -14,11 +14,11 @@ class Package extends Model
     protected $casts = [
         'custom_permissions' => 'array',
     ];
-    
+
     /**
      * Scope a query to only include active packages.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
@@ -34,7 +34,7 @@ class Package extends Model
     public static function listPackages($exlude_private = false)
     {
         $packages = Package::active()
-                        ->orderby('sort_order');
+            ->orderby('sort_order');
 
         if ($exlude_private) {
             $packages->notPrivate();
@@ -46,7 +46,7 @@ class Package extends Model
     /**
      * Scope a query to exclude private packages.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeNotPrivate($query)

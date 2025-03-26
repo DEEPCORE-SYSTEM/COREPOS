@@ -2,11 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Utils\ModuleUtil;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-
-use App\Utils\ModuleUtil;
-
 use Illuminate\Support\Facades\DB;
 
 class CreateDummyBusiness extends Command
@@ -42,49 +40,49 @@ class CreateDummyBusiness extends Command
      */
     public function handle()
     {
-        //Drop database and create the db with same name.
+        // Drop database and create the db with same name.
         $servername = config('database.connections.mysql.host');
         $username = config('database.connections.mysql.username');
         $password = config('database.connections.mysql.password');
         $db = config('database.connections.mysql.database');
 
         $conn = mysqli_connect($servername, $username, $password);
-        if (!$conn) {
-            die("Connection failed: " . mysqli_connect_error());
+        if (! $conn) {
+            exit('Connection failed: '.mysqli_connect_error());
         }
-        //Drop DB
+        // Drop DB
         $delete_db = "DROP DATABASE $db";
         if (mysqli_query($conn, $delete_db)) {
             $create_db = "CREATE DATABASE $db";
             mysqli_query($conn, $create_db);
         } else {
-            die("Error deleting db");
+            exit('Error deleting db');
         }
-        
+
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '512M');
-        
+
         DB::beginTransaction();
 
-        DB::statement("SET FOREIGN_KEY_CHECKS = 0");
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::statement('SET default_storage_engine=INNODB;');
 
         // DB::statement("DROP TABLE IF EXISTS barcodes, brands, business, business_locations, cash_registers, cash_register_transactions, categories, contacts, currencies, expense_categories, group_sub_taxes, invoice_layouts, invoice_schemes, migrations, model_has_permissions, model_has_roles, password_resets, permissions, printers, products, product_variations, purchase_lines, roles, role_has_permissions, sessions, stock_adjustment_lines, tax_rates, transactions, transaction_payments, transaction_sell_lines, units, users, variations, variation_location_details, variation_templates, variation_value_templates, transaction_sell_lines_purchase_lines");
 
-        DB::statement("SET FOREIGN_KEY_CHECKS = 1");
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         Artisan::call('cache:clear');
-        Artisan::call('migrate', ["--force" => true]);
+        Artisan::call('migrate', ['--force' => true]);
         Artisan::call('db:seed');
-        Artisan::call('db:seed', ["--class" => 'DummyBusinessSeeder']);
+        Artisan::call('db:seed', ['--class' => 'DummyBusinessSeeder']);
 
-        //Run the purchase & mapping command
-        //Artisan::call('pos:mapPurchaseSell');
-        
-        //Call modules dummy
-        $moduleUtil = new ModuleUtil();
+        // Run the purchase & mapping command
+        // Artisan::call('pos:mapPurchaseSell');
+
+        // Call modules dummy
+        $moduleUtil = new ModuleUtil;
         $moduleUtil->getModuleData('dummy_data');
-        
+
         if (config('app.env') == 'demo') {
             system('chmod 777 -R /var/www/pos/storage');
         }

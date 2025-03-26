@@ -11,12 +11,11 @@ Route::group(['middleware' => ['web', 'auth', 'language', 'AdminSidebarMenu', 's
 
     Route::get('/', 'SuperadminController@index');
     Route::get('/stats', 'SuperadminController@stats');
-    
+
     Route::get('/{business_id}/toggle-active/{is_active}', 'BusinessController@toggleActive');
 
     Route::get('/users/{business_id}', 'BusinessController@usersList');
     Route::post('/update-password', 'BusinessController@updatePassword');
-
 
     Route::resource('/business', 'BusinessController');
     Route::get('/business/{id}/destroy', 'BusinessController@destroy');
@@ -39,16 +38,16 @@ Route::group(['middleware' => ['web', 'auth', 'language', 'AdminSidebarMenu', 's
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'AdminSidebarMenu'],
     'namespace' => 'Modules\Superadmin\Http\Controllers'], function () {
-        //Routes related to paypal checkout
+        // Routes related to paypal checkout
         Route::get('/subscription/{package_id}/paypal-express-checkout', 'SubscriptionController@paypalExpressCheckout');
 
         Route::get('/subscription/post-flutterwave-payment', 'SubscriptionController@postFlutterwavePaymentCallback');
-        
+
         Route::post('/subscription/pay-stack', 'SubscriptionController@getRedirectToPaystack');
         Route::get('/subscription/post-payment-pay-stack-callback', 'SubscriptionController@postPaymentPaystackCallback');
-        
-        //Routes related to pesapal checkout
-        Route::get('/subscription/{package_id}/pesapal-callback', ['as' => 'pesapalCallback', 'uses'=>'SubscriptionController@pesapalCallback']);
+
+        // Routes related to pesapal checkout
+        Route::get('/subscription/{package_id}/pesapal-callback', ['as' => 'pesapalCallback', 'uses' => 'SubscriptionController@pesapalCallback']);
 
         Route::get('/subscription/{package_id}/pay', 'SubscriptionController@pay');
         Route::any('/subscription/{package_id}/confirm', 'SubscriptionController@confirm')->name('subscription-confirm');

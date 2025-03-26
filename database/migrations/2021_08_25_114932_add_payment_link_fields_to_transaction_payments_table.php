@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AddPaymentLinkFieldsToTransactionPaymentsTable extends Migration
 {
@@ -14,7 +14,7 @@ class AddPaymentLinkFieldsToTransactionPaymentsTable extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE transaction_payments MODIFY COLUMN created_by INT(11) DEFAULT NULL");
+        DB::statement('ALTER TABLE transaction_payments MODIFY COLUMN created_by INT(11) DEFAULT NULL');
 
         Schema::table('transaction_payments', function (Blueprint $table) {
             $table->boolean('paid_through_link')->default(0)->after('created_by');

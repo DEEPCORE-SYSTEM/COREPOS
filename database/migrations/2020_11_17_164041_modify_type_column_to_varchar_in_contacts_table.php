@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Contact;
+use Illuminate\Database\Migrations\Migration;
 
 class ModifyTypeColumnToVarcharInContactsTable extends Migration
 {
@@ -12,11 +12,11 @@ class ModifyTypeColumnToVarcharInContactsTable extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE contacts MODIFY COLUMN `type` VARCHAR(191) NOT NULL");
-        
+        DB::statement('ALTER TABLE contacts MODIFY COLUMN `type` VARCHAR(191) NOT NULL');
+
         Contact::where('type', '=', '')
-                 ->orWhereNull('type')
-                ->update(['type' => 'lead']);
+            ->orWhereNull('type')
+            ->update(['type' => 'lead']);
     }
 
     /**
@@ -24,7 +24,5 @@ class ModifyTypeColumnToVarcharInContactsTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 }

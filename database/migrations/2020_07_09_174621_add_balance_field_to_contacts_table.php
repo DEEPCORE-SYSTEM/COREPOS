@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AddBalanceFieldToContactsTable extends Migration
 {
@@ -22,8 +22,8 @@ class AddBalanceFieldToContactsTable extends Migration
             $table->boolean('is_advance')->default(0)->after('created_by');
         });
 
-        DB::statement("ALTER TABLE transaction_payments MODIFY COLUMN `method` VARCHAR(191) DEFAULT NULL;");
-        DB::statement("ALTER TABLE cash_register_transactions MODIFY COLUMN `pay_method` VARCHAR(191) DEFAULT NULL;");
+        DB::statement('ALTER TABLE transaction_payments MODIFY COLUMN `method` VARCHAR(191) DEFAULT NULL;');
+        DB::statement('ALTER TABLE cash_register_transactions MODIFY COLUMN `pay_method` VARCHAR(191) DEFAULT NULL;');
     }
 
     /**
@@ -31,7 +31,5 @@ class AddBalanceFieldToContactsTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 }

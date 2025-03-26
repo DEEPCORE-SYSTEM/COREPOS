@@ -26,5 +26,5 @@ return [
     'stock_adjustment_added_successfully' => 'د سټاک سمون په بریالیتوب سره اضافه شو',
     'search_products' => 'محصوالت لټون کړئ',
     'delete_success' => 'د سټاک سمون په بریالیتوب سره پاک شو',
-    'view_details' => 'د سټاک د سمون تفصیلات وګورئ'
+    'view_details' => 'د سټاک د سمون تفصیلات وګورئ',
 ];

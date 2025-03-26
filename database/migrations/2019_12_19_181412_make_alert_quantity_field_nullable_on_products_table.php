@@ -12,7 +12,7 @@ class MakeAlertQuantityFieldNullableOnProductsTable extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE products MODIFY COLUMN alert_quantity DECIMAL(22, 4) DEFAULT NULL");
+        DB::statement('ALTER TABLE products MODIFY COLUMN alert_quantity DECIMAL(22, 4) DEFAULT NULL');
     }
 
     /**

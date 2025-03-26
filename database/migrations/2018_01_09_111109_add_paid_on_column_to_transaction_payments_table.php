@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddPaidOnColumnToTransactionPaymentsTable extends Migration
 {
@@ -17,7 +17,7 @@ class AddPaidOnColumnToTransactionPaymentsTable extends Migration
             $table->dateTime('paid_on')->nullable()->after('bank_account_number');
             $table->integer('created_by')->after('paid_on');
 
-            //Indexing
+            // Indexing
             $table->index('created_by');
         });
     }

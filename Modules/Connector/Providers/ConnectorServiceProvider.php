@@ -2,17 +2,15 @@
 
 namespace Modules\Connector\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Console\ClientCommand;
 use Laravel\Passport\Console\InstallCommand;
 use Laravel\Passport\Console\KeysCommand;
 
-
 class ConnectorServiceProvider extends ServiceProvider
 {
-
     /**
      * The filters base class name.
      *
@@ -42,23 +40,22 @@ class ConnectorServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         $this->registerMiddleware($this->app['router']);
 
-        /*ADD THIS LINES*/
+        /* ADD THIS LINES */
         $this->commands([
             InstallCommand::class,
             ClientCommand::class,
             KeysCommand::class,
-         
+
         ]);
     }
 
     /**
      * Register the filters.
      *
-     * @param  Router $router
      * @return void
      */
     public function registerMiddleware(Router $router)
@@ -109,11 +106,11 @@ class ConnectorServiceProvider extends ServiceProvider
         $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
-        ],'views');
+            $sourcePath => $viewPath,
+        ], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/connector';
+            return $path.'/modules/connector';
         }, \Config::get('view.paths')), [$sourcePath]), 'connector');
     }
 
@@ -129,20 +126,20 @@ class ConnectorServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'connector');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'connector');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'connector');
         }
     }
 
     /**
      * Register an additional directory of factories.
-     * 
+     *
      * @return void
      */
     public function registerFactories()
     {
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             Factory::guessFactoryNamesUsing(function ($modelName) {
-                return 'Modules\\Connector\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
+                return 'Modules\\Connector\\Database\\Factories\\'.class_basename($modelName).'Factory';
             });
         }
     }

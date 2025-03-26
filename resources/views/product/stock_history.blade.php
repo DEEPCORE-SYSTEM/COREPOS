@@ -10,37 +10,45 @@
 
 <!-- Main content -->
 <section class="content">
-<div class="row">
-    <div class="col-md-12">
-    @component('components.widget', ['title' => $product->name])
-        <div class="col-md-3">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
             <div class="form-group">
-                {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-                {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                <input type="text" name="search_product" class="form-control" id="search_product" placeholder="{{ __('lang_v1.search_product_to_edit') }}">
             </div>
         </div>
-        @if($product->type == 'variable')
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="variation_id">@lang('product.variations'):</label>
-                    <select class="select2 form-control" name="variation_id" id="variation_id">
-                        @foreach($product->variations as $variation)
-                            <option value="{{$variation->id}}">{{$variation->product_variation->name}} - {{$variation->name}} ({{$variation->sub_sku}})</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-        @else
-            <input type="hidden" id="variation_id" name="variation_id" value="{{$product->variations->first()->id}}">
-        @endif
-    @endcomponent
-    @component('components.widget')
-        <div id="product_stock_history" style="display: none;"></div>
-    @endcomponent
     </div>
-</div>
+    <br>
 
+    <form action="{{ action('ProductController@bulkUpdate') }}" method="post" id="bulk_edit_products_form">
+        @csrf
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table text-center table-bordered" id="product_table">
+                    <thead id="product_table_head">
+                        <tr class="bg-gray">
+                            <th class="col-md-1">@lang('sale.product')</th>
+                            <th class="col-md-2">@lang('product.category')</th>
+                            <th class="col-md-2">@lang('product.sub_category')</th>
+                            <th class="col-md-2">@lang('product.brand')</th>
+                            <th class="col-md-2">@lang('product.tax')</th>
+                            <th class="col-md-3">@lang('business.business_locations')</th>
+                        </tr>
+                    </thead>
+                    @foreach($products as $product)
+                        @include('product.partials.bulk_edit_product_row')
+                    @endforeach
+                </table>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary pull-right">@lang('messages.update')</button>
+            </div>
+        </div>
+    </form>
 </section>
+
 <!-- /.content -->
 @endsection
 

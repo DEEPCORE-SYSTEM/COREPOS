@@ -1,4 +1,5 @@
 <?php
+
 return [
     'account' => 'Cont',
     'manage_your_account' => 'Administreaza contul',

@@ -2,17 +2,17 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use App\CashRegister;
-use Modules\Connector\Transformers\CommonResource;
-use Illuminate\Support\Facades\Auth;
 use App\CashRegisterTransaction;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Modules\Connector\Transformers\CommonResource;
 
 /**
  * @group Cash register management
+ *
  * @authenticated
  *
  * APIs for managing cash registers
@@ -21,7 +21,8 @@ class CashRegisterController extends ApiController
 {
     /**
      * List Cash Registers
-     * @queryParam status status of the register (open, close) Example: open      
+     *
+     * @queryParam status status of the register (open, close) Example: open
      * @queryParam user_id id of the user Example: 10
      * @queryParam start_date format:Y-m-d Example: 2018-06-25
      * @queryParam end_date format:Y-m-d Example: 2018-06-25
@@ -119,9 +120,9 @@ class CashRegisterController extends ApiController
         $filters = request()->only(['status', 'user_id', 'location_id', 'start_date', 'end_date']);
 
         $query = CashRegister::where('business_id', $business_id)
-                            ->with(['cash_register_transactions']);
+            ->with(['cash_register_transactions']);
 
-        $perPage = !empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
+        $perPage = ! empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
         if ($perPage == -1) {
             $cash_registers = $query->get();
         } else {
@@ -133,20 +134,20 @@ class CashRegisterController extends ApiController
     }
 
     /**
-    * Create Cash Register
-    *
-    * @bodyParam location_id int required id of the business location
-    * @bodyParam initial_amount float Initial amount
-    * @bodyParam created_at string Register open datetime format:Y-m-d H:i:s, Example: 2020-5-7 15:20:22
-    * @bodyParam closed_at string Register closed datetime format:Y-m-d H:i:s, Example: 2020-5-7 15:20:22
-    * @bodyParam status register status (open, close) Example:close
-    * @bodyParam closing_amount float Closing amount
-    * @bodyParam total_card_slips int total number of card slips
-    * @bodyParam total_cheques int total number of checks
-    * @bodyParam closing_note string Closing note
-    * @bodyParam transaction_ids string Comma separated ids of sells associated with the register Example: 1,2,3
-    *
-    * response {
+     * Create Cash Register
+     *
+     * @bodyParam location_id int required id of the business location
+     * @bodyParam initial_amount float Initial amount
+     * @bodyParam created_at string Register open datetime format:Y-m-d H:i:s, Example: 2020-5-7 15:20:22
+     * @bodyParam closed_at string Register closed datetime format:Y-m-d H:i:s, Example: 2020-5-7 15:20:22
+     * @bodyParam status register status (open, close) Example:close
+     * @bodyParam closing_amount float Closing amount
+     * @bodyParam total_card_slips int total number of card slips
+     * @bodyParam total_cheques int total number of checks
+     * @bodyParam closing_note string Closing note
+     * @bodyParam transaction_ids string Comma separated ids of sells associated with the register Example: 1,2,3
+     *
+     * response {
             "data": {
                 "status": "closed",
                 "location_id": "1",
@@ -158,40 +159,40 @@ class CashRegisterController extends ApiController
                 "id": 3
             }
         }
-    */
+     */
     public function store(Request $request)
     {
         $user = Auth::user();
         $business_id = $user->business_id;
 
-        $register_data = $request->only(['status', 'location_id', 
+        $register_data = $request->only(['status', 'location_id',
             'created_at', 'closed_at', 'closing_note', 'closing_amount', 'total_card_slips', 'total_cheques']);
         $register_data['business_id'] = $business_id;
         $register_data['user_id'] = $user->id;
 
         $register = CashRegister::create($register_data);
 
-        $initial_amount = !empty($request->input('initial_amount')) ? $request->input('initial_amount') : 0;
+        $initial_amount = ! empty($request->input('initial_amount')) ? $request->input('initial_amount') : 0;
         $cash_register_payments = [];
-        if (!empty($initial_amount)) {
+        if (! empty($initial_amount)) {
             $cash_register_payments[] = new CashRegisterTransaction([
-                        'amount' => $initial_amount,
-                        'pay_method' => 'cash',
-                        'type' => 'credit',
-                        'transaction_type' => 'initial'
-                    ]);
+                'amount' => $initial_amount,
+                'pay_method' => 'cash',
+                'type' => 'credit',
+                'transaction_type' => 'initial',
+            ]);
         }
 
         $transaction_ids_string = $request->input('transaction_ids');
         $transaction_ids = explode(',', $transaction_ids_string);
 
         $sells = Transaction::where('business_id', $business_id)
-                            ->whereIn('id', $transaction_ids)
-                            ->where('status', 'final')
-                            ->where('type', 'sell')
-                            ->where('created_by', $user->id)
-                            ->with(['payment_lines'])
-                            ->get();
+            ->whereIn('id', $transaction_ids)
+            ->where('status', 'final')
+            ->where('type', 'sell')
+            ->where('created_by', $user->id)
+            ->with(['payment_lines'])
+            ->get();
 
         foreach ($sells as $sell) {
             foreach ($sell->payment_lines as $payment) {
@@ -200,12 +201,12 @@ class CashRegisterController extends ApiController
                     'pay_method' => $payment->method,
                     'type' => 'credit',
                     'transaction_type' => 'sell',
-                    'transaction_id' => $sell->id
+                    'transaction_id' => $sell->id,
                 ]);
             }
         }
 
-        if (!empty($cash_register_payments)) {
+        if (! empty($cash_register_payments)) {
             $register->cash_register_transactions()->saveMany($cash_register_payments);
         }
 
@@ -214,6 +215,7 @@ class CashRegisterController extends ApiController
 
     /**
      * Get the specified Register
+     *
      * @urlParam cash_register required comma separated ids of the cash registers Example: 59
      *
      * @response {
@@ -258,7 +260,7 @@ class CashRegisterController extends ApiController
                 }
             ]
         }
-    */
+     */
     public function show($register_ids)
     {
         $user = Auth::user();
@@ -266,9 +268,9 @@ class CashRegisterController extends ApiController
 
         $register_ids = explode(',', $register_ids);
         $cash_registers = CashRegister::where('business_id', $business_id)
-                            ->whereIn('id', $register_ids)
-                            ->with(['cash_register_transactions'])
-                            ->get();
+            ->whereIn('id', $register_ids)
+            ->with(['cash_register_transactions'])
+            ->get();
 
         return CommonResource::collection($cash_registers);
     }

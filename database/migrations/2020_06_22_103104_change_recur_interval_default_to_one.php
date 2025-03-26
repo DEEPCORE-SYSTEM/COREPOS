@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Transaction;
+use Illuminate\Database\Migrations\Migration;
 
 class ChangeRecurIntervalDefaultToOne extends Migration
 {
@@ -15,8 +13,8 @@ class ChangeRecurIntervalDefaultToOne extends Migration
     public function up()
     {
         Transaction::where('is_recurring', 1)
-                ->whereNull('recur_interval')
-                ->update(['recur_interval' => 1]);
+            ->whereNull('recur_interval')
+            ->update(['recur_interval' => 1]);
     }
 
     /**
@@ -24,7 +22,5 @@ class ChangeRecurIntervalDefaultToOne extends Migration
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 }

@@ -2,19 +2,18 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\SellingPriceGroup;
+use App\Models\Variation;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Connector\Transformers\CommonResource;
 use Modules\Connector\Transformers\ProductResource;
 use Modules\Connector\Transformers\VariationResource;
-use Modules\Connector\Transformers\CommonResource;
-use App\Models\Product;
-use App\Models\Variation;
-use App\Models\SellingPriceGroup;
 
 /**
  * @group Product management
+ *
  * @authenticated
  *
  * APIs for managing products
@@ -23,14 +22,16 @@ class ProductController extends ApiController
 {
     /**
      * List products
-     * @queryParam brand_id         
+     *
+     * @queryParam brand_id
      * @queryParam category_id
      * @queryParam sub_category_id
      * @queryParam location_id
-     * @queryParam selling_price_group (1, 0) 
+     * @queryParam selling_price_group (1, 0)
      * @queryParam name Search term for product name
      * @queryParam sku Search term for product sku
      * @queryParam per_page Total records per page. default: 10, Set -1 for no pagination Example:10
+     *
      * @response {
         "data": [
             {
@@ -264,16 +265,19 @@ class ProductController extends ApiController
         $filters['selling_price_group'] = request()->input('selling_price_group') == 1 ? true : false;
 
         $search = request()->only(['sku', 'name']);
-        
-        $products = $this->__getProducts($business_id, $filters, $search, true); 
+
+        $products = $this->__getProducts($business_id, $filters, $search, true);
 
         return ProductResource::collection($products);
     }
 
     /**
      * Get the specified product
+     *
      * @urlParam product required comma separated ids of products Example: 1
-     * @queryParam selling_price_group (1, 0) 
+     *
+     * @queryParam selling_price_group (1, 0)
+     *
      * @response {
             "data": [
                 {
@@ -504,6 +508,7 @@ class ProductController extends ApiController
 
     /**
      * Function to query product
+     *
      * @return Response
      */
     private function __getProducts($business_id, $filters = [], $search = [], $pagination = false)
@@ -512,46 +517,46 @@ class ProductController extends ApiController
 
         $with = ['product_variations.variations.variation_location_details', 'brand', 'unit', 'category', 'sub_category', 'product_tax', 'product_variations.variations.media', 'product_locations'];
 
-        if (!empty($filters['category_id'])) {
+        if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
 
-        if (!empty($filters['sub_category_id'])) {
+        if (! empty($filters['sub_category_id'])) {
             $query->where('sub_category_id', $filters['sub_category_id']);
         }
 
-        if (!empty($filters['brand_id'])) {
+        if (! empty($filters['brand_id'])) {
             $query->where('brand_id', $filters['brand_id']);
         }
 
-        if (!empty($filters['selling_price_group']) && $filters['selling_price_group'] == true) {
+        if (! empty($filters['selling_price_group']) && $filters['selling_price_group'] == true) {
             $with[] = 'product_variations.variations.group_prices';
         }
-        if (!empty($filters['location_id'])) {
+        if (! empty($filters['location_id'])) {
             $location_id = $filters['location_id'];
-            $query->whereHas('product_locations', function($q) use($location_id) {
+            $query->whereHas('product_locations', function ($q) use ($location_id) {
                 $q->where('product_locations.location_id', $location_id);
             });
         }
 
-        if (!empty($filters['product_ids'])) {
+        if (! empty($filters['product_ids'])) {
             $query->whereIn('id', $filters['product_ids']);
         }
 
-        $perPage = !empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
+        $perPage = ! empty($filters['per_page']) ? $filters['per_page'] : $this->perPage;
 
-        if (!empty($search)) {
+        if (! empty($search)) {
             $query->where(function ($query) use ($search) {
 
-                if (!empty($search['name'])) {
-                    $query->where('products.name', 'like', '%' . $search['name'] .'%');
+                if (! empty($search['name'])) {
+                    $query->where('products.name', 'like', '%'.$search['name'].'%');
                 }
-                
-                if (!empty($search['sku'])) {
+
+                if (! empty($search['sku'])) {
                     $sku = $search['sku'];
-                    $query->orWhere('sku', 'like', '%' . $sku .'%');
-                    $query->orWhereHas('variations', function($q) use($sku) {
-                        $q->where('variations.sub_sku', 'like', '%' . $sku .'%');
+                    $query->orWhere('sku', 'like', '%'.$sku.'%');
+                    $query->orWhereHas('variations', function ($q) use ($sku) {
+                        $q->where('variations.sub_sku', 'like', '%'.$sku.'%');
                     });
                 }
             });
@@ -562,7 +567,7 @@ class ProductController extends ApiController
         if ($pagination && $perPage != -1) {
             $products = $query->paginate($perPage);
             $products->appends(request()->query());
-        } else{
+        } else {
             $products = $query->get();
         }
 
@@ -571,14 +576,17 @@ class ProductController extends ApiController
 
     /**
      * List Variations
+     *
      * @urlParam product comma separated ids of variations Example: 2
-     * @queryParam brand_id         
+     *
+     * @queryParam brand_id
      * @queryParam category_id
      * @queryParam sub_category_id
      * @queryParam not_for_selling Values: 0 or 1
      * @queryParam name Search term for product name
      * @queryParam sku Search term for product sku
      * @queryParam per_page Total records per page. default: 10, Set -1 for no pagination Example:10
+     *
      * @response {
         "data": [
             {
@@ -800,78 +808,78 @@ class ProductController extends ApiController
         $business_id = $user->business_id;
 
         $query = Variation::join('products AS p', 'variations.product_id', '=', 'p.id')
-                ->join('product_variations AS pv', 'variations.product_variation_id', '=', 'pv.id')
-                ->leftjoin('units', 'p.unit_id', '=', 'units.id')
-                ->leftjoin('tax_rates as tr', 'p.tax', '=', 'tr.id')
-                ->leftjoin('brands', function ($join) {
-                    $join->on('p.brand_id', '=', 'brands.id')
-                        ->whereNull('brands.deleted_at');
-                })
-                ->leftjoin('categories as c', 'p.category_id', '=', 'c.id')
-                ->leftjoin('categories as sc', 'p.sub_category_id', '=', 'sc.id')
-                ->where('p.business_id', $business_id)
-                ->select(
-                    'variations.id',
-                    'variations.name as variation_name',
-                    'variations.sub_sku',
-                    'p.id as product_id',
-                    'p.name as product_name',
-                    'p.sku',
-                    'p.type as type',
-                    'p.business_id', 
-                    'p.barcode_type',
-                    'p.expiry_period',
-                    'p.expiry_period_type',
-                    'p.enable_sr_no',
-                    'p.weight',
-                    'p.product_custom_field1',
-                    'p.product_custom_field2',
-                    'p.product_custom_field3',
-                    'p.product_custom_field4',
-                    'p.image as product_image',
-                    'p.product_description',
-                    'p.warranty_id',
-                    'p.brand_id',
-                    'brands.name as brand_name',
-                    'p.unit_id',
-                    'p.enable_stock',
-                    'p.not_for_selling',
-                    'units.short_name as unit_name',
-                    'units.allow_decimal as unit_allow_decimal',
-                    'p.category_id',
-                    'c.name as category',
-                    'p.sub_category_id',
-                    'sc.name as sub_category',
-                    'p.tax as tax_id',
-                    'p.tax_type',
-                    'tr.name as tax_name',
-                    'tr.amount as tax_amount',
-                    'variations.product_variation_id',
-                    'variations.default_purchase_price',
-                    'variations.dpp_inc_tax',
-                    'variations.profit_percent',
-                    'variations.default_sell_price',
-                    'variations.sell_price_inc_tax',
-                    'pv.id as product_variation_id',
-                    'pv.name as product_variation_name'
-                )
-                ->with([
-                    'variation_location_details', 
-                    'media', 
-                    'group_prices',
-                    'product',
-                    'product.product_locations'
-                ]);
+            ->join('product_variations AS pv', 'variations.product_variation_id', '=', 'pv.id')
+            ->leftjoin('units', 'p.unit_id', '=', 'units.id')
+            ->leftjoin('tax_rates as tr', 'p.tax', '=', 'tr.id')
+            ->leftjoin('brands', function ($join) {
+                $join->on('p.brand_id', '=', 'brands.id')
+                    ->whereNull('brands.deleted_at');
+            })
+            ->leftjoin('categories as c', 'p.category_id', '=', 'c.id')
+            ->leftjoin('categories as sc', 'p.sub_category_id', '=', 'sc.id')
+            ->where('p.business_id', $business_id)
+            ->select(
+                'variations.id',
+                'variations.name as variation_name',
+                'variations.sub_sku',
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.sku',
+                'p.type as type',
+                'p.business_id',
+                'p.barcode_type',
+                'p.expiry_period',
+                'p.expiry_period_type',
+                'p.enable_sr_no',
+                'p.weight',
+                'p.product_custom_field1',
+                'p.product_custom_field2',
+                'p.product_custom_field3',
+                'p.product_custom_field4',
+                'p.image as product_image',
+                'p.product_description',
+                'p.warranty_id',
+                'p.brand_id',
+                'brands.name as brand_name',
+                'p.unit_id',
+                'p.enable_stock',
+                'p.not_for_selling',
+                'units.short_name as unit_name',
+                'units.allow_decimal as unit_allow_decimal',
+                'p.category_id',
+                'c.name as category',
+                'p.sub_category_id',
+                'sc.name as sub_category',
+                'p.tax as tax_id',
+                'p.tax_type',
+                'tr.name as tax_name',
+                'tr.amount as tax_amount',
+                'variations.product_variation_id',
+                'variations.default_purchase_price',
+                'variations.dpp_inc_tax',
+                'variations.profit_percent',
+                'variations.default_sell_price',
+                'variations.sell_price_inc_tax',
+                'pv.id as product_variation_id',
+                'pv.name as product_variation_name'
+            )
+            ->with([
+                'variation_location_details',
+                'media',
+                'group_prices',
+                'product',
+                'product.product_locations',
+            ]);
 
-        if (!empty(request()->input('category_id'))) {
+        if (! empty(request()->input('category_id'))) {
             $query->where('category_id', request()->input('category_id'));
         }
 
-        if (!empty(request()->input('sub_category_id'))) {
+        if (! empty(request()->input('sub_category_id'))) {
             $query->where('p.sub_category_id', request()->input('sub_category_id'));
         }
 
-        if (!empty(request()->input('brand_id'))) {
+        if (! empty(request()->input('brand_id'))) {
             $query->where('p.brand_id', request()->input('brand_id'));
         }
 
@@ -883,22 +891,22 @@ class ProductController extends ApiController
 
         $search = request()->only(['sku', 'name']);
 
-        if (!empty($search)) {
+        if (! empty($search)) {
             $query->where(function ($query) use ($search) {
 
-                if (!empty($search['name'])) {
-                    $query->where('p.name', 'like', '%' . $search['name'] .'%');
+                if (! empty($search['name'])) {
+                    $query->where('p.name', 'like', '%'.$search['name'].'%');
                 }
-                
-                if (!empty($search['sku'])) {
+
+                if (! empty($search['sku'])) {
                     $sku = $search['sku'];
-                    $query->orWhere('p.sku', 'like', '%' . $sku .'%')
-                        ->where('variations.sub_sku', 'like', '%' . $sku .'%');
+                    $query->orWhere('p.sku', 'like', '%'.$sku.'%')
+                        ->where('variations.sub_sku', 'like', '%'.$sku.'%');
                 }
             });
         }
 
-        $perPage = !empty(request()->input('per_page')) ? request()->input('per_page') : $this->perPage;
+        $perPage = ! empty(request()->input('per_page')) ? request()->input('per_page') : $this->perPage;
 
         if (empty($variation_ids)) {
             if ($perPage == -1) {
@@ -910,7 +918,7 @@ class ProductController extends ApiController
         } else {
             $variation_ids = explode(',', $variation_ids);
             $variations = $query->whereIn('variations.id', $variation_ids)
-                                ->get();
+                ->get();
         }
 
         return VariationResource::collection($variations);
@@ -950,7 +958,7 @@ class ProductController extends ApiController
         $business_id = $user->business_id;
 
         $price_groups = SellingPriceGroup::where('business_id', $business_id)
-                                        ->get();
+            ->get();
 
         return CommonResource::collection($price_groups);
     }

@@ -70,7 +70,7 @@ return [
     'shipping' => 'Pengiriman',
     'shipping_details' => 'Rincian Pengiriman',
     'shipping_charges' => 'Ongkos Kirim',
-    "shipping"=>"Pengiriman",
-    "shipping_details"=>"Rincian pengiriman",
-    "shipping_charges"=>"Biaya Pengiriman",
+    'shipping' => 'Pengiriman',
+    'shipping_details' => 'Rincian pengiriman',
+    'shipping_charges' => 'Biaya Pengiriman',
 ];

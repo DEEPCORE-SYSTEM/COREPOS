@@ -2,10 +2,10 @@
 
 namespace Modules\Project\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Utils\Util;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\View;
-use App\Utils\Util;
+use Illuminate\Support\ServiceProvider;
 
 class ProjectServiceProvider extends ServiceProvider
 {
@@ -27,12 +27,12 @@ class ProjectServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         View::composer(
             ['project::layouts.nav'],
             function ($view) {
-                $commonUtil = new Util();
+                $commonUtil = new Util;
                 $is_admin = $commonUtil->is_admin(auth()->user(), auth()->user()->business_id);
                 $view->with('__is_admin', $is_admin);
             }
@@ -76,11 +76,11 @@ class ProjectServiceProvider extends ServiceProvider
         $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
-        ],'views');
+            $sourcePath => $viewPath,
+        ], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/project';
+            return $path.'/modules/project';
         }, \Config::get('view.paths')), [$sourcePath]), 'project');
     }
 
@@ -96,20 +96,20 @@ class ProjectServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'project');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'project');
+            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'project');
         }
     }
 
     /**
      * Register an additional directory of factories.
-     * 
+     *
      * @return void
      */
     public function registerFactories()
     {
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             Factory::guessFactoryNamesUsing(function ($modelName) {
-                return 'Modules\\Project\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
+                return 'Modules\\Project\\Database\\Factories\\'.class_basename($modelName).'Factory';
             });
         }
     }

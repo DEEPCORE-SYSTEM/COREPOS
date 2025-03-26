@@ -1,0 +1,107 @@
+<?php
+$colspan = 15;
+$custom_labels = json_decode(session('business.custom_labels'), true);
+?>
+<table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
+    <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="select-all-row" data-table-id="product_table"></th>
+            <th>&nbsp;</th>
+            <th><?php echo app('translator')->get('messages.action'); ?></th>
+            <th><?php echo app('translator')->get('sale.product'); ?></th>
+            <th><?php echo app('translator')->get('purchase.business_location'); ?> <?php
+                if(session('business.enable_tooltip')){
+                    echo '<i class="fa fa-info-circle text-info hover-q no-print " aria-hidden="true" 
+                    data-container="body" data-toggle="popover" data-placement="auto bottom" 
+                    data-content="' . __('lang_v1.product_business_location_tooltip') . '" data-html="true" data-trigger="hover"></i>';
+                }
+                ?></th>
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_purchase_price')): ?>
+            <?php
+            $colspan++;
+            ?>
+            <th><?php echo app('translator')->get('lang_v1.unit_perchase_price'); ?></th>
+            <?php endif; ?>
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('access_default_selling_price')): ?>
+            <?php
+            $colspan++;
+            ?>
+            <th><?php echo app('translator')->get('lang_v1.selling_price'); ?></th>
+            <?php endif; ?>
+            <th><?php echo app('translator')->get('report.current_stock'); ?></th>
+            <th><?php echo app('translator')->get('product.product_type'); ?></th>
+            <th><?php echo app('translator')->get('product.category'); ?></th>
+            <th><?php echo app('translator')->get('product.brand'); ?></th>
+            <th><?php echo app('translator')->get('product.tax'); ?></th>
+            <th><?php echo app('translator')->get('product.sku'); ?></th>
+            <th><?php echo e($custom_labels['product']['custom_field_1'] ?? __('lang_v1.product_custom_field1'), false); ?></th>
+            <th><?php echo e($custom_labels['product']['custom_field_2'] ?? __('lang_v1.product_custom_field2'), false); ?></th>
+            <th><?php echo e($custom_labels['product']['custom_field_3'] ?? __('lang_v1.product_custom_field3'), false); ?></th>
+            <th><?php echo e($custom_labels['product']['custom_field_4'] ?? __('lang_v1.product_custom_field4'), false); ?></th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <td colspan="<?php echo e($colspan, false); ?>">
+                <div style="display: flex; width: 100%;">
+                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('product.delete')): ?>
+                    <form action="<?php echo e(action('ProductController@massDestroy'), false); ?>" method="post" id="mass_delete_form">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="selected_rows" id="selected_rows">
+                        <button type="submit" class="btn btn-xs btn-danger"
+                            id="delete-selected"><?php echo e(__('lang_v1.delete_selected'), false); ?></button>
+                    </form>
+                    <?php endif; ?>
+
+                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('product.update')): ?>
+                    <?php if(config('constants.enable_product_bulk_edit')): ?>
+                    &nbsp;
+                    <form action="<?php echo e(action('ProductController@bulkEdit'), false); ?>" method="post" id="bulk_edit_form">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="selected_products" id="selected_products_for_edit">
+                        <button type="submit" class="btn btn-xs btn-primary" id="edit-selected">
+                            <i class="fa fa-edit"></i><?php echo e(__('lang_v1.bulk_edit'), false); ?>
+
+                        </button>
+                    </form>
+                    <?php endif; ?>
+                    &nbsp;
+                    <button type="button" class="btn btn-xs btn-success update_product_location" data-type="add">
+                        <?php echo app('translator')->get('lang_v1.add_to_location'); ?>
+                    </button>
+                    &nbsp;
+                    <button type="button" class="btn btn-xs bg-navy update_product_location" data-type="remove">
+                        <?php echo app('translator')->get('lang_v1.remove_from_location'); ?>
+                    </button>
+                    <?php endif; ?>
+
+                    &nbsp;
+                    <form action="<?php echo e(action('ProductController@massDeactivate'), false); ?>" method="post"
+                        id="mass_deactivate_form">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="selected_products" id="selected_products">
+                        <button type="submit" class="btn btn-xs btn-warning" id="deactivate-selected">
+                            <?php echo e(__('lang_v1.deactivate_selected'), false); ?>
+
+                        </button>
+                    </form>
+                    <?php
+                if(session('business.enable_tooltip')){
+                    echo '<i class="fa fa-info-circle text-info hover-q no-print " aria-hidden="true" 
+                    data-container="body" data-toggle="popover" data-placement="auto bottom" 
+                    data-content="' . __('lang_v1.deactive_product_tooltip') . '" data-html="true" data-trigger="hover"></i>';
+                }
+                ?>
+                    &nbsp;
+                    <?php if($is_woocommerce): ?>
+                    <button type="button" class="btn btn-xs btn-warning toggle_woocomerce_sync">
+                        <?php echo app('translator')->get('lang_v1.woocommerce_sync'); ?>
+                    </button>
+                    <?php endif; ?>
+                </div>
+            </td>
+        </tr>
+
+    </tfoot>
+</table><?php /**PATH C:\xampp\htdocs\corepos\resources\views/product/partials/product_list.blade.php ENDPATH**/ ?>

@@ -15,10 +15,10 @@ class AddSubTypeColumnToTransactionsTable extends Migration
     {
         Schema::table('transactions', function (Blueprint $table) {
 
-            //sub_type is like for example repair or project_invoice etc.
+            // sub_type is like for example repair or project_invoice etc.
             $table->string('sub_type', 20)->nullable()->after('type');
-            
-            //Indexing
+
+            // Indexing
             $table->index('sub_type');
         });
     }

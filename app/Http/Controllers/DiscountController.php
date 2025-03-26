@@ -6,24 +6,24 @@ use App\Models\Brands;
 use App\Models\BusinessLocation;
 use App\Models\Category;
 use App\Models\Discount;
+use App\Models\SellingPriceGroup;
 use App\Utils\Util;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
-use App\Models\SellingPriceGroup;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
+
 class DiscountController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $commonUtil;
 
     /**
      * Constructor
      *
-     * @param ProductUtils $product
+     * @param  ProductUtils  $product
      * @return void
      */
     public function __construct(Util $commonUtil)
@@ -38,7 +38,7 @@ class DiscountController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -46,12 +46,12 @@ class DiscountController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $discounts = Discount::where('discounts.business_id', $business_id)
-                        ->leftjoin('brands as b', 'discounts.brand_id', '=', 'b.id')
-                        ->leftjoin('categories as c', 'discounts.category_id', '=', 'c.id')
-                        ->leftjoin('business_locations as l', 'discounts.location_id', '=', 'l.id')
-                        ->select(['discounts.id', 'discounts.name', 'starts_at', 'ends_at',
-                            'priority', 'b.name as brand', 'c.name as category', 'l.name as location', 'discounts.is_active', 'discounts.discount_amount', 'discount_type'])
-                        ->with(['variations', 'variations.product', 'variations.product_variation']);
+                ->leftjoin('brands as b', 'discounts.brand_id', '=', 'b.id')
+                ->leftjoin('categories as c', 'discounts.category_id', '=', 'c.id')
+                ->leftjoin('business_locations as l', 'discounts.location_id', '=', 'l.id')
+                ->select(['discounts.id', 'discounts.name', 'starts_at', 'ends_at',
+                    'priority', 'b.name as brand', 'c.name as category', 'l.name as location', 'discounts.is_active', 'discounts.discount_amount', 'discount_type'])
+                ->with(['variations', 'variations.product', 'variations.product_variation']);
 
             return Datatables::of($discounts)
                 ->addColumn(
@@ -66,34 +66,37 @@ class DiscountController extends Controller
                         '
                 )
                 ->addColumn('row_select', function ($row) {
-                    return  '<input type="checkbox" class="row-select" value="' . $row->id .'">' ;
+                    return '<input type="checkbox" class="row-select" value="'.$row->id.'">';
                 })
-                ->addColumn('products', function($row){
+                ->addColumn('products', function ($row) {
                     $products = [];
 
                     foreach ($row->variations as $variation) {
                         $products[] = $variation->full_name;
                     }
 
-                    return '<span class="label bg-primary">' . implode('</span>, <span class="label bg-primary">', $products) . '</span>';
+                    return '<span class="label bg-primary">'.implode('</span>, <span class="label bg-primary">', $products).'</span>';
                 })
                 ->editColumn('name', function ($row) {
-                    $name = $row->is_active != 1 ? $row->name . ' <span class="label bg-yellow">' . __('lang_v1.inactive') . '</sapn>' : $row->name;
+                    $name = $row->is_active != 1 ? $row->name.' <span class="label bg-yellow">'.__('lang_v1.inactive').'</sapn>' : $row->name;
 
                     return $name;
                 })
                 ->editColumn('starts_at', function ($row) {
-                    $starts_at = !empty($row->starts_at) ? $this->commonUtil->format_date($row->starts_at->toDateTimeString(), true) : '';
+                    $starts_at = ! empty($row->starts_at) ? $this->commonUtil->format_date($row->starts_at->toDateTimeString(), true) : '';
+
                     return $starts_at;
                 })
                 ->editColumn('ends_at', function ($row) {
-                    $ends_at = !empty($row->ends_at) ? $this->commonUtil->format_date($row->ends_at->toDateTimeString(), true) : '';
+                    $ends_at = ! empty($row->ends_at) ? $this->commonUtil->format_date($row->ends_at->toDateTimeString(), true) : '';
+
                     return $ends_at;
                 })
                 ->editColumn('discount_amount', '{{@num_format($discount_amount)}} @if($discount_type == "percentage") % @endif')
                 ->rawColumns(['name', 'action', 'row_select', 'products'])
                 ->make(true);
         }
+
         return view('discount.index');
     }
 
@@ -104,15 +107,15 @@ class DiscountController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
         $categories = Category::where('business_id', $business_id)
-                            ->where('parent_id', 0)
-                            ->pluck('name', 'id');
+            ->where('parent_id', 0)
+            ->pluck('name', 'id');
 
         $brands = Brands::forDropdown($business_id);
 
@@ -121,18 +124,17 @@ class DiscountController extends Controller
         $price_groups = SellingPriceGroup::forDropdown($business_id);
 
         return view('discount.create')
-                ->with(compact('categories', 'brands', 'locations', 'price_groups'));
+            ->with(compact('categories', 'brands', 'locations', 'price_groups'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -145,7 +147,7 @@ class DiscountController extends Controller
 
             $variation_ids = $request->input('variation_ids');
 
-            if (!empty($variation_ids)) {
+            if (! empty($variation_ids)) {
                 unset($input['brand_id']);
                 unset($input['category_id']);
             }
@@ -160,19 +162,19 @@ class DiscountController extends Controller
 
             $discount = Discount::create($input);
 
-            if (!empty($variation_ids)) {
+            if (! empty($variation_ids)) {
                 $discount->variations()->sync($variation_ids);
             }
 
             $output = ['success' => true,
-                            'msg' => __("lang_v1.added_success")
-                        ];
+                'msg' => __('lang_v1.added_success'),
+            ];
         } catch (\Exception $e) {
-            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return $output;
@@ -186,7 +188,7 @@ class DiscountController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -194,15 +196,15 @@ class DiscountController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $discount = Discount::where('business_id', $business_id)
-                            ->with(['variations', 'variations.product', 'variations.product_variation'])
-                            ->find($id);
+                ->with(['variations', 'variations.product', 'variations.product_variation'])
+                ->find($id);
 
             $starts_at = $this->commonUtil->format_date($discount->starts_at->toDateTimeString(), true);
             $ends_at = $this->commonUtil->format_date($discount->ends_at->toDateTimeString(), true);
 
             $categories = Category::where('business_id', $business_id)
-                            ->where('parent_id', 0)
-                            ->pluck('name', 'id');
+                ->where('parent_id', 0)
+                ->pluck('name', 'id');
 
             $brands = Brands::forDropdown($business_id);
 
@@ -224,20 +226,19 @@ class DiscountController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Discount  $discount
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             try {
                 $input = $request->only(['name', 'brand_id', 'category_id',
-                'location_id', 'priority', 'discount_type', 'discount_amount', 'spg']);
+                    'location_id', 'priority', 'discount_type', 'discount_amount', 'spg']);
 
                 $business_id = $request->session()->get('user.business_id');
 
@@ -251,27 +252,27 @@ class DiscountController extends Controller
 
                 $variation_ids = $request->input('variation_ids');
 
-                if (!empty($variation_ids)) {
+                if (! empty($variation_ids)) {
                     unset($input['brand_id']);
                     unset($input['category_id']);
                 }
 
                 $discount = Discount::where('business_id', $business_id)
-                            ->find($id);
+                    ->find($id);
 
                 $discount->update($input);
 
                 $discount->variations()->sync($variation_ids);
 
                 $output = ['success' => true,
-                            'msg' => __("lang_v1.updated_success")
-                            ];
+                    'msg' => __('lang_v1.updated_success'),
+                ];
             } catch (\Exception $e) {
-                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;
@@ -286,10 +287,10 @@ class DiscountController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         if (request()->ajax()) {
             try {
                 $business_id = request()->user()->business_id;
@@ -298,14 +299,14 @@ class DiscountController extends Controller
                 $discount->delete();
 
                 $output = ['success' => true,
-                            'msg' => __("lang_v1.deleted_success")
-                            ];
+                    'msg' => __('lang_v1.deleted_success'),
+                ];
             } catch (\Exception $e) {
-                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+                Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;
@@ -315,16 +316,15 @@ class DiscountController extends Controller
     /**
      * Mass deactivates discounts.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function massDeactivate(Request $request)
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
         try {
-            if (!empty($request->input('selected_discounts'))) {
+            if (! empty($request->input('selected_discounts'))) {
                 $business_id = $request->session()->get('user.business_id');
 
                 $selected_discounts = explode(',', $request->input('selected_discounts'));
@@ -332,22 +332,22 @@ class DiscountController extends Controller
                 DB::beginTransaction();
 
                 Discount::where('business_id', $business_id)
-                            ->whereIn('id', $selected_discounts)
-                            ->update(['is_active' => 0]);
+                    ->whereIn('id', $selected_discounts)
+                    ->update(['is_active' => 0]);
 
                 DB::commit();
             }
 
             $output = ['success' => 1,
-                            'msg' => __('lang_v1.deactivated_success')
-                        ];
+                'msg' => __('lang_v1.deactivated_success'),
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => 0,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return redirect()->back()->with(['status' => $output]);
@@ -361,7 +361,7 @@ class DiscountController extends Controller
      */
     public function activate($id)
     {
-        if (!auth()->user()->can('discount.access')) {
+        if (! auth()->user()->can('discount.access')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -373,14 +373,14 @@ class DiscountController extends Controller
                     ->update(['is_active' => 1]);
 
                 $output = ['success' => true,
-                                'msg' => __("lang_v1.updated_success")
-                            ];
+                    'msg' => __('lang_v1.updated_success'),
+                ];
             } catch (\Exception $e) {
-                Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-                
+                Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
                 $output = ['success' => false,
-                                'msg' => __("messages.something_went_wrong")
-                            ];
+                    'msg' => __('messages.something_went_wrong'),
+                ];
             }
 
             return $output;

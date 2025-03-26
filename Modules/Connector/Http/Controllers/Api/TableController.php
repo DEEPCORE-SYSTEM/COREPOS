@@ -2,16 +2,14 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Restaurant\ResTable;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Transformers\CommonResource;
 
-use App\Restaurant\ResTable;
-
 /**
  * @group Table management
+ *
  * @authenticated
  *
  * APIs for managing tables
@@ -20,7 +18,7 @@ class TableController extends ApiController
 {
     /**
      * List tables
-     * 
+     *
      * @queryParam location_id  int id of the location
      *
      * @response {
@@ -44,18 +42,20 @@ class TableController extends ApiController
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        
+
         $query = ResTable::where('business_id', $business_id);
 
-        if (!empty(request()->location_id)) {
+        if (! empty(request()->location_id)) {
             $query->where('location_id', request()->location_id);
         }
         $tables = $query->get();
+
         return CommonResource::collection($tables);
     }
 
     /**
      * Show the specified table
+     *
      * @urlParam table required comma separated ids of required tables Example: 5
      *
      * @response {
@@ -82,8 +82,8 @@ class TableController extends ApiController
         $table_ids = explode(',', $table_ids);
 
         $tables = ResTable::where('business_id', $business_id)
-                        ->whereIn('id', $table_ids)
-                        ->get();
+            ->whereIn('id', $table_ids)
+            ->get();
 
         return CommonResource::collection($tables);
     }

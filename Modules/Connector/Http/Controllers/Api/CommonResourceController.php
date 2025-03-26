@@ -2,35 +2,35 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-use Modules\Connector\Transformers\CommonResource;
-use Modules\Connector\Transformers\BusinessResource;
 use App\Models\Account;
 use App\Models\Business;
-use App\Utils\TransactionUtil;
 use App\Utils\BusinessUtil;
-use App\Utils\ProductUtil;
 use App\Utils\ModuleUtil;
+use App\Utils\ProductUtil;
+use App\Utils\TransactionUtil;
 use App\Utils\Util;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Modules\Connector\Transformers\BusinessResource;
+use Modules\Connector\Transformers\CommonResource;
 
 /**
  * @authenticated
- *
  */
 class CommonResourceController extends ApiController
 {
-
     /**
      * All Utils instance.
-     *
      */
     protected $transactionUtil;
+
     protected $businessUtil;
+
     protected $productUtil;
+
     protected $moduleUtil;
+
     protected $commonUtil;
 
     public function __construct(TransactionUtil $transactionUtil, BusinessUtil $businessUtil, ProductUtil $productUtil, ModuleUtil $moduleUtil, Util $commonUtil)
@@ -44,6 +44,7 @@ class CommonResourceController extends ApiController
 
     /**
      * List payment accounts
+     *
      * @response {
         "data": [
             {
@@ -61,23 +62,23 @@ class CommonResourceController extends ApiController
             }
         ]
     }
-     *
      */
     public function getPaymentAccounts()
     {
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        
-        //Accounts
+
+        // Accounts
         $accounts = Account::where('business_id', $business_id)
-                        ->get();
+            ->get();
 
         return CommonResource::collection($accounts);
     }
 
     /**
      * List payment methods
+     *
      * @response {
         "cash": "Cash",
         "card": "Card",
@@ -88,7 +89,6 @@ class CommonResourceController extends ApiController
         "custom_pay_2": "Custom Payment 2",
         "custom_pay_3": "Custom Payment 3"
     }
-     *
      */
     public function getPaymentMethods()
     {
@@ -99,6 +99,7 @@ class CommonResourceController extends ApiController
 
     /**
      * Get business details
+     *
      * @response {
         "data": {
             "id": 1,
@@ -405,20 +406,20 @@ class CommonResourceController extends ApiController
             "printers": []
         }
     }
-     *
      */
     public function getBusinessDetails()
     {
         $user = Auth::user();
 
         $business = Business::with(['locations', 'currency', 'printers'])
-                        ->findOrFail($user->business_id);
+            ->findOrFail($user->business_id);
 
         return new BusinessResource($business);
     }
 
     /**
      * Get profit and loss report
+     *
      * @queryParam location_id optional id of the location
      * @queryParam start_date optional format:Y-m-d Example: 2018-06-25
      * @queryParam end_date optional format:Y-m-d Example: 2018-06-25
@@ -467,21 +468,22 @@ class CommonResourceController extends ApiController
         $business_id = $user->business_id;
         $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
 
-        $location_id = !empty(request()->input('location_id')) ? request()->input('location_id') : null;
-        $start_date = !empty(request()->input('start_date')) ? request()->input('start_date') : $fy['start'];
-        $end_date = !empty(request()->input('end_date')) ? request()->input('end_date') : $fy['end'];
+        $location_id = ! empty(request()->input('location_id')) ? request()->input('location_id') : null;
+        $start_date = ! empty(request()->input('start_date')) ? request()->input('start_date') : $fy['start'];
+        $end_date = ! empty(request()->input('end_date')) ? request()->input('end_date') : $fy['end'];
 
         $user_id = request()->input('user_id') ?? null;
 
         $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $start_date, $end_date, $user_id);
 
         return [
-            'data' => $data
+            'data' => $data,
         ];
     }
 
     /**
      * Get product current stock
+     *
      * @response {
         "data": [
             {
@@ -565,17 +567,19 @@ class CommonResourceController extends ApiController
         $business_id = $user->business_id;
 
         $filters = request()->only(['location_id', 'category_id', 'sub_category_id',
-                                    'brand_id', 'unit_id', 'tax_id', 'type', 
-                                    'only_mfg_products', 'active_state', 
-                                    'not_for_selling', 'repair_model_id', 
-                                    'product_id', 'active_state']);
+            'brand_id', 'unit_id', 'tax_id', 'type',
+            'only_mfg_products', 'active_state',
+            'not_for_selling', 'repair_model_id',
+            'product_id', 'active_state']);
 
         $products = $this->productUtil->getProductStockDetails($business_id, $filters, 'api');
+
         return CommonResource::collection($products);
     }
 
     /**
      * Get notifications
+     *
      * @response {
             "data": [
                 {

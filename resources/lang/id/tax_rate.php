@@ -27,6 +27,6 @@ return [
     'tax_groups' => 'Grup pajak',
     'edit_tax_group' => 'Edit grup pajak',
     'sub_taxes' => 'Sub pajak',
-    'can_not_be_deleted' => 'Tarif pajak ini termasuk dalam beberapa grup pajak'
+    'can_not_be_deleted' => 'Tarif pajak ini termasuk dalam beberapa grup pajak',
 
 ];

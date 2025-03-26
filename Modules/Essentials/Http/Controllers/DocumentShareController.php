@@ -15,9 +15,8 @@ use Spatie\Permission\Models\Role;
 class DocumentShareController extends Controller
 {
     /**
-    * All Utils instance.
-    *
-    */
+     * All Utils instance.
+     */
     protected $moduleUtil;
 
     /**
@@ -32,110 +31,110 @@ class DocumentShareController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
      * @return Response
      */
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         if (request()->ajax()) {
             $type = request()->get('type');
 
             $users = User::forDropdown($business_id, false);
 
             $users_role = Role::where('business_id', $business_id)
-                          ->pluck('name', 'id');
+                ->pluck('name', 'id');
 
             $roles = [];
             foreach ($users_role as $key => $value) {
-                $roles[$key] = str_replace("#".$business_id, '', $value);
+                $roles[$key] = str_replace('#'.$business_id, '', $value);
             }
-            
-            //document shared_user
-            $shared_user = DocumentShare::where('document_id', $id)
-                                  ->where('value_type', 'user')
-                                  ->pluck('value');
 
-            //document shared_role
+            // document shared_user
+            $shared_user = DocumentShare::where('document_id', $id)
+                ->where('value_type', 'user')
+                ->pluck('value');
+
+            // document shared_role
             $shared_role = DocumentShare::where('document_id', $id)
-                                  ->where('value_type', 'role')
-                                  ->pluck('value');
-            
+                ->where('value_type', 'role')
+                ->pluck('value');
+
             return view('essentials::document_share.edit')
-                    ->with(compact('users', 'id', 'roles', 'shared_user', 'shared_role', 'type'));
+                ->with(compact('users', 'id', 'roles', 'shared_user', 'shared_role', 'type'));
         }
     }
 
     /**
      * Update the specified resource in storage.
-     * @param  Request $request
+     *
      * @return Response
      */
     public function update(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             $document = $request->only(['user', 'role', 'document_id']);
-            
+
             $existing_user_id = [0];
             $existing_role_id = [0];
 
             $document_obj = Document::find($document['document_id']);
 
-            if (!empty($document['user'])) {
+            if (! empty($document['user'])) {
                 foreach ($document['user'] as $key => $user_id) {
                     $existing_user_id[] = $user_id;
                     $share = [
-                            'document_id' => $document['document_id'],
-                            'value_type' => "user",
-                            'value' => $user_id,
-                        ];
+                        'document_id' => $document['document_id'],
+                        'value_type' => 'user',
+                        'value' => $user_id,
+                    ];
                     $doc_share = DocumentShare::updateOrCreate($share);
 
-                    //Notify document share only if newly created
+                    // Notify document share only if newly created
                     if ($doc_share->wasRecentlyCreated) {
                         $this->notify($document_obj, $user_id);
                     }
                 }
             }
 
-            //deleting not existing users
+            // deleting not existing users
             DocumentShare::where('document_id', $document['document_id'])
-                    ->where('value_type', 'user')
-                    ->whereNotIn('value', $existing_user_id)
-                    ->delete();
-            
+                ->where('value_type', 'user')
+                ->whereNotIn('value', $existing_user_id)
+                ->delete();
 
-            if (!empty($document['role'])) {
+            if (! empty($document['role'])) {
                 foreach ($document['role'] as $key => $role_id) {
                     $existing_role_id[] = $role_id;
                     $share = [
-                              'document_id' => $document['document_id'],
-                              'value_type' => "role",
-                              'value' => $role_id,
-                                ];
-                                
+                        'document_id' => $document['document_id'],
+                        'value_type' => 'role',
+                        'value' => $role_id,
+                    ];
+
                     DocumentShare::updateOrCreate($share);
                 }
             }
 
-            //deleting not existing roles
+            // deleting not existing roles
             DocumentShare::where('document_id', $document['document_id'])
-                       ->where('value_type', 'role')
-                       ->whereNotIn('value', $existing_role_id)
-                       ->delete();
+                ->where('value_type', 'role')
+                ->whereNotIn('value', $existing_role_id)
+                ->delete();
 
             $output = [
-                        'success' => true,
-                        'msg' => __('lang_v1.success')
-                        ];
+                'success' => true,
+                'msg' => __('lang_v1.success'),
+            ];
 
             return $output;
         }
@@ -143,6 +142,7 @@ class DocumentShareController extends Controller
 
     /**
      * Sends notification to the user.
+     *
      * @return void
      */
     private function notify($document, $user_id)

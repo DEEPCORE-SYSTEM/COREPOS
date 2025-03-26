@@ -15,9 +15,15 @@
         @if($is_admin)
         	<div class="row">
                 <div class="col-md-4 col-xs-12">
-                    @if(count($all_locations) > 1)
-                        {!! Form::select('dashboard_location', $all_locations, null, ['class' => 'form-control select2', 'placeholder' => __('lang_v1.select_location'), 'id' => 'dashboard_location']); !!}
-                    @endif
+                @if(count($all_locations) > 1)
+    <select name="dashboard_location" id="dashboard_location" class="form-control select2">
+        <option value="">{{ __('lang_v1.select_location') }}</option>
+        @foreach($all_locations as $key => $location)
+            <option value="{{ $key }}">{{ $location }}</option>
+        @endforeach
+    </select>
+@endif
+
                 </div>
         		<div class="col-md-8 col-xs-12">
                     <div class="form-group pull-right">

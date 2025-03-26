@@ -27,16 +27,26 @@
 		</div>
 	@endif
 
-	@if(!empty($brands))
-		<div class="col-sm-4" id="product_brand_div">
-			{!! Form::select('size', $brands, null, ['id' => 'product_brand', 'class' => 'select2', 'name' => null, 'style' => 'width:100% !important']) !!}
-		</div>
-	@endif
+    @if(!empty($brands))
 
-	<!-- used in repair : filter for service/product -->
-	<div class="col-md-6 hide" id="product_service_div">
-		{!! Form::select('is_enabled_stock', ['' => __('messages.all'), 'product' => __('sale.product'), 'service' => __('lang_v1.service')], null, ['id' => 'is_enabled_stock', 'class' => 'select2', 'name' => null, 'style' => 'width:100% !important']) !!}
-	</div>
+    <div class="col-sm-4" id="product_brand_div">
+        <select id="product_brand" class="select2" style="width:100% !important">
+            @foreach($brands as $key => $brand)
+            <option value="{{ $key }}">{{ $brand }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    @endif
+
+    <!-- used in repair : filter for service/product -->
+    <div class="col-md-6 hide" id="product_service_div">
+        <select id="is_enabled_stock" class="select2" style="width:100% !important">
+            <option value="">{{ __('messages.all') }}</option>
+            <option value="product">{{ __('sale.product') }}</option>
+            <option value="service">{{ __('lang_v1.service') }}</option>
+        </select>
+    </div>
 
 	<div class="col-sm-4 @if(empty($featured_products)) hide @endif" id="feature_product_div">
 		<button type="button" class="btn btn-primary btn-flat" id="show_featured_products">@lang('lang_v1.featured_products')</button>

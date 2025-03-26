@@ -2,22 +2,19 @@
 
 namespace App\Http;
 
-
-
-class AdminlteCustomPresenter 
+class AdminlteCustomPresenter
 {
     /**
-     * {@inheritdoc }.
+     * .
      */
     public function getOpenTagWrapper()
     {
-        return PHP_EOL . '<ul class="sidebar-menu tree" data-widget="tree">' . PHP_EOL;
+        return PHP_EOL.'<ul class="sidebar-menu tree" data-widget="tree">'.PHP_EOL;
     }
 
     /**
      * Get child menu items.
      *
-     * @param $item
      *
      * @return string
      */
@@ -27,27 +24,28 @@ class AdminlteCustomPresenter
         foreach ($item->getChilds() as $child) {
             $html .= $this->getMenuWithoutDropdownWrapper($child);
         }
+
         return $html;
     }
 
     /**
-     * {@inheritdoc }.
+     * .
      */
     public function getCloseTagWrapper()
     {
-        return PHP_EOL . '</ul>' . PHP_EOL;
+        return PHP_EOL.'</ul>'.PHP_EOL;
     }
 
     /**
-     * {@inheritdoc }.
+     * .
      */
     public function getMenuWithoutDropdownWrapper($item)
     {
-        return '<li' . $this->getActiveState($item) . '><a href="' . $item->getUrl() . '" ' . $item->getAttributes() . '>' . $item->getIcon() . ' <span>' . $item->title . '</span></a></li>' . PHP_EOL;
+        return '<li'.$this->getActiveState($item).'><a href="'.$item->getUrl().'" '.$item->getAttributes().'>'.$item->getIcon().' <span>'.$item->title.'</span></a></li>'.PHP_EOL;
     }
 
     /**
-     * {@inheritdoc }.
+     * .
      */
     public function getActiveState($item, $state = ' class="active"')
     {
@@ -57,9 +55,7 @@ class AdminlteCustomPresenter
     /**
      * Get active state on child items.
      *
-     * @param $item
-     * @param string $state
-     *
+     * @param  string  $state
      * @return null|string
      */
     public function getActiveStateOnChild($item, $state = 'active')
@@ -68,7 +64,7 @@ class AdminlteCustomPresenter
     }
 
     /**
-     * {@inheritdoc }.
+     * .
      */
     public function getDividerWrapper()
     {
@@ -76,52 +72,51 @@ class AdminlteCustomPresenter
     }
 
     /**
-     * {@inheritdoc }.
+     * .
      */
     public function getHeaderWrapper($item)
     {
-        return '<li class="header">' . $item->title . '</li>';
+        return '<li class="header">'.$item->title.'</li>';
     }
 
     /**
-     * {@inheritdoc }.
+     * .
      */
     public function getMenuWithDropDownWrapper($item)
     {
-        return '<li class="treeview' . $this->getActiveStateOnChild($item, ' active') . '" ' . $item->getAttributes() . '>
+        return '<li class="treeview'.$this->getActiveStateOnChild($item, ' active').'" '.$item->getAttributes().'>
 		          <a href="#">
-					' . $item->getIcon() . ' <span>' . $item->title . '</span>
+					'.$item->getIcon().' <span>'.$item->title.'</span>
                     <span class="pull-right-container">
                       <i class="fa fa-angle-left pull-right"></i>
                     </span>
 			      </a>
 			      <ul class="treeview-menu">
-			      	' . $this->getChildMenuItems($item) . '
+			      	'.$this->getChildMenuItems($item).'
 			      </ul>
 		      	</li>'
-        . PHP_EOL;
+        .PHP_EOL;
     }
 
     /**
      * Get multilevel menu wrapper.
      *
-     * @param \Nwidart\Menus\MenuItem $item
-     *
+     * @param  \Nwidart\Menus\MenuItem  $item
      * @return string`
      */
     public function getMultiLevelDropdownWrapper($item)
     {
-        return '<li class="treeview' . $this->getActiveStateOnChild($item, ' active') . '">
+        return '<li class="treeview'.$this->getActiveStateOnChild($item, ' active').'">
 		          <a href="#">
-					' . $item->getIcon() . ' <span>' . $item->title . '</span>
+					'.$item->getIcon().' <span>'.$item->title.'</span>
 			      	<span class="pull-right-container">
                       <i class="fa fa-angle-left pull-right"></i>
                     </span>
 			      </a>
 			      <ul class="treeview-menu">
-			      	' . $this->getChildMenuItems($item) . '
+			      	'.$this->getChildMenuItems($item).'
 			      </ul>
 		      	</li>'
-        . PHP_EOL;
+        .PHP_EOL;
     }
 }

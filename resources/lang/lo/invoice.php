@@ -35,7 +35,7 @@ return [
     'header_text' => 'ຫໍ້ຄວາມສ່ວນຫົວ',
     'invoice_no_prefix' => 'ໃບແຈ້ງໜີ້ ເລກທີ. ປ້າຍກຳກັບ',
     'invoice_heading' => 'ຫົວຂໍ້ໃບແຈ້ງໜີ້',
-    'sub_total_label' =>'ປ້າຍກຳກັບຍ່ອຍ',
+    'sub_total_label' => 'ປ້າຍກຳກັບຍ່ອຍ',
     'discount_label' => 'ປ້າຍກຳກັບສ່ວນຫຼຸດ',
     'tax_label' => 'ປ້າຍກຳກັບພາສີ ',
     'total_label' => 'ປ້າຍກຳກັບທັງໝົດ',
@@ -64,5 +64,5 @@ return [
     'show_payments' => 'ສະແດງຂໍ້ມູນການຊໍາລະເງິນ',
     'show_customer' => 'ສະແດງຂໍ້ມູນລູກຄ້າ',
     'paid_label' => 'ຈຳນວນປ້າຍກຳກັບທີ່ຊໍາລະແລ້ວ',
-    'customer_label' => 'ປ້າຍກຳກັບລູກຄ້າ'
+    'customer_label' => 'ປ້າຍກຳກັບລູກຄ້າ',
 ];

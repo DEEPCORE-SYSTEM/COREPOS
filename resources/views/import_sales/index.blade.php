@@ -11,45 +11,49 @@
 <!-- Main content -->
 <section class="content">
     @if (session('notification') || !empty($notification))
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    @if(!empty($notification['msg']))
-                        {{$notification['msg']}}
-                    @elseif(session('notification.msg'))
-                        {{ session('notification.msg') }}
-                    @endif
-                </div>
-            </div>  
-        </div>     
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                @if(!empty($notification['msg']))
+                {{$notification['msg']}}
+                @elseif(session('notification.msg'))
+                {{ session('notification.msg') }}
+                @endif
+            </div>
+        </div>
+    </div>
     @endif
     <div class="row">
         <div class="col-md-12">
             @component('components.widget')
-                {!! Form::open(['url' => action('ImportSalesController@preview'), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
-                    <div class="row">
-                        <div class="col-sm-6">
+            <form action="{{ action('ImportSalesController@preview') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="row">
+                    <div class="col-sm-6">
                         <div class="col-sm-8">
                             <div class="form-group">
-                                {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
-                                {!! Form::file('sales', ['required' => 'required']); !!}
-                              </div>
+                                <label for="sales">@lang('product.file_to_import'):</label>
+                                <input type="file" name="sales" id="sales" required>
+                            </div>
                         </div>
                         <div class="col-sm-4">
-                        <br>
+                            <br>
                             <button type="submit" class="btn btn-primary">@lang('lang_v1.upload_and_review')</button>
                         </div>
-                        </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <br>
-                            <a href="{{ asset('files/import_sales_template.xlsx') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
-                        </div>
-                    </div>
+                </div>
 
-                {!! Form::close() !!}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <br>
+                        <a href="{{ asset('files/import_sales_template.xlsx') }}" class="btn btn-success" download>
+                            <i class="fa fa-download"></i> @lang('lang_v1.download_template_file')
+                        </a>
+                    </div>
+                </div>
+            </form>
+
             @endcomponent
         </div>
     </div>
@@ -78,14 +82,14 @@
                                 <th>@lang('lang_v1.instructions')</th>
                             </tr>
                             @foreach($import_fields as $key => $value)
-                                <tr>
-                                    <td>
-                                        {{$value['label']}}
-                                    </td>
-                                    <td>
-                                        <small>{{$value['instruction'] ?? ''}}</small>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td>
+                                    {{$value['label']}}
+                                </td>
+                                <td>
+                                    <small>{{$value['instruction'] ?? ''}}</small>
+                                </td>
+                            </tr>
                             @endforeach
                         </table>
                     </td>
@@ -105,26 +109,28 @@
                         <th>@lang('business.created_by')</th>
                         <th>@lang('lang_v1.invoices')</th>
                         @can('sell.delete')
-                            <th>@lang('messages.action')</th>
+                        <th>@lang('messages.action')</th>
                         @endcan
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($imported_sales_array as $key => $value)
-                        <tr>
-                            <td>{{$key}}</td>
-                            <td>{{@format_datetime($value['import_time'])}}</td>
-                            <td>{{$value['created_by']}}</td>
-                            <td>
-                                {{implode(', ', $value['invoices'])}} <br>
-                                <p class="text-muted text-right">
+                    <tr>
+                        <td>{{$key}}</td>
+                        <td>{{@format_datetime($value['import_time'])}}</td>
+                        <td>{{$value['created_by']}}</td>
+                        <td>
+                            {{implode(', ', $value['invoices'])}} <br>
+                            <p class="text-muted text-right">
                                 <small>(@lang('sale.total'): {{count($value['invoices'])}})</small>
-                                </p>
-                            </td>
-                            @can('sell.delete')
-                                <td><a href="{{action('ImportSalesController@revertSaleImport', $key)}}" class="btn btn-xs btn-danger revert_import"><i class="fas fa-undo"></i> @lang('lang_v1.revert_import')</a></td>
-                            @endcan
-                        </tr>
+                            </p>
+                        </td>
+                        @can('sell.delete')
+                        <td><a href="{{action('ImportSalesController@revertSaleImport', $key)}}"
+                                class="btn btn-xs btn-danger revert_import"><i class="fas fa-undo"></i>
+                                @lang('lang_v1.revert_import')</a></td>
+                        @endcan
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -135,20 +141,20 @@
 @stop
 @section('javascript')
 <script type="text/javascript">
-    $(document).on('click', 'a.revert_import', function(e){
-        e.preventDefault();
-        swal({
-            title: LANG.sure,
-            icon: 'warning',
-            buttons: true,
-            dangerMode: true,
-        }).then(willDelete => {
-            if (willDelete) {
-                window.location = $(this).attr('href');
-            } else {
-                return false;
-            }
-        });
+$(document).on('click', 'a.revert_import', function(e) {
+    e.preventDefault();
+    swal({
+        title: LANG.sure,
+        icon: 'warning',
+        buttons: true,
+        dangerMode: true,
+    }).then(willDelete => {
+        if (willDelete) {
+            window.location = $(this).attr('href');
+        } else {
+            return false;
+        }
     });
+});
 </script>
 @endsection

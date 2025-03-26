@@ -27,5 +27,5 @@ return [
     'payment_dues' => 'Plati la termen',
     'due_amount' => 'Due Amount',
     'stock_expiry_alert' => 'Alerta expirate',
-    'todays_profit' => "Profit azi",
-    ];
+    'todays_profit' => 'Profit azi',
+];

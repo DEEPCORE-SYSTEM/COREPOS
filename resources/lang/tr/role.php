@@ -17,7 +17,7 @@ return [
     'supplier' => 'Tedarikçi',
     'customer' => 'Müşteri',
     'purchase' => 'Satınalma ve Stok Ayarlama',
-    'report' =>'Rapor',
+    'report' => 'Rapor',
 
     'user.view' => 'Kullanıcı görüntüleme',
     'user.create' => 'Kullanıcı Ekleme',
@@ -86,7 +86,7 @@ return [
     'brand' => 'Marka',
     'tax_rate' => 'Vergi oranı',
     'unit' => 'Birim',
-    'access_locations' =>'Şubelere Erişim',
+    'access_locations' => 'Şubelere Erişim',
     'all_locations' => 'Tüm Şubeler',
     'dashboard' => 'Ana Sayfa',
     'dashboard.data' => 'Ana Sayfa Datalarını Görüntüleme',

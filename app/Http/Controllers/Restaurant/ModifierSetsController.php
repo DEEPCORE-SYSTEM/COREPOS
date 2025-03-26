@@ -3,34 +3,33 @@
 namespace App\Http\Controllers\Restaurant;
 
 use App\Models\Product;
-
 use App\Utils\ProductUtil;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-
 use Illuminate\Support\Facades\DB;
 
 class ModifierSetsController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $productUtil;
 
     /**
      * Constructor
      *
-     * @param ProductUtils $product
+     * @param  ProductUtils  $product
      * @return void
      */
     public function __construct(ProductUtil $productUtil)
     {
         $this->productUtil = $productUtil;
     }
+
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function index()
@@ -39,8 +38,8 @@ class ModifierSetsController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $modifer_set = Product::where('business_id', $business_id)
-                            ->where('type', 'modifier')
-                            ->with(['variations', 'modifier_products']);
+                ->where('type', 'modifier')
+                ->with(['variations', 'modifier_products']);
 
             return \Datatables::of($modifer_set)
                 ->addColumn(
@@ -63,6 +62,7 @@ class ModifierSetsController extends Controller
                     foreach ($row->modifier_products as $product) {
                         $products[] = $product->name;
                     }
+
                     return implode(',  ', $products);
                 })
                 ->editColumn('variations', function ($row) {
@@ -70,6 +70,7 @@ class ModifierSetsController extends Controller
                     foreach ($row->variations as $modifier) {
                         $modifiers[] = $modifier->name;
                     }
+
                     return implode(', ', $modifiers);
                 })
                 ->removeColumn('id')
@@ -82,26 +83,27 @@ class ModifierSetsController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
     {
-        if (!auth()->user()->can('product.create')) {
+        if (! auth()->user()->can('product.create')) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         return view('restaurant.modifier_sets.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     * @param  Request $request
+     *
      * @return Response
      */
     public function store(Request $request)
     {
         try {
-            if (!auth()->user()->can('product.create')) {
+            if (! auth()->user()->can('product.create')) {
                 abort(403, 'Unauthorized action.');
             }
 
@@ -115,7 +117,7 @@ class ModifierSetsController extends Controller
                 'sku' => ' ',
                 'tax_type' => 'inclusive',
                 'business_id' => $business_id,
-                'created_by' => $user_id
+                'created_by' => $user_id,
             ];
 
             DB::beginTransaction();
@@ -140,18 +142,18 @@ class ModifierSetsController extends Controller
             $modifiers_data = [];
             $modifiers_data[] = [
                 'name' => 'DUMMY',
-                'variations' => $modifers
+                'variations' => $modifers,
             ];
             $this->productUtil->createVariableProductVariations($modifer_set->id, $modifiers_data);
 
             DB::commit();
 
-            $output = ['success' => 1, 'msg' => __("lang_v1.added_success")];
+            $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => 0, 'msg' => __("messages.something_went_wrong")];
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => 0, 'msg' => __('messages.something_went_wrong')];
         }
 
         return $output;
@@ -159,6 +161,7 @@ class ModifierSetsController extends Controller
 
     /**
      * Show the specified resource.
+     *
      * @return Response
      */
     public function show()
@@ -168,11 +171,12 @@ class ModifierSetsController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
      * @return Response
      */
     public function edit($id, Request $request)
     {
-        if (!auth()->user()->can('product.update')) {
+        if (! auth()->user()->can('product.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -180,27 +184,27 @@ class ModifierSetsController extends Controller
             $business_id = $request->session()->get('user.business_id');
 
             $modifer_set = Product::where('business_id', $business_id)
-                            ->where('id', $id)
-                            ->with(['variations'])
-                            ->first();
+                ->where('id', $id)
+                ->with(['variations'])
+                ->first();
 
             return view('restaurant.modifier_sets.edit')
                 ->with(compact('modifer_set'));
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => 0, 'msg' => __("messages.something_went_wrong")];
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => 0, 'msg' => __('messages.something_went_wrong')];
         }
     }
 
     /**
      * Update the specified resource in storage.
-     * @param  Request $request
+     *
      * @return Response
      */
     public function update($id, Request $request)
     {
-        if (!auth()->user()->can('product.update')) {
+        if (! auth()->user()->can('product.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -212,12 +216,12 @@ class ModifierSetsController extends Controller
             $user_id = $request->session()->get('user.id');
 
             $modifer_set = Product::where('business_id', $business_id)
-                    ->where('id', $id)
-                    ->where('type', 'modifier')
-                    ->first();
+                ->where('id', $id)
+                ->where('type', 'modifier')
+                ->first();
             $modifer_set->update(['name' => $input['name']]);
 
-            //Get the dummy product variation
+            // Get the dummy product variation
             $product_variation = $modifer_set->product_variations()->first();
 
             $modifiers_data[$product_variation->id]['name'] = $product_variation->name;
@@ -225,8 +229,8 @@ class ModifierSetsController extends Controller
             $variations_edit = [];
             $variations = [];
 
-            //Set existing variations
-            if (!empty($input['modifier_name_edit'])) {
+            // Set existing variations
+            if (! empty($input['modifier_name_edit'])) {
                 $modifier_name_edit = $input['modifier_name_edit'];
                 $modifier_price_edit = $input['modifier_price_edit'];
 
@@ -241,8 +245,8 @@ class ModifierSetsController extends Controller
                     }
                 }
             }
-            //Set new variations
-            if (!empty($input['modifier_name'])) {
+            // Set new variations
+            if (! empty($input['modifier_name'])) {
                 foreach ($input['modifier_name'] as $key => $value) {
                     $variations[] = [
                         'value' => $value,
@@ -255,19 +259,19 @@ class ModifierSetsController extends Controller
                 }
             }
 
-            //Update variations
+            // Update variations
             $modifiers_data[$product_variation->id]['variations_edit'] = $variations_edit;
             $modifiers_data[$product_variation->id]['variations'] = $variations;
             $this->productUtil->updateVariableProductVariations($modifer_set->id, $modifiers_data);
 
             DB::commit();
 
-            $output = ['success' => 1, 'msg' => __("lang_v1.updated_success")];
+            $output = ['success' => 1, 'msg' => __('lang_v1.updated_success')];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => 0, 'msg' => __("messages.something_went_wrong")];
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => 0, 'msg' => __('messages.something_went_wrong')];
         }
 
         return $output;
@@ -275,11 +279,12 @@ class ModifierSetsController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @return Response
      */
     public function destroy($id, Request $request)
     {
-        if (!auth()->user()->can('product.delete')) {
+        if (! auth()->user()->can('product.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -294,12 +299,12 @@ class ModifierSetsController extends Controller
 
             DB::commit();
 
-            $output = ['success' => 1, 'msg' => __("lang_v1.deleted_success")];
+            $output = ['success' => 1, 'msg' => __('lang_v1.deleted_success')];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => 0, 'msg' => __("messages.something_went_wrong")];
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => 0, 'msg' => __('messages.something_went_wrong')];
         }
 
         return $output;

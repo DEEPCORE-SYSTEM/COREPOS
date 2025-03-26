@@ -30,7 +30,7 @@ return [
     'close_register' => 'Register ditutup',
     'total_card_slips' => 'Total slip kartu',
     'total_cheques' => 'Total cek',
-    'closing_note' =>'Catatan Penutup',
+    'closing_note' => 'Catatan Penutup',
     'close_success' => 'Register berhasil ditutup',
     'open' => 'Buka',
     'close' => 'Tutup',

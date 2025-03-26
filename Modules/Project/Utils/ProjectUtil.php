@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Project\Utils;
 
 use App\Models\User;
@@ -13,16 +14,16 @@ class ProjectUtil extends Util
     /**
      * generate task id
      *
-     * @param $business_id, $project_id
+     * @param  $business_id,  $project_id
      * @return string
      */
     public function generateTaskId($business_id, $project_id)
     {
         $project = Project::withCount('tasks')
-                        ->where('business_id', $business_id)
-                        ->findOrfail($project_id);
+            ->where('business_id', $business_id)
+            ->findOrfail($project_id);
 
-        $task_id_prefix = !empty($project->settings['task_id_prefix']) ? $project->settings['task_id_prefix'] : '#';
+        $task_id_prefix = ! empty($project->settings['task_id_prefix']) ? $project->settings['task_id_prefix'] : '#';
 
         return $task_id_prefix.($project->tasks_count + 1);
     }
@@ -30,23 +31,19 @@ class ProjectUtil extends Util
     /**
      * check if the user is project lead.
      *
-     * @param $user_id
-     * @param $project_id
      * @return bool
      */
     public function isProjectLead($user_id, $project_id)
     {
         $project = Project::where('lead_id', $user_id)
-                    ->find($project_id);
+            ->find($project_id);
 
-        return !empty($project);
+        return ! empty($project);
     }
 
     /**
      * check if the user is project member.
      *
-     * @param $user_id
-     * @param $project_id
      * @return bool
      */
     public function isProjectMember($user_id, $project_id)
@@ -54,9 +51,9 @@ class ProjectUtil extends Util
         $project = Project::with(['members' => function ($query) use ($user_id) {
             $query->where('user_id', $user_id);
         }])
-        ->find($project_id);
+            ->find($project_id);
 
-        return !empty($project->members);
+        return ! empty($project->members);
     }
 
     /**
@@ -67,7 +64,7 @@ class ProjectUtil extends Util
      */
     public function notifyUsersAboutAssignedProject($members, $project)
     {
-        if (!empty($members)) {
+        if (! empty($members)) {
             $notifiable_users = User::find($members);
             Notification::send($notifiable_users, new NewProjectAssignedNotification($project));
         }
@@ -81,7 +78,7 @@ class ProjectUtil extends Util
      */
     public function notifyUsersAboutAssignedTask($members, $task)
     {
-        if (!empty($members)) {
+        if (! empty($members)) {
             $notifiable_users = User::find($members);
             Notification::send($notifiable_users, new NewTaskAssignedNotification($task));
         }
@@ -90,6 +87,7 @@ class ProjectUtil extends Util
     /**
      * check if member can crud.
      * task
+     *
      * @return bool
      */
     public function canMemberCrudTask($business_id, $user_id, $project_id)
@@ -109,6 +107,7 @@ class ProjectUtil extends Util
     /**
      * check if member can crud.
      * docs & notes
+     *
      * @return bool
      */
     public function canMemberCrudNotes($business_id, $user_id, $project_id)
@@ -128,6 +127,7 @@ class ProjectUtil extends Util
     /**
      * check if member can crud.
      * rime log
+     *
      * @return bool
      */
     public function canMemberCrudTimelog($business_id, $user_id, $project_id)
@@ -146,12 +146,13 @@ class ProjectUtil extends Util
 
     /**
      * return project
+     *
      * @return object
      */
     public function getProject($business_id, $project_id)
     {
         $project = Project::where('business_id', $business_id)
-                        ->find($project_id);
+            ->find($project_id);
 
         return $project;
     }

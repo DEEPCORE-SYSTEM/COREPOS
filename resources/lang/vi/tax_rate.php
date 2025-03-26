@@ -27,6 +27,6 @@ return [
     'tax_groups' => 'Nhóm thuế',
     'edit_tax_group' => 'Sửa nhóm thuế',
     'sub_taxes' => 'Thuế phụ',
-    'can_not_be_deleted' => 'Thuế này thuộc về một số nhóm thuế'
+    'can_not_be_deleted' => 'Thuế này thuộc về một số nhóm thuế',
 
 ];

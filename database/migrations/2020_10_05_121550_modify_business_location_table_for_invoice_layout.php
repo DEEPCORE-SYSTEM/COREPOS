@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 use App\Models\BusinessLocation;
-use App\Models\InvoiceLayout;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ModifyBusinessLocationTableForInvoiceLayout extends Migration
 {
@@ -21,7 +20,7 @@ class ModifyBusinessLocationTableForInvoiceLayout extends Migration
         });
 
         BusinessLocation::whereNotNull('id')->update([
-            "sale_invoice_layout_id" => DB::raw("invoice_layout_id"),
+            'sale_invoice_layout_id' => DB::raw('invoice_layout_id'),
         ]);
     }
 

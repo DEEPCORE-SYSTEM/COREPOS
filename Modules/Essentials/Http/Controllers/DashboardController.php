@@ -2,29 +2,27 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\User;
+use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Essentials\Entities\EssentialsLeave;
-use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsAttendance;
-use App\Models\User;
-use App\Models\Category;
-use App\Utils\ModuleUtil;
-use Carbon\Carbon;
+use Modules\Essentials\Entities\EssentialsHoliday;
+use Modules\Essentials\Entities\EssentialsLeave;
 
 class DashboardController extends Controller
 {
     /**
      * All Utils instance.
-     *
      */
     protected $moduleUtil;
 
     /**
      * Constructor
      *
-     * @param ModuleUtil $moduleUtil
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil)
@@ -34,6 +32,7 @@ class DashboardController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function hrmDashboard()
@@ -45,24 +44,24 @@ class DashboardController extends Controller
         $user_id = auth()->user()->id;
 
         $users = User::where('business_id', $business_id)
-                    ->user()
-                    ->get();
+            ->user()
+            ->get();
 
         $departments = Category::where('business_id', $business_id)
-                            ->where('category_type', 'hrm_department')
-                            ->get();
+            ->where('category_type', 'hrm_department')
+            ->get();
         $users_by_dept = $users->groupBy('essentials_department_id');
 
         $today = new \Carbon('today');
 
         $one_month_from_today = Carbon::now()->addMonth();
         $leaves = EssentialsLeave::where('business_id', $business_id)
-                            ->where('status', 'approved')
-                            ->whereDate('end_date', '>=', $today->format('Y-m-d'))
-                            ->whereDate('start_date', '<=', $one_month_from_today->format('Y-m-d'))
-                            ->with(['user', 'leave_type'])
-                            ->orderBy('start_date', 'asc')
-                            ->get();
+            ->where('status', 'approved')
+            ->whereDate('end_date', '>=', $today->format('Y-m-d'))
+            ->whereDate('start_date', '<=', $one_month_from_today->format('Y-m-d'))
+            ->with(['user', 'leave_type'])
+            ->orderBy('start_date', 'asc')
+            ->get();
 
         $todays_leaves = [];
         $upcoming_leaves = [];
@@ -78,21 +77,21 @@ class DashboardController extends Controller
                 if ($leave->user_id == $user_id) {
                     $users_leaves[] = $leave;
                 }
-            } else if ($today->lt($leave_start) && $leave_start->lte($one_month_from_today)) {
+            } elseif ($today->lt($leave_start) && $leave_start->lte($one_month_from_today)) {
                 $upcoming_leaves[] = $leave;
-                
+
                 if ($leave->user_id == $user_id) {
                     $users_leaves[] = $leave;
                 }
             }
         }
 
-        $holidays_query = EssentialsHoliday::where('essentials_holidays.business_id', 
-                                $business_id)
-                                ->whereDate('end_date', '>=', $today->format('Y-m-d'))
-                                ->whereDate('start_date', '<=', $one_month_from_today->format('Y-m-d'))
-                                ->orderBy('start_date', 'asc')
-                                ->with(['location']);
+        $holidays_query = EssentialsHoliday::where('essentials_holidays.business_id',
+            $business_id)
+            ->whereDate('end_date', '>=', $today->format('Y-m-d'))
+            ->whereDate('start_date', '<=', $one_month_from_today->format('Y-m-d'))
+            ->orderBy('start_date', 'asc')
+            ->with(['location']);
 
         $permitted_locations = auth()->user()->permitted_locations();
         if ($permitted_locations != 'all') {
@@ -112,7 +111,7 @@ class DashboardController extends Controller
 
             if ($today->gte($holiday_start) && $today->lte($holiday_end)) {
                 $todays_holidays[] = $holiday;
-            } else if ($today->lt($holiday_start) && $holiday_start->lte($one_month_from_today)) {
+            } elseif ($today->lt($holiday_start) && $holiday_start->lte($one_month_from_today)) {
                 $upcoming_holidays[] = $holiday;
             }
         }
@@ -120,18 +119,19 @@ class DashboardController extends Controller
         $todays_attendances = [];
         if ($is_admin) {
             $todays_attendances = EssentialsAttendance::where('business_id', $business_id)
-                                ->whereDate('clock_in_time', Carbon::now()->format('Y-m-d'))
-                                ->with(['employee'])
-                                ->orderBy('clock_in_time', 'asc')
-                                ->get();
+                ->whereDate('clock_in_time', Carbon::now()->format('Y-m-d'))
+                ->with(['employee'])
+                ->orderBy('clock_in_time', 'asc')
+                ->get();
         }
 
         return view('essentials::dashboard.hrm_dashboard')
-                ->with(compact('users', 'departments', 'users_by_dept', 'todays_holidays', 'todays_leaves', 'upcoming_leaves', 'is_admin', 'users_leaves', 'upcoming_holidays', 'todays_attendances'));
+            ->with(compact('users', 'departments', 'users_by_dept', 'todays_holidays', 'todays_leaves', 'upcoming_leaves', 'is_admin', 'users_leaves', 'upcoming_holidays', 'todays_attendances'));
     }
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function essentialsDashboard()
@@ -141,6 +141,7 @@ class DashboardController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
@@ -150,7 +151,7 @@ class DashboardController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Response
      */
     public function store(Request $request)
@@ -160,7 +161,8 @@ class DashboardController extends Controller
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -170,7 +172,8 @@ class DashboardController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
@@ -180,8 +183,8 @@ class DashboardController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function update(Request $request, $id)
@@ -191,7 +194,8 @@ class DashboardController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)

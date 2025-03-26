@@ -11,47 +11,81 @@
 
 <!-- Main content -->
 <section class="content no-print">
-    @component('components.filters', ['title' => __('report.filters')])
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('sell_list_filter_location_id',  __('purchase.business_location') . ':') !!}
-
-                {!! Form::select('sell_list_filter_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all') ]); !!}
-            </div>
+    {{-- Componente de Filtros --}}
+    <div class="box box-solid">
+        <div class="box-header">
+            <h3 class="box-title">{{ __('report.filters') }}</h3>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('sell_list_filter_customer_id',  __('contact.customer') . ':') !!}
-                {!! Form::select('sell_list_filter_customer_id', $customers, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+        <div class="box-body row">
+            {{-- Filtro por ubicación de negocio --}}
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="sell_list_filter_location_id">{{ __('purchase.business_location') }}:</label>
+                    <select id="sell_list_filter_location_id" name="sell_list_filter_location_id" class="form-control select2" style="width:100%">
+                        <option value="">{{ __('lang_v1.all') }}</option>
+                        @foreach($business_locations as $id => $location)
+                            <option value="{{ $id }}">{{ $location }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('sell_list_filter_date_range', __('report.date_range') . ':') !!}
-                {!! Form::text('sell_list_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+            
+            {{-- Filtro por cliente --}}
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="sell_list_filter_customer_id">{{ __('contact.customer') }}:</label>
+                    <select id="sell_list_filter_customer_id" name="sell_list_filter_customer_id" class="form-control select2" style="width:100%">
+                        <option value="">{{ __('lang_v1.all') }}</option>
+                        @foreach($customers as $id => $customer)
+                            <option value="{{ $id }}">{{ $customer }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-        </div>
-        @can('access_sell_return')
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('created_by',  __('report.user') . ':') !!}
-                {!! Form::select('created_by', $sales_representative, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+            
+            {{-- Filtro por rango de fechas --}}
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="sell_list_filter_date_range">{{ __('report.date_range') }}:</label>
+                    <input type="text" id="sell_list_filter_date_range" name="sell_list_filter_date_range" class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
+                </div>
             </div>
+            
+            {{-- Filtro por usuario que realizó la venta (solo si tiene permiso) --}}
+            @can('access_sell_return')
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="created_by">{{ __('report.user') }}:</label>
+                        <select id="created_by" name="created_by" class="form-control select2" style="width:100%">
+                            @foreach($sales_representative as $id => $user)
+                                <option value="{{ $id }}">{{ $user }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endcan
         </div>
-        @endcan
-    @endcomponent
-    @component('components.widget', ['class' => 'box-primary', 'title' => __('lang_v1.sell_return')])
-        @include('sell_return.partials.sell_return_list')
-    @endcomponent
-    <div class="modal fade payment_modal" tabindex="-1" role="dialog" 
-        aria-labelledby="gridSystemModalLabel">
     </div>
 
-    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" 
-        aria-labelledby="gridSystemModalLabel">
+    {{-- Componente de Lista de Devoluciones --}}
+    <div class="box box-primary">
+        <div class="box-header">
+            <h3 class="box-title">{{ __('lang_v1.sell_return') }}</h3>
+        </div>
+        <div class="box-body">
+            {{-- Se incluye la lista de devoluciones de venta --}}
+            @include('sell_return.partials.sell_return_list')
+        </div>
+    </div>
+
+    {{-- Modales para pagos --}}
+    <div class="modal fade payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+
+    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
 </section>
+
 
 <!-- /.content -->
 @stop

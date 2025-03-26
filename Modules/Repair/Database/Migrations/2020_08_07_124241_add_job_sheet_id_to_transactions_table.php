@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddJobSheetIdToTransactionsTable extends Migration
 {
@@ -19,8 +19,8 @@ class AddJobSheetIdToTransactionsTable extends Migration
                 ->after('repair_model_id');
 
             $table->foreign('repair_job_sheet_id')
-                    ->references('id')->on('repair_job_sheets')
-                    ->onDelete('cascade');
+                ->references('id')->on('repair_job_sheets')
+                ->onDelete('cascade');
         });
     }
 

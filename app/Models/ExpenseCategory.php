@@ -13,7 +13,6 @@ class ExpenseCategory extends Model
      *
      * @var array
      */
-    
 
     /**
      * The attributes that aren't mass assignable.

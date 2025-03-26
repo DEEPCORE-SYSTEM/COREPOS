@@ -25,11 +25,11 @@ class CreateVariationsTable extends Migration
             $table->decimal('dpp_inc_tax', 22, 4)->default(0);
             $table->decimal('profit_percent', 22, 4)->default(0);
             $table->decimal('default_sell_price', 22, 4)->nullable();
-            $table->decimal('sell_price_inc_tax', 22, 4)->comment("Sell price including tax")->nullable();
+            $table->decimal('sell_price_inc_tax', 22, 4)->comment('Sell price including tax')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
-            //Indexing
+            // Indexing
             $table->index('name');
             $table->index('sub_sku');
         });

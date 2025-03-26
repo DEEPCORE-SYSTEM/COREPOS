@@ -68,5 +68,5 @@ return [
     'edit_sale' => 'ແກ້ໄຂການຂາຍ',
     'shipping' => 'ການຂົນສົ່ງ',
     'shipping_details' => 'ລາຍລະອຽດການຂົນສົ່ງ',
-    'shipping_charges' => 'ຄ່າຂົນສົ່ງ'
+    'shipping_charges' => 'ຄ່າຂົນສົ່ງ',
 ];

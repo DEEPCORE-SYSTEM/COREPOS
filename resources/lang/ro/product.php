@@ -33,7 +33,7 @@ return [
     'selling_price_tax_type' => 'Include taxa?',
     'inclusive' => 'Inclusiv',
     'exclusive' => 'Exclusiv',
-    'edit_product' => "Editeaza",
+    'edit_product' => 'Editeaza',
     'default_purchase_price' => 'Pret standard',
     'default_selling_price' => 'Pret standard',
     'value' => 'Valoare',
@@ -57,5 +57,5 @@ return [
     'variations' => 'Variatii',
     'import_products' => 'Importa produse',
     'file_to_import' => 'Fisier de importat',
-    'file_imported_successfully' => 'Fisier importat cu succes'
- ];
+    'file_imported_successfully' => 'Fisier importat cu succes',
+];

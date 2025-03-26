@@ -35,7 +35,7 @@ return [
     'header_text' => 'سرلیک متن',
     'invoice_no_prefix' => 'د رسید نمبر لیبل',
     'invoice_heading' => 'د رسید سرلیک',
-    'sub_total_label' =>'فرعي جمع لیبل',
+    'sub_total_label' => 'فرعي جمع لیبل',
     'discount_label' => 'د تخفیف لیبل',
     'tax_label' => 'د مالیی لیبل',
     'total_label' => 'د جمع لیبل',
@@ -64,5 +64,5 @@ return [
     'show_payments' => 'د پیسو د ورکړې معلومات ښکاره کړئ',
     'show_customer' => 'د ګیراک معلومات ښکاره کړئ',
     'paid_label' => 'پيسې ورکړل شوې لیبل',
-    'customer_label' => 'د ګیراک لیبل'
+    'customer_label' => 'د ګیراک لیبل',
 ];

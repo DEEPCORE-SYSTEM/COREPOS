@@ -9,10 +9,15 @@ id="subscriptions_tab">
         <div class="col-md-12">
             @component('components.widget')
                 <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('subscriptions_filter_date_range', __('report.date_range') . ':') !!}
-                        {!! Form::text('subscriptions_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-                    </div>
+                <div class="form-group">
+    <!-- Etiqueta para el campo de rango de fechas -->
+    <label for="subscriptions_filter_date_range">@lang('report.date_range'):</label>
+
+    <!-- Campo de entrada de texto para seleccionar un rango de fechas -->
+    <input type="text" name="subscriptions_filter_date_range" id="subscriptions_filter_date_range" 
+        class="form-control" placeholder="@lang('lang_v1.select_a_date_range')" readonly>
+</div>
+
                 </div>
             @endcomponent
         </div>

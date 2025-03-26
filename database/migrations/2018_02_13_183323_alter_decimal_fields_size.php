@@ -41,7 +41,7 @@ class AlterDecimalFieldsSize extends Migration
         // DB::statement("ALTER TABLE cash_registers MODIFY COLUMN closing_amount DECIMAL(20,2) NOT NULL DEFAULT 0");
 
         // DB::statement("ALTER TABLE variation_location_details MODIFY COLUMN qty_available DECIMAL(20,2)");
-        
+
         // DB::statement("ALTER TABLE transaction_payments MODIFY COLUMN amount DECIMAL(20,2) NOT NULL DEFAULT 0");
 
         // DB::statement("ALTER TABLE cash_register_transactions MODIFY COLUMN amount DECIMAL(20,2) NOT NULL DEFAULT 0");

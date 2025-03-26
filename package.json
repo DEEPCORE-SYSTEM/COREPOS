@@ -6,13 +6,14 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@babel/plugin-proposal-decorators": "^7.25.9",
         "@popperjs/core": "^2.11.6",
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/vite": "^4.0.0",
         "alpinejs": "^3.14.8",
         "autoprefixer": "^10.4.2",
         "axios": "^1.7.4",
-        "bootstrap": "^5.2.3",
+        "bootstrap": "^5.3.3",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.4.31",
@@ -22,6 +23,7 @@
     },
     "dependencies": {
         "admin-lte": "^4.0.0-beta3",
+        "bootstrap-datepicker": "^1.10.0",
         "vue": "^3.5.13"
     }
 }

@@ -2,15 +2,14 @@
 
 namespace Modules\Connector\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\TypesOfService;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Transformers\TypesOfServiceResource;
-use App\TypesOfService;
 
 /**
  * @group Types of service management
+ *
  * @authenticated
  *
  * APIs for managing Types of services
@@ -38,22 +37,22 @@ class TypesOfServiceController extends ApiController
             }
         ]
     }
-     * 
      */
     public function index()
     {
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        
+
         $types_of_service = TypesOfService::where('business_id', $business_id)
-                                        ->get();
+            ->get();
 
         return TypesOfServiceResource::collection($types_of_service);
     }
 
     /**
      * Get the specified types of service
+     *
      * @urlParam types_of_service required comma separated ids of required types of services Example: 1
      *
      * @response {
@@ -83,8 +82,8 @@ class TypesOfServiceController extends ApiController
         $types_of_service_ids = explode(',', $types_of_service_ids);
 
         $types_of_service = TypesOfService::where('business_id', $business_id)
-                        ->whereIn('id', $types_of_service_ids)
-                        ->get();
+            ->whereIn('id', $types_of_service_ids)
+            ->get();
 
         return TypesOfServiceResource::collection($types_of_service);
     }

@@ -14,19 +14,24 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-solid'])
-        {!! Form::open(['url' => action('ContactController@contactMap'), 'method' => 'get']) !!}
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="contacts">@lang('lang_v1.select_contacts')</label>
-                    <select id="contacts" class="form-control" name="contacts[]" multiple="">
-                    </select>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-            <div class="col-md-6">
-                <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
-            </div>
-        {!! Form::close() !!}
+    <form action="{{ action('ContactController@contactMap') }}" method="GET">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="contacts">@lang('lang_v1.select_contacts')</label>
+            <select id="contacts" class="form-control" name="contacts[]" multiple>
+                <!-- Aquí puedes cargar dinámicamente las opciones de contactos si es necesario -->
+            </select>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="col-md-6">
+        <!-- Botón para enviar el formulario -->
+        <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
+    </div>
+</form>
+
     @endcomponent
     @component('components.widget', ['class' => 'box-solid'])
         <script async defer src="https://maps.googleapis.com/maps/api/js?key={{$api_key}}"></script>

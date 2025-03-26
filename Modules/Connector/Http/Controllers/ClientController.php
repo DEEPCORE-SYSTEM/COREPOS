@@ -2,28 +2,30 @@
 
 namespace Modules\Connector\Http\Controllers;
 
+use App\Utils\Util;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Laravel\Passport\Passport;
-use Illuminate\Support\Str;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\Util;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Laravel\Passport\Passport;
 
 class ClientController extends Controller
 {
-    public function __construct(Util $util) {
+    public function __construct(Util $util)
+    {
         $this->util = $util;
     }
 
     /**
      * Display a listing of the resource.
+     *
      * @return Response
      */
     public function index()
     {
-        if (!auth()->user()->can('superadmin')) {
+        if (! auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -31,18 +33,19 @@ class ClientController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $clients = Passport::client()
-                    ->leftJoin('users as u', 'oauth_clients.user_id', '=', 'u.id')
-                    ->where('u.business_id', $business_id)
-                    ->where('password_client', 1)
-                    ->select('oauth_clients.*')
-                    ->get()
-                    ->makeVisible('secret');
+            ->leftJoin('users as u', 'oauth_clients.user_id', '=', 'u.id')
+            ->where('u.business_id', $business_id)
+            ->where('password_client', 1)
+            ->select('oauth_clients.*')
+            ->get()
+            ->makeVisible('secret');
 
         return view('connector::clients.index')->with(compact('clients', 'is_demo'));
     }
 
     /**
      * Show the form for creating a new resource.
+     *
      * @return Response
      */
     public function create()
@@ -52,12 +55,12 @@ class ClientController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     *
      * @return Response
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('superadmin')) {
+        if (! auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -75,14 +78,14 @@ class ClientController extends Controller
             $client->save();
 
             $output = ['success' => true,
-                            'msg' => __("lang_v1.added_success")
-                        ];
+                'msg' => __('lang_v1.added_success'),
+            ];
         } catch (\Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
+            Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
             $output = ['success' => false,
-                            'msg' => __("messages.something_went_wrong")
-                        ];
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
 
         return redirect()->back()->with('status', $output);
@@ -90,7 +93,8 @@ class ClientController extends Controller
 
     /**
      * Show the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -100,7 +104,8 @@ class ClientController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
@@ -110,8 +115,8 @@ class ClientController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function update(Request $request, $id)
@@ -121,30 +126,33 @@ class ClientController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
+     *
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('superadmin')) {
+        if (! auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $business_id = request()->session()->get('user.business_id');
         $clients = Passport::client()
-                        ->leftJoin('users as u', 'oauth_clients.user_id', '=', 'u.id')
-                        ->where('u.business_id', $business_id)
-                        ->where('oauth_clients.id', $id)
-                        ->delete();
+            ->leftJoin('users as u', 'oauth_clients.user_id', '=', 'u.id')
+            ->where('u.business_id', $business_id)
+            ->where('oauth_clients.id', $id)
+            ->delete();
 
         $output = ['success' => true,
-                            'msg' => __("lang_v1.deleted_success")
-                        ];
+            'msg' => __('lang_v1.deleted_success'),
+        ];
+
         return redirect()->back()->with('status', $output);
     }
 
-    public function regenerate(){
-        if (!auth()->user()->can('superadmin')) {
+    public function regenerate()
+    {
+        if (! auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -153,15 +161,15 @@ class ClientController extends Controller
             Artisan::call('apidoc:generate');
 
             $output = ['success' => 1,
-                    'msg' => __("lang_v1.success")
-                ];
+                'msg' => __('lang_v1.success'),
+            ];
 
         } catch (Exception $e) {
             $output = ['success' => 1,
-                    'msg' => $e->getMessage()
-                ];
+                'msg' => $e->getMessage(),
+            ];
         }
-        
+
         return redirect()->back()->with('status', $output);
     }
 }

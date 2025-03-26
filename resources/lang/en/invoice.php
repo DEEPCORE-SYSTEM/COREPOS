@@ -35,7 +35,7 @@ return [
     'header_text' => 'Header text',
     'invoice_no_prefix' => 'Invoice no. label',
     'invoice_heading' => 'Invoice heading',
-    'sub_total_label' =>'Subtotal label',
+    'sub_total_label' => 'Subtotal label',
     'discount_label' => 'Discount label',
     'tax_label' => 'Tax label',
     'total_label' => 'Total label',
@@ -64,5 +64,5 @@ return [
     'show_payments' => 'Show Payment information',
     'show_customer' => 'Show Customer information',
     'paid_label' => 'Amount Paid Label',
-    'customer_label' => 'Customer Label'
+    'customer_label' => 'Customer Label',
 ];

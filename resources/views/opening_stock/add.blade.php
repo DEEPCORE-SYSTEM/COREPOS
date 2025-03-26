@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('title', __('lang_v1.add_opening_stock'))
 
 @section('content')
@@ -10,18 +11,22 @@
 
 <!-- Main content -->
 <section class="content">
-	{!! Form::open(['url' => action('OpeningStockController@save'), 'method' => 'post', 'id' => 'add_opening_stock_form' ]) !!}
-	{!! Form::hidden('product_id', $product->id); !!}
-	@include('opening_stock.form-part')
-	<div class="row">
-		<div class="col-sm-12">
-			<button type="submit" class="btn btn-primary pull-right">@lang('messages.save')</button>
-		</div>
-	</div>
+    <form action="{{ action('OpeningStockController@save') }}" method="POST" id="add_opening_stock_form">
+        @csrf
+        <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-	{!! Form::close() !!}
+        @include('opening_stock.form-part')
+
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary pull-right">@lang('messages.save')</button>
+            </div>
+        </div>
+    </form>
 </section>
+
 @stop
+
 @section('javascript')
-	<script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
+    <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
 @endsection

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateProductVariationsTable extends Migration
 {
@@ -21,7 +21,7 @@ class CreateProductVariationsTable extends Migration
             $table->boolean('is_dummy')->default(1);
             $table->timestamps();
 
-            //Indexing
+            // Indexing
             $table->index('name');
             $table->index('product_id');
         });

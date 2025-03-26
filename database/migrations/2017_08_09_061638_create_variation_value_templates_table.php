@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateVariationValueTemplatesTable extends Migration
 {
@@ -20,7 +20,7 @@ class CreateVariationValueTemplatesTable extends Migration
             $table->foreign('variation_template_id')->references('id')->on('variation_templates')->onDelete('cascade');
             $table->timestamps();
 
-            //Indexing
+            // Indexing
             $table->index('name');
             $table->index('variation_template_id');
         });

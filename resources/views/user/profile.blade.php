@@ -14,138 +14,162 @@
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['url' => action('UserController@updatePassword'), 'method' => 'post', 'id' => 'edit_password_form',
-            'class' => 'form-horizontal' ]) !!}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="box box-solid"> <!--business info box start-->
-            <div class="box-header">
-                <div class="box-header">
-                    <h3 class="box-title"> @lang('user.change_password')</h3>
-                </div>
-            </div>
-            <div class="box-body">
-                <div class="form-group">
-                    {!! Form::label('current_password', __('user.current_password') . ':', ['class' => 'col-sm-3 control-label']) !!}
-                    <div class="col-sm-9">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-lock"></i>
-                            </span>
-                            {!! Form::password('current_password', ['class' => 'form-control','placeholder' => __('user.current_password'), 'required']); !!}
+    <form action="{{ action('UserController@updatePassword') }}" method="POST" id="edit_password_form" class="form-horizontal">
+        @csrf
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        <h3 class="box-title">@lang('user.change_password')</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="current_password" class="col-sm-3 control-label">@lang('user.current_password'):</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-lock"></i>
+                                    </span>
+                                    <input type="password" name="current_password" id="current_password" class="form-control" 
+                                           placeholder="@lang('user.current_password')" required>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    {!! Form::label('new_password', __('user.new_password') . ':', ['class' => 'col-sm-3 control-label']) !!}
-                    <div class="col-sm-9">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-lock"></i>
-                            </span>
-                            {!! Form::password('new_password', ['class' => 'form-control','placeholder' => __('user.new_password'), 'required']); !!}
+                        <div class="form-group">
+                            <label for="new_password" class="col-sm-3 control-label">@lang('user.new_password'):</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-lock"></i>
+                                    </span>
+                                    <input type="password" name="new_password" id="new_password" class="form-control" 
+                                           placeholder="@lang('user.new_password')" required>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    {!! Form::label('confirm_password', __('user.confirm_new_password') . ':', ['class' => 'col-sm-3 control-label']) !!}
-                    <div class="col-sm-9">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-lock"></i>
-                            </span>
-                            {!! Form::password('confirm_password', ['class' => 'form-control','placeholder' =>  __('user.confirm_new_password'), 'required']); !!}
+                        <div class="form-group">
+                            <label for="confirm_password" class="col-sm-3 control-label">@lang('user.confirm_new_password'):</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-lock"></i>
+                                    </span>
+                                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" 
+                                           placeholder="@lang('user.confirm_new_password')" required>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary pull-right">@lang('messages.update')</button>
-            </div>
-        </div>
-    </div>
-</div>
-{!! Form::close() !!}
-{!! Form::open(['url' => action('UserController@updateProfile'), 'method' => 'post', 'id' => 'edit_user_profile_form', 'files' => true ]) !!}
-<div class="row">
-    <div class="col-sm-8">
-        <div class="box box-solid"> <!--business info box start-->
-            <div class="box-header">
-                <div class="box-header">
-                    <h3 class="box-title"> @lang('user.edit_profile')</h3>
-                </div>
-            </div>
-            <div class="box-body">
-                <div class="form-group col-md-2">
-                    {!! Form::label('surname', __('business.prefix') . ':') !!}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-info"></i>
-                        </span>
-                        {!! Form::text('surname', $user->surname, ['class' => 'form-control','placeholder' => __('business.prefix_placeholder')]); !!}
-                    </div>
-                </div>
-                <div class="form-group col-md-5">
-                    {!! Form::label('first_name', __('business.first_name') . ':') !!}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-info"></i>
-                        </span>
-                        {!! Form::text('first_name', $user->first_name, ['class' => 'form-control','placeholder' => __('business.first_name'), 'required']); !!}
-                    </div>
-                </div>
-                <div class="form-group col-md-5">
-                    {!! Form::label('last_name', __('business.last_name') . ':') !!}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-info"></i>
-                        </span>
-                        {!! Form::text('last_name', $user->last_name, ['class' => 'form-control','placeholder' => __('business.last_name')]); !!}
-                    </div>
-                </div>
-                <div class="form-group col-md-6">
-                    {!! Form::label('email', __('business.email') . ':') !!}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-info"></i>
-                        </span>
-                        {!! Form::email('email',  $user->email, ['class' => 'form-control','placeholder' => __('business.email') ]); !!}
-                    </div>
-                </div>
-                <div class="form-group col-md-6">
-                    {!! Form::label('language', __('business.language') . ':') !!}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-info"></i>
-                        </span>
-                        {!! Form::select('language',$languages, $user->language, ['class' => 'form-control select2']); !!}
+                        <button type="submit" class="btn btn-primary pull-right">@lang('messages.update')</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        @component('components.widget', ['title' => __('lang_v1.profile_photo')])
-            @if(!empty($user->media))
-                <div class="col-md-12 text-center">
-                    {!! $user->media->thumbnail([150, 150], 'img-circle') !!}
+    </form>
+</section>
+
+
+<form action="{{ action('UserController@updateProfile') }}" method="POST" id="edit_user_profile_form" enctype="multipart/form-data">
+    @csrf
+
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <h3 class="box-title">@lang('user.edit_profile')</h3>
                 </div>
-            @endif
-            <div class="col-md-12">
-                <div class="form-group">
-                    {!! Form::label('profile_photo', __('lang_v1.upload_image') . ':') !!}
-                    {!! Form::file('profile_photo', ['id' => 'profile_photo', 'accept' => 'image/*']); !!}
-                    <small><p class="help-block">@lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])</p></small>
+                <div class="box-body">
+                    <div class="form-group col-md-2">
+                        <label for="surname">@lang('business.prefix'):</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-info"></i>
+                            </span>
+                            <input type="text" name="surname" id="surname" class="form-control" 
+                                   placeholder="@lang('business.prefix_placeholder')" value="{{ $user->surname }}">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label for="first_name">@lang('business.first_name'):</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-info"></i>
+                            </span>
+                            <input type="text" name="first_name" id="first_name" class="form-control" 
+                                   placeholder="@lang('business.first_name')" value="{{ $user->first_name }}" required>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label for="last_name">@lang('business.last_name'):</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-info"></i>
+                            </span>
+                            <input type="text" name="last_name" id="last_name" class="form-control" 
+                                   placeholder="@lang('business.last_name')" value="{{ $user->last_name }}">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">@lang('business.email'):</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-info"></i>
+                            </span>
+                            <input type="email" name="email" id="email" class="form-control" 
+                                   placeholder="@lang('business.email')" value="{{ $user->email }}">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="language">@lang('business.language'):</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-info"></i>
+                            </span>
+                            <select name="language" id="language" class="form-control select2">
+                                @foreach($languages as $key => $value)
+                                    <option value="{{ $key }}" {{ $user->language == $key ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
-        @endcomponent
+        </div>
+
+        <div class="col-md-4">
+            @component('components.widget', ['title' => __('lang_v1.profile_photo')])
+                @if(!empty($user->media))
+                    <div class="col-md-12 text-center">
+                        {!! $user->media->thumbnail([150, 150], 'img-circle') !!}
+                    </div>
+                @endif
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="profile_photo">@lang('lang_v1.upload_image'):</label>
+                        <input type="file" name="profile_photo" id="profile_photo" accept="image/*">
+                        <small>
+                            <p class="help-block">
+                                @lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])
+                            </p>
+                        </small>
+                    </div>
+                </div>
+            @endcomponent
+        </div>
     </div>
-</div>
-@include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null])
-<div class="row">
-    <div class="col-md-12 text-center">
-        <button type="submit" class="btn btn-primary btn-big">@lang('messages.update')</button>
+
+    @include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null])
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <button type="submit" class="btn btn-primary btn-big">@lang('messages.update')</button>
+        </div>
     </div>
-</div>
-{!! Form::close() !!}
+
+</form>
+
 
 </section>
 <!-- /.content -->

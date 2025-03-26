@@ -86,7 +86,7 @@ return [
     'delete_booking' => 'ລົບການຈອງ',
     'click_on_any_booking_to_view_or_change_status' => 'ກົດເຂົ້າເບິ່ງດານຈອງເພື່ອເບິ່ງລາຍລະອຽດຫລືປ່ຽນສະຖານະ',
     'double_click_on_any_day_to_add_new_booking' => ' ກົດສອງຄັ້ງໃສ່ວັນທີໃດກໍ່ໄດ້ເພື່ອເພີ່ມການຈອງໃໝ່',
-    'todays_bookings' => "ການຈອງມື້ນີ້",
+    'todays_bookings' => 'ການຈອງມື້ນີ້',
     'hello_name' => 'ສະບາຍດີ :name!',
     'booking_confirmed' => 'ການຈອງຂອງທ່ານໄດ້ຮັບການຢືນຢັນແລ້ວ.',
     'table_info' => 'ໂຕະ: :table',

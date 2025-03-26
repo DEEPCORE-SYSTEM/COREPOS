@@ -24,7 +24,7 @@ class NewTaskAssignedNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -33,35 +33,35 @@ class NewTaskAssignedNotification extends Notification
         if (isPusherEnabled()) {
             $channels[] = 'broadcast';
         }
-        
+
         return $channels;
     }
 
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', 'https://laravel.com')
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', 'https://laravel.com')
+            ->line('Thank you for using our application!');
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
             'project_task_id' => $this->task->id,
-            'project_id' => $this->task->project_id
+            'project_id' => $this->task->project_id,
         ];
     }
 
@@ -76,7 +76,7 @@ class NewTaskAssignedNotification extends Notification
         return new BroadcastMessage([
             'title' => $this->task->title,
             'body' => $this->task->body,
-            'link' => $this->task->link
+            'link' => $this->task->link,
         ]);
     }
 }

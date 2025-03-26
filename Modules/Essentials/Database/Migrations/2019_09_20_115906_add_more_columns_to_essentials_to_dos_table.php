@@ -31,18 +31,18 @@ class AddMoreColumnsToEssentialsToDosTable extends Migration
             $table->integer('user_id');
         });
 
-        //Modify status column of the existing todos
+        // Modify status column of the existing todos
         ToDo::where('is_completed', 1)
             ->update(['status' => 'completed']);
 
-        //move user_id from essentials_to_dos table to essentials_todos_users table
+        // move user_id from essentials_to_dos table to essentials_todos_users table
         $todos_users = ToDo::select('id as todo_id', 'user_id')->get()->toArray();
-        if (!empty($todos_users)) {
+        if (! empty($todos_users)) {
             DB::table('essentials_todos_users')->insert($todos_users);
         }
 
-        //Drop columns user_id and is_completed from essentials_to_dos table
-        DB::statement("ALTER TABLE essentials_to_dos DROP COLUMN is_completed, DROP COLUMN user_id");
+        // Drop columns user_id and is_completed from essentials_to_dos table
+        DB::statement('ALTER TABLE essentials_to_dos DROP COLUMN is_completed, DROP COLUMN user_id');
 
         Permission::create(['name' => 'essentials.assign_todos']);
     }

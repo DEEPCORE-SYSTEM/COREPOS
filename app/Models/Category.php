@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +14,6 @@ class Category extends Model
      *
      * @var array
      */
-    
 
     /**
      * The attributes that aren't mass assignable.
@@ -27,17 +25,17 @@ class Category extends Model
     /**
      * Combines Category and sub-category
      *
-     * @param int $business_id
+     * @param  int  $business_id
      * @return array
      */
     public static function catAndSubCategories($business_id)
     {
         $all_categories = Category::where('business_id', $business_id)
-                                ->where('category_type', 'product')
-                                ->orderBy('name', 'asc')
-                                ->get()
-                                ->toArray();
-                        
+            ->where('category_type', 'product')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->toArray();
+
         if (empty($all_categories)) {
             return [];
         }
@@ -53,7 +51,7 @@ class Category extends Model
         }
 
         $sub_cat_by_parent = [];
-        if (!empty($sub_categories)) {
+        if (! empty($sub_categories)) {
             foreach ($sub_categories as $sub_category) {
                 if (empty($sub_cat_by_parent[$sub_category['parent_id']])) {
                     $sub_cat_by_parent[$sub_category['parent_id']] = [];
@@ -64,7 +62,7 @@ class Category extends Model
         }
 
         foreach ($categories as $key => $value) {
-            if (!empty($sub_cat_by_parent[$value['id']])) {
+            if (! empty($sub_cat_by_parent[$value['id']])) {
                 $categories[$key]['sub_categories'] = $sub_cat_by_parent[$value['id']];
             }
         }
@@ -75,20 +73,20 @@ class Category extends Model
     /**
      * Category Dropdown
      *
-     * @param int $business_id
-     * @param string $type category type
+     * @param  int  $business_id
+     * @param  string  $type  category type
      * @return array
      */
     public static function forDropdown($business_id, $type)
     {
         $categories = Category::where('business_id', $business_id)
-                            ->where('parent_id', 0)
-                            ->where('category_type', $type)
-                            ->select(DB::raw('IF(short_code IS NOT NULL, CONCAT(name, "-", short_code), name) as name'), 'id')
-                            ->orderBy('name', 'asc')
-                            ->get();
+            ->where('parent_id', 0)
+            ->where('category_type', $type)
+            ->select(DB::raw('IF(short_code IS NOT NULL, CONCAT(name, "-", short_code), name) as name'), 'id')
+            ->orderBy('name', 'asc')
+            ->get();
 
-        $dropdown =  $categories->pluck('name', 'id');
+        $dropdown = $categories->pluck('name', 'id');
 
         return $dropdown;
     }
@@ -101,7 +99,7 @@ class Category extends Model
     /**
      * Scope a query to only include main categories.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeOnlyParent($query)
