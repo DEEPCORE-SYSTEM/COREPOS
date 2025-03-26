@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7d50b121f141d0125c7e212a45243291
+class ComposerStaticInit06c0904405e5b6709744e0b29a5ad386
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -2587,6 +2587,7 @@ class ComposerStaticInit7d50b121f141d0125c7e212a45243291
         'Illuminate\\Contracts\\Translation\\HasLocalePreference' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Contracts/Translation/HasLocalePreference.php',
         'Illuminate\\Contracts\\Translation\\Loader' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Contracts/Translation/Loader.php',
         'Illuminate\\Contracts\\Translation\\Translator' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Contracts/Translation/Translator.php',
+        'Illuminate\\Contracts\\Validation\\CompilableRules' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Contracts/Validation/CompilableRules.php',
         'Illuminate\\Contracts\\Validation\\DataAwareRule' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Contracts/Validation/DataAwareRule.php',
         'Illuminate\\Contracts\\Validation\\Factory' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Contracts/Validation/Factory.php',
         'Illuminate\\Contracts\\Validation\\ImplicitRule' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Contracts/Validation/ImplicitRule.php',
@@ -8377,9 +8378,9 @@ class ComposerStaticInit7d50b121f141d0125c7e212a45243291
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7d50b121f141d0125c7e212a45243291::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7d50b121f141d0125c7e212a45243291::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit7d50b121f141d0125c7e212a45243291::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit06c0904405e5b6709744e0b29a5ad386::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit06c0904405e5b6709744e0b29a5ad386::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit06c0904405e5b6709744e0b29a5ad386::$classMap;
 
         }, null, ClassLoader::class);
     }

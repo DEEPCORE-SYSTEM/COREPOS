@@ -1,7 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+use App\Http\Controllers\SellingPriceGroupController;
+
+
+
+include_once('install_r.php');
 
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
@@ -26,7 +40,12 @@ Route::middleware(['setData'])->group(function () {
         ->name('confirm_payment');
 });
 
-// Routes for authenticated users only
+
+
+Route::post('/selling-price-group/import', [SellingPriceGroupController::class, 'import'])
+    ->name('selling_price_group.import');
+
+//Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/home/get-totals', 'HomeController@getTotals');
@@ -35,7 +54,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/home/sales-payment-dues', 'HomeController@getSalesPaymentDues');
     Route::post('/attach-medias-to-model', 'HomeController@attachMediasToGivenModel')->name('attach.medias.to.model');
     Route::get('/calendar', 'HomeController@getCalendar')->name('calendar');
-
+    
     Route::post('/test-email', 'BusinessController@testEmailConfiguration');
     Route::post('/test-sms', 'BusinessController@testSmsConfiguration');
     Route::get('/business/settings', 'BusinessController@getBusinessSettings')->name('business.getBusinessSettings');
@@ -45,7 +64,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/user/update-password', 'UserController@updatePassword')->name('user.updatePassword');
 
     Route::resource('brands', 'BrandController');
-
+    
     Route::resource('payment-account', 'PaymentAccountController');
 
     Route::resource('tax-rates', 'TaxRateController');
@@ -84,7 +103,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/products/bulk-update', 'ProductController@bulkUpdate');
     Route::post('/products/bulk-update-location', 'ProductController@updateProductLocation');
     Route::get('/products/get-product-to-edit/{product_id}', 'ProductController@getProductToEdit');
-
+    
     Route::post('/products/get_sub_categories', 'ProductController@getSubCategories');
     Route::get('/products/get_sub_units', 'ProductController@getSubUnits');
     Route::post('/products/product_form_part', 'ProductController@getProductVariationFormPart');
@@ -96,7 +115,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/products/save_quick_product', 'ProductController@saveQuickProduct');
     Route::get('/products/get-combo-product-entry-row', 'ProductController@getComboProductEntryRow');
     Route::post('/products/toggle-woocommerce-sync', 'ProductController@toggleWooCommerceSync');
-
+    
     Route::resource('products', 'ProductController');
 
     Route::post('/purchases/update-status', 'PurchaseController@updateStatus');
@@ -139,16 +158,16 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/barcodes/set_default/{id}', 'BarcodeController@setDefault');
     Route::resource('barcodes', 'BarcodeController');
 
-    // Invoice schemes..
+    //Invoice schemes..
     Route::get('/invoice-schemes/set_default/{id}', 'InvoiceSchemeController@setDefault');
     Route::resource('invoice-schemes', 'InvoiceSchemeController');
 
-    // Print Labels
+    //Print Labels
     Route::get('/labels/show', 'LabelsController@show');
     Route::get('/labels/add-product-row', 'LabelsController@addProductRow');
     Route::get('/labels/preview', 'LabelsController@preview');
 
-    // Reports...
+    //Reports...
     Route::get('/reports/get-stock-by-sell-price', 'ReportController@getStockBySellingPrice');
     Route::get('/reports/purchase-report', 'ReportController@purchaseReport');
     Route::get('/reports/sale-report', 'ReportController@saleReport');
@@ -188,29 +207,29 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/reports/get-profit/{by?}', 'ReportController@getProfit');
     Route::get('/reports/items-report', 'ReportController@itemsReport');
     Route::get('/reports/get-stock-value', 'ReportController@getStockValue');
-
+    
     Route::get('business-location/activate-deactivate/{location_id}', 'BusinessLocationController@activateDeactivateLocation');
 
-    // Business Location Settings...
+    //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
         Route::get('settings', 'LocationSettingsController@index')->name('settings');
         Route::post('settings', 'LocationSettingsController@updateSettings')->name('settings_update');
     });
 
-    // Business Locations...
+    //Business Locations...
     Route::post('business-location/check-location-id', 'BusinessLocationController@checkLocationId');
     Route::resource('business-location', 'BusinessLocationController');
 
-    // Invoice layouts..
+    //Invoice layouts..
     Route::resource('invoice-layouts', 'InvoiceLayoutController');
 
-    // Expense Categories...
+    //Expense Categories...
     Route::resource('expense-categories', 'ExpenseCategoryController');
 
-    // Expenses...
+    //Expenses...
     Route::resource('expenses', 'ExpenseController');
 
-    // Transaction payments...
+    //Transaction payments...
     // Route::get('/payments/opening-balance/{contact_id}', 'TransactionPaymentController@getOpeningBalancePayments');
     Route::get('/payments/show-child-payments/{payment_id}', 'TransactionPaymentController@showChildPayments');
     Route::get('/payments/view-payment/{payment_id}', 'TransactionPaymentController@viewPayment');
@@ -219,7 +238,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/payments/pay-contact-due', 'TransactionPaymentController@postPayContactDue');
     Route::resource('payments', 'TransactionPaymentController');
 
-    // Printers...
+    //Printers...
     Route::resource('printers', 'PrinterController');
 
     Route::get('/stock-adjustments/remove-expired-stock/{purchase_line_id}', 'StockAdjustmentController@removeExpiredStock');
@@ -231,39 +250,39 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/cash-register/close-register', 'CashRegisterController@postCloseRegister');
     Route::resource('cash-register', 'CashRegisterController');
 
-    // Import products
+    //Import products
     Route::get('/import-products', 'ImportProductsController@index');
     Route::post('/import-products/store', 'ImportProductsController@store');
 
-    // Sales Commission Agent
+    //Sales Commission Agent
     Route::resource('sales-commission-agents', 'SalesCommissionAgentController');
 
-    // Stock Transfer
+    //Stock Transfer
     Route::get('stock-transfers/print/{id}', 'StockTransferController@printInvoice');
     Route::post('stock-transfers/update-status/{id}', 'StockTransferController@updateStatus');
     Route::resource('stock-transfers', 'StockTransferController');
-
+    
     Route::get('/opening-stock/add/{product_id}', 'OpeningStockController@add');
     Route::post('/opening-stock/save', 'OpeningStockController@save');
 
-    // Customer Groups
+    //Customer Groups
     Route::resource('customer-group', 'CustomerGroupController');
 
-    // Import opening stock
+    //Import opening stock
     Route::get('/import-opening-stock', 'ImportOpeningStockController@index');
     Route::post('/import-opening-stock/store', 'ImportOpeningStockController@store');
 
-    // Sell return
+    //Sell return
     Route::resource('sell-return', 'SellReturnController');
     Route::get('sell-return/get-product-row', 'SellReturnController@getProductRow');
     Route::get('/sell-return/print/{id}', 'SellReturnController@printInvoice');
     Route::get('/sell-return/add/{id}', 'SellReturnController@add');
-
-    // Backup
+    
+    //Backup
     Route::get('backup/download/{file_name}', 'BackUpController@download');
     Route::get('backup/delete/{file_name}', 'BackUpController@delete');
     Route::resource('backup', 'BackUpController', ['only' => [
-        'index', 'create', 'store',
+        'index', 'create', 'store'
     ]]);
 
     Route::get('selling-price-group/activate-deactivate/{id}', 'SellingPriceGroupController@activateDeactivate');
@@ -305,15 +324,15 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::post('/link-account', 'AccountReportsController@postLinkAccount');
         Route::get('/cash-flow', 'AccountController@cashFlow');
     });
-
+    
     Route::resource('account-types', 'AccountTypeController');
 
-    // Restaurant module
+    //Restaurant module
     Route::group(['prefix' => 'modules'], function () {
         Route::resource('tables', 'Restaurant\TableController');
         Route::resource('modifiers', 'Restaurant\ModifierSetsController');
 
-        // Map modifier to products
+        //Map modifier to products
         Route::get('/product-modifiers/{id}/edit', 'Restaurant\ProductModifierSetController@edit');
         Route::post('/product-modifiers/{id}/update', 'Restaurant\ProductModifierSetController@update');
         Route::get('/product-modifiers/product-row/{product_id}', 'Restaurant\ProductModifierSetController@product_row');
@@ -334,7 +353,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('bookings/get-todays-bookings', 'Restaurant\BookingController@getTodaysBookings');
     Route::resource('bookings', 'Restaurant\BookingController');
-
+    
     Route::resource('types-of-service', 'TypesOfServiceController');
     Route::get('sells/edit-shipping/{id}', 'SellController@editShipping');
     Route::put('sells/update-shipping/{id}', 'SellController@updateShipping');
@@ -346,11 +365,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('warranties', 'WarrantyController');
 
     Route::resource('dashboard-configurator', 'DashboardConfiguratorController')
-        ->only(['edit', 'update']);
+    ->only(['edit', 'update']);
 
     Route::get('view-media/{model_id}', 'SellController@viewMedia');
 
-    // common controller for document & note
+    //common controller for document & note
     Route::get('get-document-note-page', 'DocumentAndNoteController@getDocAndNoteIndexPage');
     Route::post('post-document-upload', 'DocumentAndNoteController@postMedia');
     Route::resource('note-documents', 'DocumentAndNoteController');
@@ -367,6 +386,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('reports/activity-log', 'ReportController@activityLog');
 });
 
+
 Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {
     Route::get('products/{id?}', 'ProductController@getProductsApi');
     Route::get('categories', 'CategoryController@getCategoriesApi');
@@ -377,7 +397,7 @@ Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {
     Route::post('orders', 'SellPosController@placeOrdersApi');
 });
 
-// common route
+//common route
 Route::middleware(['auth'])->group(function () {
     Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 });

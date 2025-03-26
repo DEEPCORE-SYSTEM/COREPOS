@@ -39,7 +39,8 @@
         <div class="col-sm-6">
             <!-- Formulario para importar precios del grupo de venta -->
             <form action="{{ route('selling_price_group.import') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+    @csrf
+    <input type="file" name="archivo">
                 <!-- Token de seguridad de Laravel -->
 
                 <div class="form-group">
