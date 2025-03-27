@@ -15,17 +15,22 @@
 		$is_discount_enabled = $pos_settings['disable_discount'] != 1 ? true : false;
 		$is_rp_enabled = session('business.enable_rp') == 1 ? true : false;
 	@endphp
-	{!! Form::open(['url' => action('SellPosController@update', [$transaction->id]), 'method' => 'post', 'id' => 'edit_pos_sell_form' ]) !!}
-	{{ method_field('PUT') }}
+	<form action="{{ action('SellPosController@update', [$transaction->id]) }}" method="POST" id="edit_pos_sell_form">
+    @method('PUT')
+
 	<div class="row mb-12">
 		<div class="col-md-12">
 			<div class="row">
 				<div class="@if(empty($pos_settings['hide_product_suggestion'])) col-md-7 @else col-md-10 col-md-offset-1 @endif no-padding pr-12">
 					<div class="box box-solid mb-12">
 						<div class="box-body pb-0">
-							{!! Form::hidden('location_id', $transaction->location_id, ['id' => 'location_id', 'data-receipt_printer_type' => !empty($location_printer_type) ? $location_printer_type : 'browser', 'data-default_payment_accounts' => $transaction->location->default_payment_accounts]); !!}
-							<!-- sub_type -->
-							{!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
+						<input type="hidden" name="location_id" id="location_id" value="{{ $transaction->location_id }}" 
+       data-receipt_printer_type="{{ !empty($location_printer_type) ? $location_printer_type : 'browser' }}" 
+       data-default_payment_accounts="{{ $transaction->location->default_payment_accounts }}">
+
+<!-- sub_type -->
+<input type="hidden" name="sub_type" value="{{ isset($sub_type) ? $sub_type : null }}">
+
 							<input type="hidden" id="item_addition_method" value="{{$business_details->item_addition_method}}">
 								@include('sale_pos.partials.pos_form_edit')
 
@@ -52,7 +57,7 @@
 		</div>
 	</div>
 	@include('sale_pos.partials.pos_form_actions', ['edit' => true])
-	{!! Form::close() !!}
+	</form>
 </section>
 
 <!-- This will be printed -->

@@ -70,10 +70,12 @@
                                     <span class="input-group-addon">
                                         <i class="fas fa-exchange-alt"></i>
                                     </span>
-                                    {!! Form::text('exchange_rate', config('constants.currency_exchange_rate'), ['class'
-                                    =>
-                                    'form-control input-sm input_number', 'placeholder' =>
-                                    __('lang_v1.currency_exchange_rate'), 'id' => 'exchange_rate']); !!}
+                                    <div class="form-group">
+                                        <label for="exchange_rate">{{ __('lang_v1.currency_exchange_rate') }}:</label>
+                                        <input type="text" name="exchange_rate" value="{{ config('constants.currency_exchange_rate') }}"
+                                            class="form-control input-sm input_number" placeholder="{{ __('lang_v1.currency_exchange_rate') }}" id="exchange_rate">
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

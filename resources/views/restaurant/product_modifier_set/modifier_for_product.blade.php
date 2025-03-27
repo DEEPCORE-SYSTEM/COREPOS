@@ -69,7 +69,7 @@
       <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
     </div>
 
-    {!! Form::close() !!}
+   </form>
 
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

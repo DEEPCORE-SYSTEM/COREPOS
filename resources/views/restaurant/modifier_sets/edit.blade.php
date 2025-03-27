@@ -1,7 +1,9 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
 
-    {!! Form::open(['url' => action('Restaurant\ModifierSetsController@update', [$modifer_set->id]), 'method' => 'PUT', 'id' => 'edit_form' ]) !!}
+  <form action="{{ action('Restaurant\ModifierSetsController@update', [$modifer_set->id]) }}" method="POST" id="edit_form">
+    @csrf
+    @method('PUT')
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -13,10 +15,12 @@
       <div class="row">
         
         <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('name', __( 'restaurant.modifier_set' ) . ':*') !!}
-            {!! Form::text('name', $modifer_set->name, ['class' => 'form-control', 'required', 'placeholder' => __( 'lang_v1.name' ) ]); !!}
-          </div>
+        <div class="form-group">
+    <label for="name">{{ __('restaurant.modifier_set') }}:*</label>
+    <input type="text" name="name" id="name" class="form-control" required 
+           placeholder="{{ __('lang_v1.name') }}" value="{{ old('name', $modifer_set->name ?? '') }}">
+</div>
+
         </div>
 
         <div class="col-sm-12">
@@ -90,7 +94,8 @@
       <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
     </div>
 
-    {!! Form::close() !!}
+    </form>
+
 
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

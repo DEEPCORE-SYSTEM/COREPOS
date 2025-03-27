@@ -1,7 +1,8 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
 
-    {!! Form::open(['url' => action('Restaurant\ProductModifierSetController@update', [$modifer_set->id]), 'method' => 'post', 'id' => 'table_add_form' ]) !!}
+  <form action="{{ action('Restaurant\ProductModifierSetController@update', [$modifer_set->id]) }}" method="POST" id="table_add_form">
+    @csrf
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -14,7 +15,7 @@
         
         <div class="col-sm-12">
           <div class="form-group">
-            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.search_product_placeholder' ), 'id' => 'search_product' ]); !!}
+          <input type="text" name="name" id="search_product" class="form-control" placeholder="{{ __('lang_v1.search_product_placeholder') }}">
           </div>
         </div>
         
@@ -46,7 +47,7 @@
       <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
     </div>
 
-    {!! Form::close() !!}
+    </form>
 
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

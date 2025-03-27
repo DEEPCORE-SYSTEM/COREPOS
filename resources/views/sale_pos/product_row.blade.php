@@ -69,7 +69,7 @@
   		@endphp
 
 		@if(!empty($discount))
-			{!! Form::hidden("products[$row_count][discount_id]", $discount->id); !!}
+		<input type="hidden" name="products[{{ $row_count }}][discount_id]" value="{{ $discount->id }}">
 		@endif
 
 		@php
@@ -288,59 +288,106 @@
 		@endif
 	</td>
 	@if(!empty($is_direct_sell))
-		@if(!empty($pos_settings['inline_service_staff']))
-			<td>
-				<div class="form-group">
-					<div class="input-group">
-						{!! Form::select("products[" . $row_count . "][res_service_staff_id]", $waiters, !empty($product->res_service_staff_id) ? $product->res_service_staff_id : null, ['class' => 'form-control select2 order_line_service_staff', 'placeholder' => __('restaurant.select_service_staff'), 'required' => (!empty($pos_settings['is_service_staff_required']) && $pos_settings['is_service_staff_required'] == 1) ? true : false ]); !!}
-					</div>
-				</div>
-			</td>
-		@endif
-		@php
-			$pos_unit_price = !empty($product->unit_price_before_discount) ? $product->unit_price_before_discount : $product->default_sell_price;
+    @if(!empty($pos_settings['inline_service_staff']))
+        <td>
+            <div class="form-group">
+                <div class="input-group">
+                    <select name="products[{{ $row_count }}][res_service_staff_id]" class="form-control select2 order_line_service_staff" 
+                        {{ !empty($pos_settings['is_service_staff_required']) && $pos_settings['is_service_staff_required'] == 1 ? 'required' : '' }}>
+                        <option value="">{{ __('restaurant.select_service_staff') }}</option>
+                        @foreach($waiters as $key => $value)
+                            <option value="{{ $key }}" {{ !empty($product->res_service_staff_id) && $product->res_service_staff_id == $key ? 'selected' : '' }}>
+                                {{ $value }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </td>
+    @endif
 
-			if(!empty($so_line)) {
-				$pos_unit_price = $so_line->unit_price_before_discount;
-			}
-		@endphp
-		<td @if(!auth()->user()->can('edit_product_price_from_sale_screen')) hide @endif">
-			<input type="text" name="products[{{$row_count}}][unit_price]" class="form-control pos_unit_price input_number mousetrap" value="{{@num_format($pos_unit_price)}}" @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$pos_unit_price}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($pos_unit_price)])}}" @endif>
-		</td>
-		<td @if(!$edit_discount) hide @endif>
-			{!! Form::text("products[$row_count][line_discount_amount]", @num_format($discount_amount), ['class' => 'form-control input_number row_discount_amount']); !!}<br>
-			{!! Form::select("products[$row_count][line_discount_type]", ['fixed' => __('lang_v1.fixed'), 'percentage' => __('lang_v1.percentage')], $discount_type , ['class' => 'form-control row_discount_type']); !!}
-			@if(!empty($discount))
-				<p class="help-block">{!! __('lang_v1.applied_discount_text', ['discount_name' => $discount->name, 'starts_at' => $discount->formated_starts_at, 'ends_at' => $discount->formated_ends_at]) !!}</p>
-			@endif
-		</td>
-		<td class="text-center {{$hide_tax}}">
-			{!! Form::hidden("products[$row_count][item_tax]", @num_format($item_tax), ['class' => 'item_tax']); !!}
-		
-			{!! Form::select("products[$row_count][tax_id]", $tax_dropdown['tax_rates'], $tax_id, ['placeholder' => 'Select', 'class' => 'form-control tax_id'], $tax_dropdown['attributes']); !!}
-		</td>
+    @php
+        $pos_unit_price = !empty($product->unit_price_before_discount) ? $product->unit_price_before_discount : $product->default_sell_price;
+        if(!empty($so_line)) {
+            $pos_unit_price = $so_line->unit_price_before_discount;
+        }
+    @endphp
 
-	@else
-		@if(!empty($warranties))
-			{!! Form::select("products[$row_count][warranty_id]", $warranties, $warranty_id, ['placeholder' => __('messages.please_select'), 'class' => 'form-control']); !!}
-		@endif
+    <td @if(!auth()->user()->can('edit_product_price_from_sale_screen')) style="display: none;" @endif>
+        <input type="text" name="products[{{ $row_count }}][unit_price]" class="form-control pos_unit_price input_number mousetrap" 
+            value="{{ num_format($pos_unit_price) }}"
+            @if(!empty($pos_settings['enable_msp'])) 
+                data-rule-min-value="{{ $pos_unit_price }}" 
+                data-msg-min-value="{{ __('lang_v1.minimum_selling_price_error_msg', ['price' => num_format($pos_unit_price)]) }}" 
+            @endif>
+    </td>
 
-		@if(!empty($pos_settings['inline_service_staff']))
-			<td>
-				<div class="form-group">
-					<div class="input-group">
-						{!! Form::select("products[" . $row_count . "][res_service_staff_id]", $waiters, !empty($product->res_service_staff_id) ? $product->res_service_staff_id : null, ['class' => 'form-control select2 order_line_service_staff', 'placeholder' => __('restaurant.select_service_staff'), 'required' => (!empty($pos_settings['is_service_staff_required']) && $pos_settings['is_service_staff_required'] == 1) ? true : false ]); !!}
-					</div>
-				</div>
-			</td>
-		@endif
-	@endif
+    <td @if(!$edit_discount) style="display: none;" @endif>
+        <input type="text" name="products[{{ $row_count }}][line_discount_amount]" class="form-control input_number row_discount_amount" value="{{ num_format($discount_amount) }}"><br>
+        <select name="products[{{ $row_count }}][line_discount_type]" class="form-control row_discount_type">
+            <option value="fixed" {{ $discount_type == 'fixed' ? 'selected' : '' }}>{{ __('lang_v1.fixed') }}</option>
+            <option value="percentage" {{ $discount_type == 'percentage' ? 'selected' : '' }}>{{ __('lang_v1.percentage') }}</option>
+        </select>
+        @if(!empty($discount))
+            <p class="help-block">{{ __('lang_v1.applied_discount_text', ['discount_name' => $discount->name, 'starts_at' => $discount->formated_starts_at, 'ends_at' => $discount->formated_ends_at]) }}</p>
+        @endif
+    </td>
+
+    <td class="text-center {{ $hide_tax }}">
+        <input type="hidden" name="products[{{ $row_count }}][item_tax]" class="item_tax" value="{{ num_format($item_tax) }}">
+        <select name="products[{{ $row_count }}][tax_id]" class="form-control tax_id">
+            <option value="">Select</option>
+            @foreach($tax_dropdown['tax_rates'] as $key => $value)
+                <option value="{{ $key }}" {{ $tax_id == $key ? 'selected' : '' }}>
+                    {{ $value }}
+                </option>
+            @endforeach
+        </select>
+    </td>
+@else
+    @if(!empty($warranties))
+        <select name="products[{{ $row_count }}][warranty_id]" class="form-control">
+            <option value="">{{ __('messages.please_select') }}</option>
+            @foreach($warranties as $key => $value)
+                <option value="{{ $key }}" {{ $warranty_id == $key ? 'selected' : '' }}>
+                    {{ $value }}
+                </option>
+            @endforeach
+        </select>
+    @endif
+
+    @if(!empty($pos_settings['inline_service_staff']))
+        <td>
+            <div class="form-group">
+                <div class="input-group">
+                    <select name="products[{{ $row_count }}][res_service_staff_id]" class="form-control select2 order_line_service_staff"
+                        {{ !empty($pos_settings['is_service_staff_required']) && $pos_settings['is_service_staff_required'] == 1 ? 'required' : '' }}>
+                        <option value="">{{ __('restaurant.select_service_staff') }}</option>
+                        @foreach($waiters as $key => $value)
+                            <option value="{{ $key }}" {{ !empty($product->res_service_staff_id) && $product->res_service_staff_id == $key ? 'selected' : '' }}>
+                                {{ $value }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </td>
+    @endif
+@endif
+
 	<td class="{{$hide_tax}}">
 		<input type="text" name="products[{{$row_count}}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number" value="{{@num_format($unit_price_inc_tax)}}" @if(!$edit_price) readonly @endif @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$unit_price_inc_tax}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($unit_price_inc_tax)])}}" @endif>
 	</td>
 	@if(!empty($common_settings['enable_product_warranty']) && !empty($is_direct_sell))
 		<td>
-			{!! Form::select("products[$row_count][warranty_id]", $warranties, $warranty_id, ['placeholder' => __('messages.please_select'), 'class' => 'form-control']); !!}
+		<select name="products[{{ $row_count }}][warranty_id]" class="form-control">
+    <option value="">{{ __('messages.please_select') }}</option>
+    @foreach($warranties as $key => $value)
+        <option value="{{ $key }}" {{ $warranty_id == $key ? 'selected' : '' }}>
+            {{ $value }}
+        </option>
+    @endforeach
+</select>
 		</td>
 	@endif
 	<td class="text-center">

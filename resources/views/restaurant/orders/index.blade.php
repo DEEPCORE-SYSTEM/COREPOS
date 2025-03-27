@@ -19,16 +19,24 @@
     @if(!$is_service_staff)
         @component('components.widget')
             <div class="col-sm-6">
-                {!! Form::open(['url' => action('Restaurant\OrderController@index'), 'method' => 'get', 'id' => 'select_service_staff_form' ]) !!}
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-user-secret"></i>
-                        </span>
-                        {!! Form::select('service_staff', $service_staff, request()->service_staff, ['class' => 'form-control select2', 'placeholder' => __('restaurant.select_service_staff'), 'id' => 'service_staff_id']); !!}
-                    </div>
-                </div>
-                {!! Form::close() !!}
+            <form action="{{ action('Restaurant\OrderController@index') }}" method="GET" id="select_service_staff_form">
+    <div class="form-group">
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-user-secret"></i>
+            </span>
+            <select name="service_staff" id="service_staff_id" class="form-control select2">
+                <option value="">{{ __('restaurant.select_service_staff') }}</option>
+                @foreach($service_staff as $key => $value)
+                    <option value="{{ $key }}" {{ request()->service_staff == $key ? 'selected' : '' }}>
+                        {{ $value }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+</form>
+
             </div>
         @endcomponent
     @endif

@@ -13,43 +13,55 @@
     <div class="row no-print">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
-              {!! Form::open(['url' => action('ReportController@getExpenseReport'), 'method' => 'get' ]) !!}
+            <form action="{{ action('ReportController@getExpenseReport') }}" method="get">
                 <div class="col-md-4">
                     <div class="form-group">
-                        {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-                        {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="location_id">{{ __('purchase.business_location') }}:</label>
+                        <select name="location_id" id="location_id" class="form-control select2" style="width:100%">
+                            @foreach($business_locations as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <div class="form-group">
-                        {!! Form::label('category_id', __('category.category').':') !!}
-                        {!! Form::select('category', $categories, null, ['placeholder' =>
-                        __('report.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'category_id']); !!}
+                        <label for="category_id">{{ __('category.category') }}:</label>
+                        <select name="category" id="category_id" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('report.all') }}</option>
+                            @foreach($categories as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <div class="form-group">
-                        {!! Form::label('trending_product_date_range', __('report.date_range') . ':') !!}
-                        {!! Form::text('date_range', null , ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'trending_product_date_range', 'readonly']); !!}
+                        <label for="trending_product_date_range">{{ __('report.date_range') }}:</label>
+                        <input type="text" name="date_range" id="trending_product_date_range" class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
                     </div>
                 </div>
+
                 <div class="col-sm-12">
-                  <button type="submit" class="btn btn-primary pull-right">@lang('report.apply_filters')</button>
-                </div> 
-                {!! Form::close() !!}
+                    <button type="submit" class="btn btn-primary pull-right">@lang('report.apply_filters')</button>
+                </div>
+            </form>
             @endcomponent
+
         </div>
     </div>
     <div class="row">
         <div class="col-xs-12">
             @component('components.widget', ['class' => 'box-primary'])
-                {!! $chart->container() !!}
+            {!! $chart->container() !!}
             @endcomponent
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-        @component('components.widget', ['class' => 'box-primary'])
+            @component('components.widget', ['class' => 'box-primary'])
             <table class="table" id="expense_report_table">
                 <thead>
                     <tr>
@@ -59,16 +71,16 @@
                 </thead>
                 <tbody>
                     @php
-                        $total_expense = 0;
+                    $total_expense = 0;
                     @endphp
                     @foreach($expenses as $expense)
-                        <tr>
-                            <td>{{$expense['category'] ?? __('report.others')}}</td>
-                            <td><span class="display_currency" data-currency_symbol="true">{{$expense['total_expense']}}</span></td>
-                        </tr>
-                        @php
-                            $total_expense += $expense['total_expense'];
-                        @endphp
+                    <tr>
+                        <td>{{$expense['category'] ?? __('report.others')}}</td>
+                        <td><span class="display_currency" data-currency_symbol="true">{{$expense['total_expense']}}</span></td>
+                    </tr>
+                    @php
+                    $total_expense += $expense['total_expense'];
+                    @endphp
                     @endforeach
                 </tbody>
                 <tfoot>
@@ -78,7 +90,7 @@
                     </tr>
                 </tfoot>
             </table>
-        @endcomponent
+            @endcomponent
         </div>
     </div>
 
@@ -88,6 +100,6 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
-    {!! $chart->script() !!}
+<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
+{!! $chart->script() !!}
 @endsection

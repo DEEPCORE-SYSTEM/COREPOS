@@ -1,155 +1,170 @@
 <!-- Fix for scroll issue in new booking -->
 <style type="text/css">
-.modal {
-    overflow-y: auto;
-}
+    .modal {
+        overflow-y: auto;
+    }
 </style>
 <div class="modal-dialog" role="document">
     <div class="modal-content">
 
-        {!! Form::open(['url' => $notification_template['template_for'] == 'send_ledger' ?
-        action('ContactController@sendLedger') : action('NotificationController@send'), 'method' => 'post', 'id' =>
-        'send_notification_form' ]) !!}
+        <form
+            action="{{ $notification_template['template_for'] == 'send_ledger' ? route('contact.sendLedger') : route('notification.send') }}"
+            method="POST"
+            id="send_notification_form">
+            @csrf
 
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                    aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">@lang( 'lang_v1.send_notification' ) - {{$template_name}}</h4>
-        </div>
-
-        <div class="modal-body">
-            <div>
-                <strong>@lang('lang_v1.available_tags'):</strong>
-                <p class="help-block">{{implode(', ', $tags)}}</p>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@lang( 'lang_v1.send_notification' ) - {{$template_name}}</h4>
             </div>
-            <div class="box-group" id="accordion">
-                {{-- email --}}
-                <div class="panel box box-solid">
-                    <div class="box-header with-border">
-                        <h4 class="box-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#email_collapse"
-                                aria-expanded="true">
-                                @lang('lang_v1.send_email')
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="email_collapse" class="panel-collapse collapse in" aria-expanded="true">
-                        <div class="box-body">
-                            <div
-                                class="form-group @if($notification_template['template_for'] == 'send_ledger') hide @endif">
-                                <label>
-                                    {!! Form::checkbox('notification_type[]', 'email', true, ['class' => 'input-icheck
-                                    notification_type']); !!} @lang('lang_v1.send_email')
-                                </label>
-                            </div>
-                            <div id="email_div">
-                                <div class="form-group">
-                                    {!! Form::label('to_email', __('lang_v1.to').':') !!}
-                                    @show_tooltip(__('lang_v1.notification_email_tooltip'))
-                                    {!! Form::text('to_email', $contact->email, ['class' => 'form-control' ,
-                                    'placeholder' => __('lang_v1.to')]); !!}
+
+            <div class="modal-body">
+                <div>
+                    <strong>@lang('lang_v1.available_tags'):</strong>
+                    <p class="help-block">{{implode(', ', $tags)}}</p>
+                </div>
+                <div class="box-group" id="accordion">
+                    {{-- email --}}
+                    <div class="panel box box-solid">
+                        <div class="box-header with-border">
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#email_collapse"
+                                    aria-expanded="true">
+                                    @lang('lang_v1.send_email')
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="email_collapse" class="panel-collapse collapse in" aria-expanded="true">
+                            <div class="box-body">
+                                <div
+                                    class="form-group @if($notification_template['template_for'] == 'send_ledger') hide @endif">
+                                    <label>
+                                        <input type="checkbox" name="notification_type[]" value="email"
+                                            class="input-icheck notification_type" checked>
+                                        {{ __('lang_v1.send_email') }}
+
+                                    </label>
                                 </div>
-                                <div class="form-group">
-                                    {!! Form::label('subject', __('lang_v1.email_subject').':') !!}
-                                    {!! Form::text('subject', $notification_template['subject'], ['class' =>
-                                    'form-control' , 'placeholder' => __('lang_v1.email_subject')]); !!}
+                                <div id="email_div">
+                                    <div class="form-group">
+                                        <label for="to_email">{{ __('lang_v1.to') }}:</label>
+                                        @show_tooltip(__('lang_v1.notification_email_tooltip'))
+                                        <input type="text" id="to_email" name="to_email" value="{{ $contact->email }}"
+                                            class="form-control" placeholder="{{ __('lang_v1.to') }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="subject">{{ __('lang_v1.email_subject') }}:</label>
+                                        <input type="text" id="subject" name="subject" value="{{ $notification_template['subject'] }}"
+                                            class="form-control" placeholder="{{ __('lang_v1.email_subject') }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cc">CC:</label>
+                                        <input type="email" id="cc" name="cc" value="{{ $notification_template['cc'] ?? '' }}"
+                                            class="form-control" placeholder="CC">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="bcc">BCC:</label>
+                                        <input type="email" id="bcc" name="bcc" value="{{ $notification_template['bcc'] ?? '' }}"
+                                            class="form-control" placeholder="BCC">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email_body">{{ __('lang_v1.email_body') }}:</label>
+                                        <textarea id="email_body" name="email_body" class="form-control"
+                                            placeholder="{{ __('lang_v1.email_body') }}" rows="6">{{ $notification_template['email_body'] ?? '' }}</textarea>
+                                    </div>
+
+                                    @if(config('constants.enable_download_pdf') && $notification_template['template_for'] ==
+                                    'new_sale')
+                                    <label>
+                                        <input type="checkbox" id="attach_pdf" name="attach_pdf" value="1" class="input-icheck notification_type">
+                                        <label for="attach_pdf">{{ __('lang_v1.attach_pdf') }}</label>
+
+                                        @lang('lang_v1.attach_pdf_in_email')
+                                    </label>
+                                    @endif
+                                    @if($notification_template['template_for'] == 'send_ledger')
+                                    <p class="help-block">*@lang('lang_v1.ledger_attacment_help')</p>
+                                    @endif
                                 </div>
-                                <div class="form-group">
-                                    {!! Form::label('cc', 'CC:') !!}
-                                    {!! Form::email('cc', $notification_template['cc'], ['class' => 'form-control' ,
-                                    'placeholder' => 'CC']); !!}
-                                </div>
-                                <div class="form-group">
-                                    {!! Form::label('bcc', 'BCC:') !!}
-                                    {!! Form::email('bcc', $notification_template['bcc'], ['class' => 'form-control' ,
-                                    'placeholder' => 'BCC']); !!}
-                                </div>
-                                <div class="form-group">
-                                    {!! Form::label('email_body', __('lang_v1.email_body').':') !!}
-                                    {!! Form::textarea('email_body', $notification_template['email_body'], ['class' =>
-                                    'form-control', 'placeholder' => __('lang_v1.email_body'), 'rows' => 6]); !!}
-                                </div>
-                                @if(config('constants.enable_download_pdf') && $notification_template['template_for'] ==
-                                'new_sale')
-                                <label>
-                                    {!! Form::checkbox('attach_pdf', true, false, ['class' => 'input-icheck
-                                    notification_type']); !!}
-                                    @lang('lang_v1.attach_pdf_in_email')
-                                </label>
-                                @endif
-                                @if($notification_template['template_for'] == 'send_ledger')
-                                <p class="help-block">*@lang('lang_v1.ledger_attacment_help')</p>
-                                @endif
                             </div>
                         </div>
                     </div>
-                </div>
-                {{-- sms /whatsapp--}}
-                @if($notification_template['template_for'] != 'send_ledger')
-                <div class="panel box box-solid">
-                    <div class="box-header with-border">
-                        <h5 class="box-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#sms_collapse" class="collapsed"
-                                aria-expanded="false">
-                                @lang('lang_v1.send_sms_whatsapp_notification')
-                            </a>
-                        </h5>
-                    </div>
-                    <div id="sms_collapse" class="panel-collapse collapse" aria-expanded="false">
-                        <div class="box-body">
-                            <div
-                                class="form-group @if($notification_template['template_for'] == 'send_ledger') hide @endif">
-                                <label>
-                                    {!! Form::checkbox('notification_type[]', 'sms', false, ['class' => 'input-icheck
-                                    notification_type']); !!} @lang('lang_v1.send_sms')
-                                </label>
-                                <label>
-                                    {!! Form::checkbox('notification_type[]', 'whatsapp', false, ['class' =>
-                                    'input-icheck notification_type']); !!} @lang('lang_v1.send_whatsapp')
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('mobile_number', __('lang_v1.mobile_number').':') !!}
-                                {!! Form::text('mobile_number', $contact->mobile, ['class' => 'form-control',
-                                'placeholder' => __('lang_v1.mobile_number')]); !!}
-                            </div>
-                            <div id="sms_div" class="hide">
-                                <div class="form-group">
-                                    {!! Form::label('sms_body', __('lang_v1.sms_body').':') !!}
-                                    {!! Form::textarea('sms_body', $notification_template['sms_body'], ['class' =>
-                                    'form-control', 'placeholder' => __('lang_v1.sms_body'), 'rows' => 6]); !!}
+                    {{-- sms /whatsapp--}}
+                    @if($notification_template['template_for'] != 'send_ledger')
+                    <div class="panel box box-solid">
+                        <div class="box-header with-border">
+                            <h5 class="box-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#sms_collapse" class="collapsed"
+                                    aria-expanded="false">
+                                    @lang('lang_v1.send_sms_whatsapp_notification')
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="sms_collapse" class="panel-collapse collapse" aria-expanded="false">
+                            <div class="box-body">
+                                <div
+                                    class="form-group @if($notification_template['template_for'] == 'send_ledger') hide @endif">
+                                    <label>
+                                        <input type="checkbox" id="notification_sms" name="notification_type[]" value="sms" class="input-icheck notification_type">
+                                        <label for="notification_sms">{{ __('lang_v1.send_sms') }}</label>
+                                        @lang('lang_v1.send_sms')
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="notification_whatsapp" name="notification_type[]" value="whatsapp" class="input-icheck notification_type">
+                                        <label for="notification_whatsapp">{{ __('lang_v1.send_whatsapp') }}</label>
+                                        @lang('lang_v1.send_whatsapp')
+                                    </label>
                                 </div>
-                            </div>
-                            <div id="whatsapp_div" class="hide">
-                                {!! Form::label('whatsapp_text', __('lang_v1.whatsapp_text').':') !!}
-                                {!! Form::textarea('whatsapp_text', $notification_template['whatsapp_text'], ['class' =>
-                                'form-control', 'placeholder' => __('lang_v1.whatsapp_text'), 'rows' => 6]); !!}
+                                <div class="form-group">
+                                    <label for="mobile_number">{{ __('lang_v1.mobile_number') }}:</label>
+                                    <input type="text" id="mobile_number" name="mobile_number" value="{{ $contact->mobile }}" class="form-control" placeholder="{{ __('lang_v1.mobile_number') }}">
+
+                                </div>
+                                <div id="sms_div" class="hide">
+                                    <div class="form-group">
+                                        <label for="sms_body">{{ __('lang_v1.sms_body') }}:</label>
+                                        <textarea id="sms_body" name="sms_body" class="form-control" placeholder="{{ __('lang_v1.sms_body') }}" rows="6">{{ $notification_template['sms_body'] }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div id="whatsapp_div" class="hide">
+                                    <label for="whatsapp_text">{{ __('lang_v1.whatsapp_text') }}:</label>
+                                    <textarea id="whatsapp_text" name="whatsapp_text" class="form-control" placeholder="{{ __('lang_v1.whatsapp_text') }}" rows="6">{{ $notification_template['whatsapp_text'] }}</textarea>
+                                </div>
+
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
+
+                @if(!empty($transaction))
+                <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
+
                 @endif
-            </div>
 
-            @if(!empty($transaction))
-            {!! Form::hidden('transaction_id', $transaction->id); !!}
-            @endif
+                @if($notification_template['template_for'] == 'send_ledger')
+                <input type="hidden" name="contact_id" value="{{ $contact->id }}">
+                <input type="hidden" name="start_date" value="{{ $start_date }}">
+                <input type="hidden" name="end_date" value="{{ $end_date }}">
 
-            @if($notification_template['template_for'] == 'send_ledger')
-            {!! Form::hidden('contact_id', $contact->id); !!}
-            {!! Form::hidden('start_date', $start_date); !!}
-            {!! Form::hidden('end_date', $end_date); !!}
-            @endif
-            {!! Form::hidden('template_for', $notification_template['template_for']); !!}
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" id="send_notification_btn">@lang('lang_v1.send')</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-            </div>
-            {!! Form::close() !!}
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
+                @endif
+                <input type="hidden" name="template_for" value="{{ $notification_template['template_for'] }}">
 
-    <script type="text/javascript">
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="send_notification_btn">@lang('lang_v1.send')</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                </div>
+        </form>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript">
     // Fix for not updating textarea value on modal
     // CKEDITOR.on('instanceReady', function(){
     //    $.each( CKEDITOR.instances, function(instance) {
@@ -227,4 +242,4 @@
             }
         });
     });
-    </script>
+</script>

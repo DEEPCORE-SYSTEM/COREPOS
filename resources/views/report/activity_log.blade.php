@@ -14,27 +14,36 @@
     <div class="row">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('al_users_filter', __( 'lang_v1.by' ) . ':') !!}
-                        {!! Form::select('al_users_filter', $users, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'al_users_filter', 'placeholder' => __('lang_v1.all')]); !!}
-                    </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="al_users_filter">{{ __('lang_v1.by') }}:</label>
+                    <select name="al_users_filter" id="al_users_filter" class="form-control select2" style="width:100%" placeholder="{{ __('lang_v1.all') }}">
+                        <option value="">{{ __('lang_v1.all') }}</option>
+                        @foreach ($users as $key => $user)
+                        <option value="{{ $key }}">{{ $user }}</option>
+                        @endforeach
+                    </select>
                 </div>
+            </div>
 
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('subject_type', __( 'lang_v1.subject_type' ) . ':') !!}
-                        {!! Form::select('subject_type', $transaction_types, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'subject_type', 'placeholder' => __('lang_v1.all')]); !!}
-                    </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="subject_type">{{ __('lang_v1.subject_type') }}:</label>
+                    <select name="subject_type" id="subject_type" class="form-control select2" style="width:100%" placeholder="{{ __('lang_v1.all') }}">
+                        <option value="">{{ __('lang_v1.all') }}</option>
+                        @foreach ($transaction_types as $key => $type)
+                        <option value="{{ $key }}">{{ $type }}</option>
+                        @endforeach
+                    </select>
                 </div>
+            </div>
 
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('al_date_filter', __('report.date_range') . ':') !!}
-                        {!! Form::text('al_date_filter', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-                    </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="al_date_filter">{{ __('report.date_range') }}:</label>
+                    <input type="text" name="al_date_filter" id="al_date_filter" placeholder="{{ __('lang_v1.select_a_date_range') }}" class="form-control" readonly />
                 </div>
+            </div>
 
             @endcomponent
         </div>
@@ -66,7 +75,7 @@
 
 @section('javascript')
 <script type="text/javascript">
-    $(document).ready( function(){
+    $(document).ready(function() {
         $('#al_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
             $('#al_date_filter').val(
                 start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
@@ -81,10 +90,12 @@
         activity_log_table = $('#activity_log_table').DataTable({
             processing: true,
             serverSide: true,
-            aaSorting: [[0, 'desc']],
+            aaSorting: [
+                [0, 'desc']
+            ],
             "ajax": {
                 "url": '{{action("ReportController@activityLog")}}',
-                "data": function ( d ) {
+                "data": function(d) {
                     var start_date = '';
                     var end_date = '';
                     if ($('#al_date_filter').val()) {
@@ -100,16 +111,31 @@
                     d.subject_type = $('#subject_type').val();
                 }
             },
-            columns: [
-                { data: 'created_at', name: 'created_at'  },
-                { data: 'subject_type', "orderable": false, "searchable": false},
-                { data: 'description', name: 'description'},
-                { data: 'created_by', name: 'created_by'},
-                { data: 'note', name: 'note'}
+            columns: [{
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+                {
+                    data: 'subject_type',
+                    "orderable": false,
+                    "searchable": false
+                },
+                {
+                    data: 'description',
+                    name: 'description'
+                },
+                {
+                    data: 'created_by',
+                    name: 'created_by'
+                },
+                {
+                    data: 'note',
+                    name: 'note'
+                }
             ]
-        });  
+        });
 
-        $(document).on('change', '#al_users_filter, #subject_type', function(){
+        $(document).on('change', '#al_users_filter, #subject_type', function() {
             activity_log_table.ajax.reload();
         })
     });

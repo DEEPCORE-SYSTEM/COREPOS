@@ -12,8 +12,12 @@ $class = '';
 
 <tr class="variation_row">
     <td>
-        {!! Form::select('product_variation[' . $row_index .'][variation_template_id]', $variation_templates, null,
-        ['class' => 'form-control input-sm variation_template', 'required']); !!}
+        <select name="product_variation[{{ $row_index }}][variation_template_id]" class="form-control input-sm variation_template" required>
+            @foreach($variation_templates as $key => $value)
+            <option value="{{ $key }}">{{ $value }}</option>
+            @endforeach
+        </select>
+
         <input type="hidden" class="row_index" value="{{$row_index}}">
     </td>
 

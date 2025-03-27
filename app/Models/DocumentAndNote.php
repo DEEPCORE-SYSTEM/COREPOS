@@ -10,6 +10,18 @@ class DocumentAndNote extends Model
     use LogsActivity;
 
     /**
+     * Get the options for activity logging.
+     *
+     * @return \Spatie\Activitylog\LogOptions
+     */
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    {
+        return \Spatie\Activitylog\LogOptions::defaults()
+            ->logOnly(['attribute1', 'attribute2']) // Specify attributes to log
+            ->logOnlyDirty();
+    }
+
+    /**
      * The attributes that aren't mass assignable.
      *
      * @var array

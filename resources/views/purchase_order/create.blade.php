@@ -31,7 +31,8 @@
         <div class="row">
             <div class="@if(!empty($default_purchase_status)) col-sm-4 @else col-sm-3 @endif">
                 <div class="form-group">
-                    {!! Form::label('supplier_id', __('purchase.supplier') . ':*') !!}
+                    <label for="supplier_id">{{ __('purchase.supplier') }}:*</label>
+
                     <label for="supplier_id">{{__('purchase.supplier')}}:*</label>
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -76,7 +77,7 @@
                     </div>
                 </div>
             </div>
-            
+
 
             @if(count($business_locations) == 1)
             @php
@@ -168,8 +169,8 @@
                             <i class="fa fa-search"></i>
                         </span>
                         <input type="text" name="search_product" id="search_product" class="form-control mousetrap"
-                                placeholder="{{ __('lang_v1.search_product_placeholder') }}"
-                                {{ $search_disable ? 'disabled' : '' }} {{ $search_disable ? '' : 'autofocus' }}>
+                            placeholder="{{ __('lang_v1.search_product_placeholder') }}"
+                            {{ $search_disable ? 'disabled' : '' }} {{ $search_disable ? '' : 'autofocus' }}>
 
 
 
@@ -598,20 +599,20 @@
 <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
 <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
 <script type="text/javascript">
-$(document).ready(function() {
-    __page_leave_confirmation('#add_purchase_form');
-    $('.paid_on').datetimepicker({
-        format: moment_date_format + ' ' + moment_time_format,
-        ignoreReadonly: true,
-    });
+    $(document).ready(function() {
+        __page_leave_confirmation('#add_purchase_form');
+        $('.paid_on').datetimepicker({
+            format: moment_date_format + ' ' + moment_time_format,
+            ignoreReadonly: true,
+        });
 
-    $('#shipping_documents').fileinput({
-        showUpload: false,
-        showPreview: false,
-        browseLabel: LANG.file_browse_label,
-        removeLabel: LANG.remove,
+        $('#shipping_documents').fileinput({
+            showUpload: false,
+            showPreview: false,
+            browseLabel: LANG.file_browse_label,
+            removeLabel: LANG.remove,
+        });
     });
-});
 </script>
 @include('purchase.partials.keyboard_shortcuts')
 @endsection

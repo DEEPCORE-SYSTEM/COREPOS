@@ -31,12 +31,18 @@
         <div class="row">
             <div class="@if(!empty($default_purchase_status)) col-sm-4 @else col-sm-3 @endif">
               <div class="form-group">
-                {!! Form::label('supplier_id', __('purchase.supplier') . ':*') !!}
+            
+                <label for="supplier_id">{{__('purchase.supplier'):*}} </label>
                 <div class="input-group">
                   <span class="input-group-addon">
                     <i class="fa fa-user"></i>
                   </span>
                   {!! Form::select('contact_id', [ $purchase->contact_id => $purchase->contact->name], $purchase->contact_id, ['class' => 'form-control', 'placeholder' => __('messages.please_select') , 'required', 'id' => 'supplier_id']); !!}
+
+                  <select name="contact_id" id="
+
+
+
                   <span class="input-group-btn">
                     <button type="button" class="btn btn-default bg-white btn-flat add_new_supplier" data-name=""><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
                   </span>
