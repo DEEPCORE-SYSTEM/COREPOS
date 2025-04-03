@@ -301,7 +301,7 @@
 
                                         @show_tooltip(__('tooltip.pay_term'))
                                         <br />
-                                        <input type="number" name="pay_term_number" value="{{ $contact->pay_term_number }}" class="form-control width-40 pull-left" placeholder="{{ __('contact.pay_term') }}">
+                                        <input type="number" id="pay_term_number" value="{{ $contact->pay_term_number }}" class="form-control width-40 pull-left" placeholder="{{ __('contact.pay_term') }}">
 
                                         <select name="pay_term_type" class="form-control width-60 pull-left">
                                             <option value="" disabled selected>{{ __('messages.please_select') }}</option>

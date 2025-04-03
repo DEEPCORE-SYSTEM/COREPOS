@@ -24,5 +24,5 @@ return [
     'receipt_settings_mgs' => 'ຕັ້ງຄ່າທີ່ກ່ຽວຂ້ອງກັບການຮັບທັງໝົດສຳຫຼັບສະຖານທີ່ນີ',
     'print_receipt_on_invoice' => 'ພິມໃບແຈ້ງໜີ້ອັດຕະໂຍມັດຫຼັງຈາກສຳເລັດ',
     'receipt_printer_type' => 'ປະເພດເຄື່ອງພິມໃບບິນ',
-    'receipt_settings_updated' => 'ຕັ້ວຄ່າໃບບິນສຳເລັດ',
+    'receipt_settings_updated' => 'ຕັ້ວຄ່າໃບບິນສຳເລັດ'
 ];

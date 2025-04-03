@@ -3,14 +3,14 @@
 return [
 
     'styles' => [
-        'navbar' => \App\Http\AdminlteCustomPresenter::class,
-        'navbar-right' => \App\Http\AdminlteCustomPresenter::class,
-        'nav-pills' =>\App\Http\AdminlteCustomPresenter::class,
-        'nav-tab' => \App\Http\AdminlteCustomPresenter::class,
-        'sidebar' => \App\Http\AdminlteCustomPresenter::class,
-        'navmenu' => \App\Http\AdminlteCustomPresenter::class,
-        'adminlte' => \App\Http\AdminlteCustomPresenter::class,
-        'zurbmenu' => \App\Http\AdminlteCustomPresenter::class,
+        'navbar' => \Nwidart\Menus\Presenters\Bootstrap\NavbarPresenter::class,
+        'navbar-right' => \Nwidart\Menus\Presenters\Bootstrap\NavbarRightPresenter::class,
+        'nav-pills' => \Nwidart\Menus\Presenters\Bootstrap\NavPillsPresenter::class,
+        'nav-tab' => \Nwidart\Menus\Presenters\Bootstrap\NavTabPresenter::class,
+        'sidebar' => \Nwidart\Menus\Presenters\Bootstrap\SidebarMenuPresenter::class,
+        'navmenu' => \Nwidart\Menus\Presenters\Bootstrap\NavMenuPresenter::class,
+        'adminlte' => \Nwidart\Menus\Presenters\Admin\AdminltePresenter::class,
+        'zurbmenu' => \Nwidart\Menus\Presenters\Foundation\ZurbMenuPresenter::class,
         'adminltecustom' => \App\Http\AdminlteCustomPresenter::class,
     ],
 

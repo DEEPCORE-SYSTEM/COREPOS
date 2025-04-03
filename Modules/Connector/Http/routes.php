@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Support\Facades\Route;
+
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'AdminSidebarMenu'], 'prefix' => 'connector', 'namespace' => 'Modules\Connector\Http\Controllers'], function () {
     Route::get('/api', 'ConnectorController@index');

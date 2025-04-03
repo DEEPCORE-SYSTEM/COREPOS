@@ -14,7 +14,7 @@ return [
     'barcodes' => 'Códigos de barras',
     'barcode_settings' => 'Configurações de código de barras',
     'manage_your_barcodes' => 'Gerenciar a configuração do seu código de barras',
-    'all_your_barcode' => 'Todas as suas configurações de código de barras',
+    'all_your_barcode' => 'Todas as suas configurações de código de barras', 
     'setting_name' => 'Nome da configuração da folha adesiva',
     'setting_description' => 'Configuração da folha adesiva Descrição',
     'added_success' => 'Configuração de código de barras adicionada com sucesso',

@@ -76,12 +76,12 @@ return [
 
     'tax_groups' => 'Group Tax Rates - defined above, to be used in combination in Purchase/Sell sections.',
 
-    'unit_allow_decimal' => 'Số thập phân cho phép bạn bán các sản phẩm liên quan theo phân số.',
+    'unit_allow_decimal' => "Số thập phân cho phép bạn bán các sản phẩm liên quan theo phân số.",
 
     'print_label' => 'Thêm sản phẩm -> Chọn thông tin để hiển thị trong Nhãn -> Chọn Cài đặt mã vạch -> Xem trước Nhãn -> In',
 
     'expense_for' => 'Chọn người dùng mà chi phí có liên quan đến. <i>(Không bắt buộc)</i><br/><small>Ví dụ: Mức lương của một nhân viên.</small>',
-
+    
     'all_location_permission' => 'Nếu <b> Tất cả các vị trí </b> được chọn, vai trò này sẽ có quyền truy cập vào tất cả các địa điểm kinh doanh',
 
     'dashboard_permission' => 'Nếu chỉ được chọn, thông báo Chào mừng sẽ được hiển thị trong Trang chủ.',
@@ -90,7 +90,7 @@ return [
 
     'print_receipt_on_invoice' => 'Bật hoặc Tắt tự động in hóa đơn khi hoàn tất',
 
-    'receipt_printer_type' => '<i>Impressão Baseada em Navegador</i>: Mostrar caixa de diálogo de impressão no navegador com visualização da fatura <br/> <br/> <i> Usar Impressora de Recibos Configurada </i>: Selecionar um recibo configurado / impressora térmica para impressão',
+    'receipt_printer_type' => "<i>Impressão Baseada em Navegador</i>: Mostrar caixa de diálogo de impressão no navegador com visualização da fatura <br/> <br/> <i> Usar Impressora de Recibos Configurada </i>: Selecionar um recibo configurado / impressora térmica para impressão",
 
     'adjustment_type' => '<i>Bình thường</i>: Điều chỉnh cho các lý do bình thường như Rò rỉ, Thiệt hại .v.v.. <br/><br/> <i>Khác thường</i>: Điều chỉnh cho các lý do như hỏa hoạn, tai nạn.v.v..',
 
@@ -110,6 +110,6 @@ return [
 
     'transaction_edit_days' => 'Số ngày kể từ Ngày giao dịch cho đến khi giao dịch có thể được chỉnh sửa.',
     'stock_expiry_alert' => "List of stocks expiring in :days days <br> <small class='text-muted'>You can set the no. of days in Business Settings </small>",
-    'sub_sku' => 'Sku là tùy chọn. <br><br><small>Giữ trống để tự động tạo SKU.<small>',
-    'shipping' => 'Đặt chi tiết vận chuyển và phí vận chuyển. Nhấp vào biểu tượng chỉnh sửa bên dưới để thêm / cập nhật chi tiết vận chuyển và chi phí.',
+    'sub_sku' => "Sku là tùy chọn. <br><br><small>Giữ trống để tự động tạo SKU.<small>",
+    'shipping' => "Đặt chi tiết vận chuyển và phí vận chuyển. Nhấp vào biểu tượng chỉnh sửa bên dưới để thêm / cập nhật chi tiết vận chuyển và chi phí."
 ];

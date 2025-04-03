@@ -152,7 +152,7 @@ $custom_labels = json_decode(session('business.custom_labels'), true);
 
                         @show_tooltip(__('tooltip.pay_term'))
                         <br />
-                        <input type="number" name="pay_term_number" class="form-control width-40 pull-left"
+                        <input type="number" id="pay_term_number"  class="form-control width-40 pull-left"
                             placeholder="{{ __('contact.pay_term') }}">
 
                         <select name="pay_term_type" id="pay_term_type" class="form-control width-60 pull-left">

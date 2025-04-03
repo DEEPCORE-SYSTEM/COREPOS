@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Console\ClientCommand;
 use Laravel\Passport\Console\InstallCommand;
 use Laravel\Passport\Console\KeysCommand;
+use Illuminate\Support\Facades\Config;
 
 class ConnectorServiceProvider extends ServiceProvider
 {
@@ -111,7 +112,7 @@ class ConnectorServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
             return $path.'/modules/connector';
-        }, \Config::get('view.paths')), [$sourcePath]), 'connector');
+        }, Config::get('view.paths')), [$sourcePath]), 'connector');
     }
 
     /**

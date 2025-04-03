@@ -13,41 +13,68 @@
     <div class="row">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
-              {!! Form::open(['url' => action('ReportController@getStockExpiryReport'), 'method' => 'get', 'id' => 'stock_report_filter_form' ]) !!}
+            <form action="{{ action('ReportController@getStockExpiryReport') }}" method="GET" id="stock_report_filter_form">
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-                        {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="location_id">{{ __('purchase.business_location') }}:</label>
+                        <select name="location_id" class="form-control select2" style="width:100%">
+                            @foreach($business_locations as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('category_id', __('product.category') . ':') !!}
-                        {!! Form::select('category', $categories, null, ['placeholder' => __('lang_v1.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'category_id']); !!}
+                        <label for="category_id">{{ __('product.category') }}:</label>
+                        <select name="category" id="category_id" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($categories as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('sub_category_id', __('product.sub_category') . ':') !!}
-                        {!! Form::select('sub_category', array(), null, ['placeholder' => __('lang_v1.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'sub_category_id']); !!}
+                        <label for="sub_category_id">{{ __('product.sub_category') }}:</label>
+                        <select name="sub_category" id="sub_category_id" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            <!-- Sub categories options will be populated dynamically -->
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('brand', __('product.brand') . ':') !!}
-                        {!! Form::select('brand', $brands, null, ['placeholder' => __('lang_v1.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="brand">{{ __('product.brand') }}:</label>
+                        <select name="brand" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($brands as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('unit', __('product.unit') . ':') !!}
-                        {!! Form::select('unit', $units, null, ['placeholder' => __('lang_v1.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="unit">{{ __('product.unit') }}:</label>
+                        <select name="unit" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($units as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('view_stock_filter', __('report.view_stocks') . ':') !!}
-                        {!! Form::select('view_stock_filter', $view_stock_filter, null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="view_stock_filter">{{ __('report.view_stocks') }}:</label>
+                        <select name="view_stock_filter" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('messages.all') }}</option>
+                            @foreach($view_stock_filter as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 @if(Module::has('Manufacturing'))
@@ -56,14 +83,14 @@
                             <br>
                             <div class="checkbox">
                                 <label>
-                                  {!! Form::checkbox('only_mfg', 1, false, 
-                                  [ 'class' => 'input-icheck', 'id' => 'only_mfg_products']); !!} {{ __('manufacturing::lang.only_mfg_products') }}
+                                    <input type="checkbox" name="only_mfg" id="only_mfg_products" class="input-icheck"> {{ __('manufacturing::lang.only_mfg_products') }}
                                 </label>
                             </div>
                         </div>
                     </div>
                 @endif
-                {!! Form::close() !!}
+            </form>
+            
             @endcomponent
         </div>
     </div>

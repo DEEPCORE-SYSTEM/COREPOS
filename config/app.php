@@ -176,10 +176,12 @@ return [
 
         //  Collective\Html\HtmlServiceProvider::class,
 
-        // Spatie\Permission\PermissionServiceProvider::class,
-        //   Milon\Barcode\BarcodeServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
+        Spatie\Menu\Laravel\MenuServiceProvider::class,
+        Milon\Barcode\BarcodeServiceProvider::class,
         // ConsoleTVs\Charts\ChartsServiceProvider::class,
         App\Providers\DropboxServiceProvider::class,
+        
 
     ],
 
@@ -235,10 +237,11 @@ return [
         // 'Form' => Collective\Html\FormFacade::class,
         // 'Html' => Collective\Html\HtmlFacade::class,
         'Carbon' => 'Carbon\Carbon',
-        //'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
-        //'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
-        //'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
+        'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
+        'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+       // 'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
         'Datatables' => Yajra\DataTables\Facades\DataTables::class,
         //'Paystack' => Unicodeveloper\Paystack\Facades\Paystack::class,
+
     ],
 ];

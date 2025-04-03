@@ -30,7 +30,7 @@ return [
     'close_register' => 'Close Register',
     'total_card_slips' => 'Total Card Slips',
     'total_cheques' => 'Total cheques',
-    'closing_note' => 'Closing Note',
+    'closing_note' =>'Closing Note',
     'close_success' => 'Register closed successfully',
     'open' => 'Open',
     'close' => 'Close',

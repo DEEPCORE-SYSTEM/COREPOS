@@ -12,51 +12,83 @@
 <!-- Main content -->
 <section class="content no-print">
     @component('components.filters', ['title' => __('report.filters')])
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('sell_list_filter_location_id',  __('purchase.business_location') . ':') !!}
-
-                {!! Form::select('sell_list_filter_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all') ]); !!}
-            </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="sell_list_filter_location_id">{{ __('purchase.business_location') . ':' }}</label>
+            <select name="sell_list_filter_location_id" class="form-control select2" style="width:100%" id="sell_list_filter_location_id">
+                <option value="">{{ __('lang_v1.all') }}</option>
+                @foreach ($business_locations as $key => $location)
+                    <option value="{{ $key }}">{{ $location }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('sell_list_filter_customer_id',  __('contact.customer') . ':') !!}
-                {!! Form::select('sell_list_filter_customer_id', $customers, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="sell_list_filter_customer_id">{{ __('contact.customer') . ':' }}</label>
+            <select name="sell_list_filter_customer_id" class="form-control select2" style="width:100%" id="sell_list_filter_customer_id">
+                <option value="">{{ __('lang_v1.all') }}</option>
+                @foreach ($customers as $key => $customer)
+                    <option value="{{ $key }}">{{ $customer }}</option>
+                @endforeach
+            </select>
         </div>
-
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('sell_list_filter_date_range', __('report.date_range') . ':') !!}
-                {!! Form::text('sell_list_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-            </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="sell_list_filter_date_range">{{ __('report.date_range') . ':' }}</label>
+            <input type="text" name="sell_list_filter_date_range" id="sell_list_filter_date_range" placeholder="{{ __('lang_v1.select_a_date_range') }}" class="form-control" readonly>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('created_by',  __('report.user') . ':') !!}
-                {!! Form::select('created_by', $sales_representative, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
-            </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="created_by">{{ __('report.user') . ':' }}</label>
+            <select name="created_by" class="form-control select2" style="width:100%" id="created_by">
+                @foreach ($sales_representative as $key => $representative)
+                    <option value="{{ $key }}">{{ $representative }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('sell_list_filter_payment_status',  __('purchase.payment_status') . ':') !!}
-                {!! Form::select('sell_list_filter_payment_status', ['paid' => __('lang_v1.paid'), 'due' => __('lang_v1.due'), 'partial' => __('lang_v1.partial'), 'overdue' => __('lang_v1.overdue')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="sell_list_filter_payment_status">{{ __('purchase.payment_status') . ':' }}</label>
+            <select name="sell_list_filter_payment_status" class="form-control select2" style="width:100%" id="sell_list_filter_payment_status">
+                <option value="">{{ __('lang_v1.all') }}</option>
+                <option value="paid">{{ __('lang_v1.paid') }}</option>
+                <option value="due">{{ __('lang_v1.due') }}</option>
+                <option value="partial">{{ __('lang_v1.partial') }}</option>
+                <option value="overdue">{{ __('lang_v1.overdue') }}</option>
+            </select>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('shipping_status',  __('lang_v1.shipping_status') . ':') !!}
-
-                {!! Form::select('shipping_status', $shipping_statuses, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all') ]); !!}
-            </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="shipping_status">{{ __('lang_v1.shipping_status') . ':' }}</label>
+            <select name="shipping_status" class="form-control select2" style="width:100%" id="shipping_status">
+                <option value="">{{ __('lang_v1.all') }}</option>
+                @foreach ($shipping_statuses as $key => $status)
+                    <option value="{{ $key }}">{{ $status }}</option>
+                @endforeach
+            </select>
         </div>
+    </div>
+    
         @if(!empty($service_staffs))
             <div class="col-md-3">
                 <div class="form-group">
-                    {!! Form::label('service_staffs', __('restaurant.service_staff') . ':') !!}
-                    {!! Form::select('service_staffs', $service_staffs, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                </div>
+                    <label for="service_staffs">{{ __('restaurant.service_staff') . ':' }}</label>
+                    <select name="service_staffs" class="form-control select2" style="width:100%" id="service_staffs">
+                        <option value="">{{ __('lang_v1.all') }}</option>
+                        @foreach ($service_staffs as $key => $staff)
+                            <option value="{{ $key }}">{{ $staff }}</option>
+                        @endforeach
+                    </select>                </div>
             </div>
         @endif
     @endcomponent

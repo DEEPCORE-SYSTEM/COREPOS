@@ -17,7 +17,7 @@ return [
     'supplier' => 'Supplier',
     'customer' => 'Customer',
     'purchase' => 'Purchase & Stock Adjustment',
-    'report' => 'Report',
+    'report' =>'Report',
 
     'user.view' => 'View user',
     'user.create' => 'Add user',
@@ -86,7 +86,7 @@ return [
     'brand' => 'Brand',
     'tax_rate' => 'Tax rate',
     'unit' => 'Unit',
-    'access_locations' => 'Access locations',
+    'access_locations' =>'Access locations',
     'all_locations' => 'All Locations',
     'dashboard' => 'Home',
     'dashboard.data' => 'View Home data',

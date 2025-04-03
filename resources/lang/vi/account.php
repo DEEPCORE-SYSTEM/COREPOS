@@ -1,5 +1,4 @@
 <?php
-
 return [
     'account' => 'Tài khoản',
     'manage_your_account' => 'Quản lý tài khoản',

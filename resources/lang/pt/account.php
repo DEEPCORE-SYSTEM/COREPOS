@@ -1,5 +1,4 @@
 <?php
-
 return [
     'account' => 'Conta',
     'manage_your_account' => 'Gerenciar sua conta',

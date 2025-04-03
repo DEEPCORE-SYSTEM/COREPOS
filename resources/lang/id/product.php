@@ -33,7 +33,7 @@ return [
     'selling_price_tax_type' => 'Jenis Pajak Harga Jual',
     'inclusive' => 'Termasuk',
     'exclusive' => 'Tidak termasuk',
-    'edit_product' => 'Edit Produk',
+    'edit_product' => "Edit Produk",
     'default_purchase_price' => 'Harga Pembelian Default',
     'default_selling_price' => 'Harga Jual Default',
     'value' => 'Nilai',
@@ -57,5 +57,5 @@ return [
     'variations' => 'Varian',
     'import_products' => 'Impor Produk',
     'file_to_import' => 'File Untuk Diimpor',
-    'file_imported_successfully' => 'File berhasil diimpor',
-];
+    'file_imported_successfully' => 'File berhasil diimpor'
+ ];

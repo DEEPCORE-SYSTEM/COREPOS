@@ -26,5 +26,5 @@ return [
     'stock_adjustment_added_successfully' => 'Điều chỉnh kho thêm thành công',
     'search_products' => 'Tìm kiếm sản phẩm',
     'delete_success' => 'Điều chỉnh kho đã xóa thành công',
-    'view_details' => 'Xem chi tiết điều chỉnh kho',
+    'view_details' => 'Xem chi tiết điều chỉnh kho'
 ];

@@ -70,7 +70,7 @@
                         <div class="form-group">
                             <label for="pay_term_number">@lang('contact.pay_term')</label>
                             <div class="input-group">
-                                <input type="number" name="pay_term_number" class="form-control width-40" value="{{ $transaction->pay_term_number }}">
+                                <input type="number" id="pay_term_number" name="pay_term_number" class="form-control width-40" value="{{ $transaction->pay_term_number }}">
                                 <select name="pay_term_type" class="form-control width-60">
                                     <option value="">{{ __('messages.please_select') }}</option>
                                     <option value="months" {{ $transaction->pay_term_type == 'months' ? 'selected' : '' }}>@lang('lang_v1.months')</option>

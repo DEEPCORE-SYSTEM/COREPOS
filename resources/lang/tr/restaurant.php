@@ -86,7 +86,7 @@ return [
     'delete_booking' => 'Rezervasyonu sil',
     'click_on_any_booking_to_view_or_change_status' => 'Detayları görmek veya durumunu değiştirmek için herhangi bir rezervasyona Tıklayın',
     'double_click_on_any_day_to_add_new_booking' => 'Yeni rezervasyon eklemek için herhangi bir güne çift tıklayın',
-    'todays_bookings' => 'Bugünün Rezervasyonları',
+    'todays_bookings' => "Bugünün Rezervasyonları",
     'hello_name' => 'Merhaba :name!',
     'booking_confirmed' => 'Rezervasyonunuz onaylandı.',
     'table_info' => 'Masa: :table',

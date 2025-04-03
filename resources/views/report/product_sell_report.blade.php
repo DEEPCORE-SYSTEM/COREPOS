@@ -13,77 +13,112 @@
     <div class="row">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
-              {!! Form::open(['url' => action('ReportController@getStockReport'), 'method' => 'get', 'id' => 'product_sell_report_form' ]) !!}
+            <form action="{{ action('ReportController@getStockReport') }}" method="GET" id="product_sell_report_form">
                 <div class="col-md-3">
                     <div class="form-group">
-                    {!! Form::label('search_product', __('lang_v1.search_product') . ':') !!}
+                        <label for="search_product">{{ __('lang_v1.search_product') }}:</label>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="fa fa-search"></i>
                             </span>
                             <input type="hidden" value="" id="variation_id">
-                            {!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 'placeholder' => __('lang_v1.search_product_placeholder'), 'autofocus']); !!}
+                            <input type="text" name="search_product" id="search_product" class="form-control" placeholder="{{ __('lang_v1.search_product_placeholder') }}" autofocus>
                         </div>
                     </div>
                 </div>
+            
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('customer_id', __('contact.customer') . ':') !!}
+                        <label for="customer_id">{{ __('contact.customer') }}:</label>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="fa fa-user"></i>
                             </span>
-                            {!! Form::select('customer_id', $customers, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
+                            <select name="customer_id" class="form-control select2" required>
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($customers as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
+            
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('psr_customer_group_id', __( 'lang_v1.customer_group_name' ) . ':') !!}
-                        {!! Form::select('psr_customer_group_id', $customer_group, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_customer_group_id']); !!}
+                        <label for="psr_customer_group_id">{{ __('lang_v1.customer_group_name') }}:</label>
+                        <select name="psr_customer_group_id" id="psr_customer_group_id" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('messages.please_select') }}</option>
+                            @foreach($customer_group as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+            
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('location_id', __('purchase.business_location').':') !!}
+                        <label for="location_id">{{ __('purchase.business_location') }}:</label>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="fa fa-map-marker"></i>
                             </span>
-                            {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
+                            <select name="location_id" class="form-control select2" required>
+                                <option value="">{{ __('messages.please_select') }}</option>
+                                @foreach($business_locations as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
+            
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('category_id', __('product.category') . ':') !!}
-                        {!! Form::select('category_id', $categories, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_filter_category_id', 'placeholder' => __('lang_v1.all')]); !!}
+                        <label for="category_id">{{ __('product.category') }}:</label>
+                        <select name="category_id" id="psr_filter_category_id" class="form-control select2" style="width:100%" placeholder="{{ __('lang_v1.all') }}">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($categories as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+            
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('brand_id', __('product.brand') . ':') !!}
-                        {!! Form::select('brand_id', $brands, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_filter_brand_id', 'placeholder' => __('lang_v1.all')]); !!}
+                        <label for="brand_id">{{ __('product.brand') }}:</label>
+                        <select name="brand_id" id="psr_filter_brand_id" class="form-control select2" style="width:100%" placeholder="{{ __('lang_v1.all') }}">
+                            <option value="">{{ __('lang_v1.all') }}</option>
+                            @foreach($brands as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+            
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('product_sr_date_filter', __('report.date_range') . ':') !!}
-                        {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'product_sr_date_filter', 'readonly']); !!}
+                        <label for="product_sr_date_filter">{{ __('report.date_range') }}:</label>
+                        <input type="text" name="date_range" id="product_sr_date_filter" class="form-control" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
                     </div>
                 </div>
+            
                 <div class="col-md-3">
-                    {!! Form::label('product_sr_start_time', __('lang_v1.time_range') . ':') !!}
-                    @php
-                        $startDay = Carbon::now()->startOfDay();
-                        $endDay   = $startDay->copy()->endOfDay();
-                    @endphp
                     <div class="form-group">
-                        {!! Form::text('start_time', @format_time($startDay), ['style' => __('lang_v1.select_a_date_range'), 'class' => 'form-control width-50 f-left', 'id' => 'product_sr_start_time']); !!}
-                        {!! Form::text('end_time', @format_time($endDay), ['class' => 'form-control width-50 f-left', 'id' => 'product_sr_end_time']); !!}
+                        <label for="product_sr_start_time">{{ __('lang_v1.time_range') }}:</label>
+                        @php
+                            $startDay = Carbon::now()->startOfDay();
+                            $endDay   = $startDay->copy()->endOfDay();
+                        @endphp
+                        <input type="text" name="start_time" id="product_sr_start_time" class="form-control width-50 f-left" value="{{ @format_time($startDay) }}">
+                        <input type="text" name="end_time" id="product_sr_end_time" class="form-control width-50 f-left" value="{{ @format_time($endDay) }}">
                     </div>
                 </div>
-                {!! Form::close() !!}
+            
+                <button type="submit" class="btn btn-primary pull-right">{{ __('report.apply_filters') }}</button>
+            </form>
+            
             @endcomponent
         </div>
     </div>

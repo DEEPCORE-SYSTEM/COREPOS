@@ -27,5 +27,5 @@ return [
     'payment_dues' => 'ການຊຳລະເງິນຄົບກຳໜົດຊຳລະ',
     'due_amount' => 'ກຳນົດຊຳລະຈຳນວນ',
     'stock_expiry_alert' => 'ແຈ້ງເຕືອນສະຕັອກໝົດອາຍຸ',
-    'todays_profit' => 'ກຳໄລ ມື້ນີ້',
-];
+    'todays_profit' => "ກຳໄລ ມື້ນີ້",
+    ];

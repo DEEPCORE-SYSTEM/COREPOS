@@ -3,7 +3,7 @@
 		<div class="input-group date">
 			<input type="text" name="attendance_by_shift_date_filter" id="attendance_by_shift_date_filter" 
 				class="form-control" readonly 
-				value="{{ format_date('today') }}">
+				value="{{ @format_date('today') }}">
 			<span class="input-group-addon"><i class="fas fa-calendar"></i></span>
 		</div>
 

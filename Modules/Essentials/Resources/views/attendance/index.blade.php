@@ -128,8 +128,10 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="date_range">@lang('report.date_range'):</label>
-                                    <input type="text" name="date_range" id="date_range" class="form-control" readonly 
-                                        placeholder="@lang('lang_v1.select_a_date_range')">
+
+                                    <input type="text" name="date_range" id="date_range" class="form-control {{ $extra_class ?? '' }}" readonly 
+    placeholder="@lang('lang_v1.select_a_date_range')">
+
                                 </div>
                             </div>
 

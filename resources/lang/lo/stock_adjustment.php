@@ -26,5 +26,5 @@ return [
     'stock_adjustment_added_successfully' => 'ເພີ່ມການດັດປັບສະຕັອກຮຽບຮ້ອຍແລ້ວ',
     'search_products' => 'ຄົ້ນຫາສິນຄ້າ',
     'delete_success' => 'ລຶບການດັດປັບສະຕັອກຮຽບຮ້ອຍແລ້ວ',
-    'view_details' => 'ເບິ່ງລາຍລະອຽດການດັດປັບສະຕັອກ',
+    'view_details' => 'ເບິ່ງລາຍລະອຽດການດັດປັບສະຕັອກ'
 ];

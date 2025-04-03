@@ -35,7 +35,7 @@ return [
     'header_text' => 'Antet',
     'invoice_no_prefix' => 'Eticheta Nr. factura',
     'invoice_heading' => 'Titlu factura',
-    'sub_total_label' => 'Eticheta subtotal',
+    'sub_total_label' =>'Eticheta subtotal',
     'discount_label' => 'Eticheta discount',
     'tax_label' => 'Eticheta taxa',
     'total_label' => 'Eticheta total',
@@ -64,5 +64,5 @@ return [
     'show_payments' => 'Show Payment information',
     'show_customer' => 'Show Customer information',
     'paid_label' => 'Amount Paid Label',
-    'customer_label' => 'Customer Label',
+    'customer_label' => 'Customer Label'
 ];

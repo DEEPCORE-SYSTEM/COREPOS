@@ -69,5 +69,5 @@ return [
     'edit_sale' => 'Chỉnh sửa giảm giá',
     'shipping' => 'Vận chuyển',
     'shipping_details' => 'Chi tiết vận chuyển',
-    'shipping_charges' => 'Phí vận chuyển',
+    'shipping_charges' => 'Phí vận chuyển'
 ];

@@ -24,5 +24,5 @@ return [
     'receipt_settings_mgs' => 'د دې ځای لپاره ټولې رسید پورې اړوند ترتیبونه',
     'print_receipt_on_invoice' => 'د وروستي کولو وروسته اتوماتیک د رسید چاپ',
     'receipt_printer_type' => 'د رسید د چاپګر ډول',
-    'receipt_settings_updated' => 'د رسید ترتیبونه په بریالیتوب سره تازه شوه',
+    'receipt_settings_updated' => 'د رسید ترتیبونه په بریالیتوب سره تازه شوه'
 ];

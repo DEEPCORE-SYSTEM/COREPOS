@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Install;
 use App\Http\Controllers\Controller;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
-use Module;
+use Nwidart\Modules\Facades\Module;
 use ZipArchive;
 
 class ModulesController extends Controller
@@ -233,7 +233,7 @@ class ModulesController extends Controller
             $output = ['success' => true,
                 'msg' => __('lang_v1.success'),
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $output = ['success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];

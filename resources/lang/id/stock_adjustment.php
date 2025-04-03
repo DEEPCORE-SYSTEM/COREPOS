@@ -26,5 +26,5 @@ return [
     'stock_adjustment_added_successfully' => 'Penyesuaian stok berhasil ditambahkan',
     'search_products' => 'Cari produk',
     'delete_success' => 'Penyesuaian stok berhasil dihapus',
-    'view_details' => 'Lihat rincian penyesuaian stok',
+    'view_details' => 'Lihat rincian penyesuaian stok'
 ];

@@ -30,7 +30,7 @@ return [
     'close_register' => 'ປິດການລົງທະບຽນ',
     'total_card_slips' => 'ຈຳນວນ Slips ທັງໝົດ',
     'total_cheques' => 'ແຊັກທັງໝົດ',
-    'closing_note' => 'ໝາຍເຫດການປິດ',
+    'closing_note' =>'ໝາຍເຫດການປິດ',
     'close_success' => 'ປິດການລົງທະບຽນຮຽບຮ້ອຍ',
     'open' => 'ເປີດ',
     'close' => 'ປິດ',

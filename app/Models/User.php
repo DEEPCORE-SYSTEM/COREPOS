@@ -292,6 +292,6 @@ class User extends Authenticatable
      */
     public function contact()
     {
-        return $this->belongsTo(\Modules\Crm\Entities\CrmContact::class, 'crm_contact_id');
+      //  return $this->belongsTo(\Modules\Crm\Entities\CrmContact::class, 'crm_contact_id');
     }
 }

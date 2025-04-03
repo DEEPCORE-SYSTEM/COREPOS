@@ -49,7 +49,7 @@ return [
         'customer' => [
             'driver' => 'session',
             'provider' => 'contacts',
-        ],
+        ]
     ],
 
     /*
@@ -78,7 +78,7 @@ return [
         'contacts' => [
             'driver' => 'eloquent',
             'model' => App\Models\Contact::class,
-        ],
+        ]
 
         // 'users' => [
         //     'driver' => 'database',

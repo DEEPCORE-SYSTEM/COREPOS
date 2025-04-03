@@ -308,10 +308,10 @@
                     <div class="col-md-4 pay_term">
                         <div class="form-group">
                             <div class="multi-input">
-                                <label for="pay_term_number">{{ __('contact.pay_term') }}:</label>
+                                <label for="pay_term_number">{{ __('contact.pay_term') }}:5</label>
                                 @show_tooltip(__('tooltip.pay_term'))
                                 <br />
-                                <input type="number" name="pay_term_number" id="pay_term_number"
+                                <input type="number"  id="pay_term_number"
                                     class="form-control width-40 pull-left" placeholder="{{ __('contact.pay_term') }}">
 
                                 <select name="pay_term_type" id="pay_term_type" class="form-control width-60 pull-left">

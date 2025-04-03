@@ -7,6 +7,7 @@ use App\Utils\ModuleUtil;
 use Closure;
 use Illuminate\Support\Facades\View;
 use Spatie\Menu\Laravel\Menu;
+use Illuminate\Support\Facades\Auth;
 
 class AdminSidebarMenu
 {
@@ -27,26 +28,31 @@ class AdminSidebarMenu
         $common_settings = session('business.common_settings', []);
         $pos_settings = json_decode(session('business.pos_settings', '[]'), true);
 
-        $is_admin = auth()->user()->hasRole('Admin#'.session('business.id'));
+        $is_admin = auth()->check() && auth()->user()->hasRole('Admin#' . session('business.id'));
+
 
         // Construcción del menú con Spatie Menu
         $menu = Menu::new()
             ->addClass('admin-sidebar-menu') // Agrega clases CSS si es necesario
             ->add(
                 Menu::new()
-                    ->link(action([HomeController::class, 'index']), '<i class="fa fas fa-tachometer-alt"></i> '.__('home.home'))
+                    ->link(action([HomeController::class, 'index']), '<i class="fa fas fa-tachometer-alt"></i> ' . __('home.home'))
                     ->addParentClass('nav-item')
                     ->setActive(request()->segment(1) == 'home'),
 
                 // Home
                 Menu::new()
-                    ->link(action([HomeController::class, 'index']), '<i class="fa fas fa-tachometer-alt"></i> '.__('home.home'))
+                    ->link(action([HomeController::class, 'index']), '<i class="fa fas fa-tachometer-alt"></i> ' . __('home.home'))
                     ->addParentClass('nav-item')
                     ->setActive(request()->segment(1) == 'home')
             );
 
-        // User management submenu
-        if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
+        // Verifica si hay usuario autenticado antes de acceder a permisos
+        if (Auth::check() && (
+            auth()->user()->can('user.view') ||
+            auth()->user()->can('user.create') ||
+            auth()->user()->can('roles.view')
+        )) {
             $menu->submenu(
                 __('user.user_management'),
                 function ($sub) {
@@ -76,8 +82,14 @@ class AdminSidebarMenu
             );
         }
 
+
         // Contacts submenu
-        if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own')) {
+        if (Auth::check() && (
+            auth()->user()->can('supplier.view') ||
+            auth()->user()->can('customer.view') ||
+            auth()->user()->can('supplier.view_own') ||
+            auth()->user()->can('customer.view_own')
+        )) {
             $menu->submenu(
                 __('contact.contacts'),
                 function ($sub) {
@@ -108,7 +120,7 @@ class AdminSidebarMenu
                         );
                     }
 
-                    if (! empty(env('GOOGLE_MAP_API_KEY'))) {
+                    if (!empty(env('GOOGLE_MAP_API_KEY'))) {
                         $sub->url(
                             action('ContactController@contactMap'),
                             __('lang_v1.map'),
@@ -120,11 +132,14 @@ class AdminSidebarMenu
             );
         }
 
+
         // Products submenu
-        if (auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
+        if (Auth::check() && (
+            auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
             auth()->user()->can('brand.view') || auth()->user()->can('unit.view') ||
             auth()->user()->can('category.view') || auth()->user()->can('brand.create') ||
-            auth()->user()->can('unit.create') || auth()->user()->can('category.create')) {
+            auth()->user()->can('unit.create') || auth()->user()->can('category.create')
+        )) {
             $menu->submenu(
                 __('sale.products'),
                 function ($sub) {
@@ -184,7 +199,7 @@ class AdminSidebarMenu
                     }
                     if (auth()->user()->can('category.view') || auth()->user()->can('category.create')) {
                         $sub->url(
-                            action('TaxonomyController@index').'?type=product',
+                            action('TaxonomyController@index') . '?type=product',
                             __('category.categories'),
                             ['icon' => 'fa fas fa-tags', 'active' => request()->segment(1) == 'taxonomies' && request()->get('type') == 'product']
                         );
@@ -208,11 +223,13 @@ class AdminSidebarMenu
         }
 
         // Purchase submenu
-        if (in_array('purchases', $enabled_modules) && (auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('purchase.update'))) {
+        if (Auth::check() && in_array('purchases', $enabled_modules) && (
+            auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('purchase.update')
+        )) {
             $menu->submenu(
                 __('purchase.purchases'),
                 function ($sub) use ($common_settings) {
-                    if (! empty($common_settings['enable_purchase_order']) && (auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own'))) {
+                    if (!empty($common_settings['enable_purchase_order']) && (auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own'))) {
                         $sub->url(
                             action('PurchaseOrderController@index'),
                             __('lang_v1.purchase_order'),
@@ -244,8 +261,9 @@ class AdminSidebarMenu
                 ['icon' => 'fa fas fa-arrow-circle-down', 'id' => 'tour_step6']
             );
         }
+
         // Sell submenu
-        if ($is_admin || auth()->user()->hasAnyPermission(['sell.view', 'sell.create', 'direct_sell.access', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping', 'access_sell_return', 'direct_sell.view', 'direct_sell.update', 'access_own_sell_return'])) {
+        if ($is_admin || (auth::check() && auth()->user()->hasAnyPermission(['sell.view', 'sell.create', 'direct_sell.access', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping', 'access_sell_return', 'direct_sell.view', 'direct_sell.update', 'access_own_sell_return']))) {
             $menu->submenu(
                 __('sale.sale'),
                 function ($sub) use ($enabled_modules, $is_admin, $pos_settings) {
@@ -440,7 +458,7 @@ class AdminSidebarMenu
             );
         }
         // Accounts submenu
-        if (auth()->user()->can('account.access') && in_array('account', $enabled_modules)) {
+        if (auth::check()&& auth()->user()->can('account.access') && in_array('account', $enabled_modules)) {
             $menu->submenu(
                 __('lang_v1.payment_accounts'),
                 function ($sub) {
@@ -475,10 +493,12 @@ class AdminSidebarMenu
         }
 
         // Reports submenu
-        if (auth()->user()->can('purchase_n_sell_report.view') || auth()->user()->can('contacts_report.view')
-            || auth()->user()->can('stock_report.view') || auth()->user()->can('tax_report.view')
-            || auth()->user()->can('trending_product_report.view') || auth()->user()->can('sales_representative.view') || auth()->user()->can('register_report.view')
-            || auth()->user()->can('expense_report.view')) {
+        if (
+            auth::check() && auth()->user()->can('purchase_n_sell_report.view') || auth::check() && auth()->user()->can('contacts_report.view')
+            ||auth::check() &&  auth()->user()->can('stock_report.view') || auth::check() && auth()->user()->can('tax_report.view')
+            || auth::check() && auth()->user()->can('trending_product_report.view') || auth::check() && auth()->user()->can('sales_representative.view') || auth::check() && auth()->user()->can('register_report.view')
+            || auth::check() && auth()->user()->can('expense_report.view')
+        ) {
             $menu->submenu(
                 __('report.reports'),
                 function ($sub) use ($enabled_modules, $is_admin) {
@@ -492,14 +512,14 @@ class AdminSidebarMenu
                     if (config('constants.show_report_606') == true) {
                         $sub->url(
                             action('ReportController@purchaseReport'),
-                            'Report 606 ('.__('lang_v1.purchase').')',
+                            'Report 606 (' . __('lang_v1.purchase') . ')',
                             ['icon' => 'fa fas fa-arrow-circle-down', 'active' => request()->segment(2) == 'purchase-report']
                         );
                     }
                     if (config('constants.show_report_607') == true) {
                         $sub->url(
                             action('ReportController@saleReport'),
-                            'Report 607 ('.__('business.sale').')',
+                            'Report 607 (' . __('business.sale') . ')',
                             ['icon' => 'fa fas fa-arrow-circle-up', 'active' => request()->segment(2) == 'sale-report']
                         );
                     }
@@ -649,17 +669,17 @@ class AdminSidebarMenu
         }
 
         // Backup menu
-        if (auth()->user()->can('backup')) {
+        if (auth::check() && auth()->user()->can('backup')) {
             $menu->url(action('BackUpController@index'), __('lang_v1.backup'), ['icon' => 'fa fas fa-hdd', 'active' => request()->segment(1) == 'backup']);
         }
 
         // Modules menu
-        if (auth()->user()->can('manage_modules')) {
+        if (auth::check() && auth()->user()->can('manage_modules')) {
             $menu->url(action('Install\ModulesController@index'), __('lang_v1.modules'), ['icon' => 'fa fas fa-plug', 'active' => request()->segment(1) == 'manage-modules']);
         }
 
         // Booking menu
-        if (in_array('booking', $enabled_modules) && (auth()->user()->can('crud_all_bookings') || auth()->user()->can('crud_own_bookings'))) {
+        if (auth::check() && in_array('booking', $enabled_modules) && (auth()->user()->can('crud_all_bookings') || auth()->user()->can('crud_own_bookings'))) {
             $menu->url(action('Restaurant\BookingController@index'), __('restaurant.bookings'), ['icon' => 'fas fa fa-calendar-check', 'active' => request()->segment(1) == 'bookings']);
         }
 
@@ -674,17 +694,19 @@ class AdminSidebarMenu
         }
 
         // Notification template menu
-        if (auth()->user()->can('send_notifications')) {
+        if (auth::check() && auth()->user()->can('send_notifications')) {
             $menu->url(action('NotificationTemplateController@index'), __('lang_v1.notification_templates'), ['icon' => 'fa fas fa-envelope', 'active' => request()->segment(1) == 'notification-templates']);
         }
 
         // Settings submenu
-        if (auth()->user()->can('business_settings.access') ||
+        if (
+            auth::check() && (auth()->user()->can('business_settings.access') ||
             auth()->user()->can('barcode_settings.access') ||
             auth()->user()->can('invoice_settings.access') ||
             auth()->user()->can('tax_rate.view') ||
             auth()->user()->can('tax_rate.create') ||
-            auth()->user()->can('access_package_subscriptions')) {
+            auth()->user()->can('access_package_subscriptions'))
+        ) {
             $menu->submenu(
                 __('business.settings'),
                 function ($sub) use ($enabled_modules) {
@@ -759,10 +781,8 @@ class AdminSidebarMenu
         }
 
         // Add menus from modules
-        $moduleUtil = new ModuleUtil;
-        $moduleUtil->getModuleData('modifyAdminMenu');
 
-        View::share('AdminSidebarMenu', $menu);
+
 
         return $next($request);
     }

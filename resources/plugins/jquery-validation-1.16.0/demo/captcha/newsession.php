@@ -8,3 +8,5 @@ session_start();
 
 // Set the session contents
 $_SESSION['captcha_id'] = $str;
+
+?>

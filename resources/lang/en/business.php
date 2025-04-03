@@ -68,7 +68,7 @@ return [
         9 => 'September',
         10 => 'October',
         11 => 'November',
-        12 => 'December',
+        12 => 'December'
     ],
     'fy_start_month' => 'Financial year start month',
     'accounting_method' => 'Stock Accounting Method',

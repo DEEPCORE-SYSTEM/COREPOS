@@ -13,59 +13,87 @@
     <div class="row no-print">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
-              {!! Form::open(['url' => action('ReportController@getTrendingProducts'), 'method' => 'get' ]) !!}
+            <form action="{{ action('ReportController@getTrendingProducts') }}" method="GET">
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
-                        {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="location_id">{{ __('purchase.business_location') }}:</label>
+                        <select name="location_id" class="form-control select2" style="width:100%">
+                            @foreach($business_locations as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('category_id', __('product.category') . ':') !!}
-                        {!! Form::select('category', $categories, null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'category_id']); !!}
+                        <label for="category_id">{{ __('product.category') }}:</label>
+                        <select name="category" id="category_id" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('messages.all') }}</option>
+                            @foreach($categories as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('sub_category_id', __('product.sub_category') . ':') !!}
-                        {!! Form::select('sub_category', array(), null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'sub_category_id']); !!}
+                        <label for="sub_category_id">{{ __('product.sub_category') }}:</label>
+                        <select name="sub_category" id="sub_category_id" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('messages.all') }}</option>
+                            <!-- Sub categories options will be populated dynamically -->
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('brand', __('product.brand') . ':') !!}
-                        {!! Form::select('brand', $brands, null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="brand">{{ __('product.brand') }}:</label>
+                        <select name="brand" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('messages.all') }}</option>
+                            @foreach($brands as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('unit', __('product.unit') . ':') !!}
-                        {!! Form::select('unit', $units, null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="unit">{{ __('product.unit') }}:</label>
+                        <select name="unit" class="form-control select2" style="width:100%">
+                            <option value="">{{ __('messages.all') }}</option>
+                            @foreach($units as $key => $value)
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('trending_product_date_range',__('report.date_range') .  ':') !!}
-                        {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'trending_product_date_range', 'readonly']); !!}
+                        <label for="trending_product_date_range">{{ __('report.date_range') }}:</label>
+                        <input type="text" name="date_range" class="form-control" id="trending_product_date_range" placeholder="{{ __('lang_v1.select_a_date_range') }}" readonly>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('limit', __('lang_v1.no_of_products') . ':') !!} @show_tooltip(__('tooltip.no_of_products_for_trending_products'))
-                        {!! Form::number('limit', 5, ['placeholder' => __('lang_v1.no_of_products'), 'class' => 'form-control', 'min' => 1]); !!}
+                        <label for="limit">{{ __('lang_v1.no_of_products') }}:</label>
+                        <!-- Tooltip for no of products -->
+                        <input type="number" name="limit" value="5" class="form-control" placeholder="{{ __('lang_v1.no_of_products') }}" min="1">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('product_type', __('product.product_type') . ':') !!}
-                        {!! Form::select('product_type', ['single' => __('lang_v1.single'), 'variable' => __('lang_v1.variable'), 'combo' => __('lang_v1.combo')], request()->input('product_type'), ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
+                        <label for="product_type">{{ __('product.product_type') }}:</label>
+                        <select name="product_type" class="form-control select2" style="width:100%">
+                            <option value="single">{{ __('lang_v1.single') }}</option>
+                            <option value="variable">{{ __('lang_v1.variable') }}</option>
+                            <option value="combo">{{ __('lang_v1.combo') }}</option>
+                        </select>
                     </div>
                 </div>
                 <div class="col-sm-12">
-                  <button type="submit" class="btn btn-primary pull-right">@lang('report.apply_filters')</button>
-                </div> 
-                {!! Form::close() !!}
+                    <button type="submit" class="btn btn-primary pull-right">{{ __('report.apply_filters') }}</button>
+                </div>
+            </form>
+            
             @endcomponent
         </div>
     </div>

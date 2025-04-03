@@ -33,7 +33,7 @@ return [
     'selling_price_tax_type' => 'د خرڅ بیې د مالیې ډول',
     'inclusive' => 'شامل دي',
     'exclusive' => 'ځانګړې',
-    'edit_product' => 'د محصول سمول',
+    'edit_product' => "د محصول سمول",
     'default_purchase_price' => 'همیشه د خرید بیې',
     'default_selling_price' => 'همیشه د خرڅ بیې',
     'value' => 'ارزښت',
@@ -57,5 +57,5 @@ return [
     'variations' => 'بدلونونه',
     'import_products' => 'محصولات پورته کړئ',
     'file_to_import' => 'دوتنه چې پورته کړئ',
-    'file_imported_successfully' => 'دوتنه په بریالیتوب سره پورته شوه',
-];
+    'file_imported_successfully' => 'دوتنه په بریالیتوب سره پورته شوه'
+ ];

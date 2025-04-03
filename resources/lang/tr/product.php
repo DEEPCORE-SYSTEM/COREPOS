@@ -57,5 +57,5 @@ return [
     'variations' => 'Varyasyonlar',
     'import_products' => 'Ürünleri İçe Aktar',
     'file_to_import' => 'İçe Aktarılacak Dosya',
-    'file_imported_successfully' => 'Dosya başarıyla içe aktarıldı',
-];
+    'file_imported_successfully' => 'Dosya başarıyla içe aktarıldı'
+ ];

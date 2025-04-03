@@ -33,7 +33,7 @@ return [
     'selling_price_tax_type' => 'ປະເພດອາກອນລາຄາຂາຍ',
     'inclusive' => 'ລວມ',
     'exclusive' => 'ບໍ່ລວມ',
-    'edit_product' => 'ແກ້ໄຂ ສິນຄ້າ',
+    'edit_product' => "ແກ້ໄຂ ສິນຄ້າ",
     'default_purchase_price' => 'ລາຄາຊື້ຕັ້ງຕົ້ນ',
     'default_selling_price' => 'ລາຄາຂາຍຕັ້ງຕົ້ນ',
     'value' => 'ມູນຄ່າ',
@@ -57,5 +57,5 @@ return [
     'variations' => 'ຄ່າຜັນປ່ຽນ',
     'import_products' => 'ນໍາສິນຄ້າເຂົ້າ',
     'file_to_import' => 'ໄຟລທີ່ຈະນຳເຂົ້າ',
-    'file_imported_successfully' => 'ນຳເຂົ້າໄຟສຳເລັດແລ້ວ',
-];
+    'file_imported_successfully' => 'ນຳເຂົ້າໄຟສຳເລັດແລ້ວ'
+ ];

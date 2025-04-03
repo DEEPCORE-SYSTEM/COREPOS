@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,10 +13,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-use App\Http\Controllers\SellingPriceGroupController;
-
-
 
 include_once('install_r.php');
 
@@ -39,11 +38,6 @@ Route::middleware(['setData'])->group(function () {
     Route::post('/confirm-payment/{id}', 'SellPosController@confirmPayment')
         ->name('confirm_payment');
 });
-
-
-
-Route::post('/selling-price-group/import', [SellingPriceGroupController::class, 'import'])
-    ->name('selling_price_group.import');
 
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {

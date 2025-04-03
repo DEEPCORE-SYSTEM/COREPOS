@@ -9,6 +9,19 @@ class EssentialsLeave extends Model
 {
     use LogsActivity;
 
+    /**
+     * Get the activity log options for the model.
+     *
+     * @return \Spatie\Activitylog\LogOptions
+     */
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    {
+        return \Spatie\Activitylog\LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogIfAttributesChangedOnly(['created_at', 'updated_at']);
+    }
+
     protected static $logAttributes = ['*'];
 
     protected static $logAttributesToIgnore = ['created_at', 'updated_at'];

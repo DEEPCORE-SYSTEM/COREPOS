@@ -46,7 +46,7 @@ return [
         'served' => 'Served',
         '' => 'Received',
         'partial_cooked' => 'Partially Cooked',
-        'partial_served' => 'Partially Served',
+        'partial_served' => 'Partially Served'
     ],
     'order_successfully_marked_cooked' => 'Order successfully marked as cooked',
     'order_successfully_marked_served' => 'Order successfully marked as served',

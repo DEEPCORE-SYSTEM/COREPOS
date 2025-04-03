@@ -3,6 +3,8 @@
 namespace Modules\Superadmin\Http\Controllers;
 
 use Modules\Superadmin\Entities\Subscription;
+use Illuminate\Support\Facades\Log;
+
 
 class PesaPalController extends BaseController
 {
@@ -10,8 +12,8 @@ class PesaPalController extends BaseController
     public function pesaPalPaymentConfirmation($transaction_id, $status, $payment_method, $merchant_reference)
     {
         $subscription = Subscription::where('payment_transaction_id', $transaction_id)->first();
-
-        \Log::emergency('subscription transaction_id:'.$transaction_id.'status:'.$status.'payment_method:'.$payment_method);
+        Log::emergency('subscription transaction_id:'.$transaction_id.'status:'.$status.'payment_method:'.$payment_method);
+        
 
         if ($status == 'COMPLETED') {
             if ($subscription->status != 'approved') {

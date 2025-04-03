@@ -114,27 +114,28 @@ class DataController extends Controller
     public function modifyAdminMenu()
     {
         $menu = Menu::new();
-
+    
         if (auth()->user()->can('superadmin')) {
             $menu->add(
-                Menu::new()->url(
-                    action('\Modules\Superadmin\Http\Controllers\SuperadminController@index'),
-                    __('superadmin::lang.superadmin')
-                )->addParentClass('fa fas fa-users-cog')
+                Menu::new()->link(
+                    action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index']),
+                    '<i class="fa fas fa-users-cog"></i> ' . __('superadmin::lang.superadmin')
+                )->addParentClass('nav-item') // Esto sí es válido
             );
         }
-
+    
         if (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access')) {
             $menu->add(
-                Menu::new()->url(
-                    action('\Modules\Superadmin\Http\Controllers\SubscriptionController@index'),
-                    __('superadmin::lang.subscription')
-                )->addParentClass('fa fas fa-sync')
+                Menu::new()->link(
+                    action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index']),
+                    '<i class="fa fas fa-sync"></i> ' . __('superadmin::lang.subscription')
+                )->addParentClass('nav-item')
             );
         }
-
-        return $menu;
+    
+        return $menu->count() > 0 ? $menu : null; // Evita retornar un menú vacío
     }
+    
 
     /**
      * Defines user permissions for the module.

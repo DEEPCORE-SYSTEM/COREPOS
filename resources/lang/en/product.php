@@ -33,7 +33,7 @@ return [
     'selling_price_tax_type' => 'Selling Price Tax Type',
     'inclusive' => 'Inclusive',
     'exclusive' => 'Exclusive',
-    'edit_product' => 'Edit Product',
+    'edit_product' => "Edit Product",
     'default_purchase_price' => 'Default Purchase Price',
     'default_selling_price' => 'Default Selling Price',
     'value' => 'Value',
@@ -57,5 +57,5 @@ return [
     'variations' => 'Variations',
     'import_products' => 'Import Products',
     'file_to_import' => 'File To Import',
-    'file_imported_successfully' => 'File imported successfully',
-];
+    'file_imported_successfully' => 'File imported successfully'
+ ];

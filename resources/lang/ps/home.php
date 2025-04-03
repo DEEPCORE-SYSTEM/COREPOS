@@ -27,5 +27,5 @@ return [
     'payment_dues' => 'د پیسو ورکړه',
     'due_amount' => 'د پیسو راکړه',
     'stock_expiry_alert' => 'د سټاک د تاریخ ختمولو خبرتیا',
-    'todays_profit' => 'د نن ورځې ګټه',
-];
+    'todays_profit' => "د نن ورځې ګټه",
+    ];

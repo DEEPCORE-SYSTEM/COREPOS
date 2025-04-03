@@ -3,7 +3,9 @@
 namespace Modules\Project\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Project extends Model
 {
@@ -22,6 +24,15 @@ class Project extends Model
      * @var array
      */
     protected $guarded = ['id'];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['subject', 'task_id', 'project_id', 'status']) // Ajusta los campos a registrar
+            ->setDescriptionForEvent(fn(string $eventName) => "Se ha {$eventName} una tarea del proyecto")
+            ->logOnlyDirty(); // Solo guarda cambios, no toda la data
+    }
+
 
     /**
      * The attributes that should be cast to native types.

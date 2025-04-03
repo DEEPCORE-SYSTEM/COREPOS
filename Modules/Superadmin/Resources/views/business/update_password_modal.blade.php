@@ -24,7 +24,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="password">{{ __('business.password') }}:</label>
-                                <input type="password" name="password" class="form-control" placeholder="{{ __('business.password') }}" required>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="{{ __('business.password') }}" required>
                                 <input type="hidden" name="user_id" id="user_id">
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="confirm_password">{{ __('business.confirm_password') }}:</label>
-                                <input type="password" name="confirm_password" class="form-control" placeholder="{{ __('business.confirm_password') }}" required data-rule-equalTo="#password">
+                                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="{{ __('business.confirm_password') }}" required data-rule-equalTo="#password">
                             </div>
                         </div>
                     </div>

@@ -1,4 +1,7 @@
 {
-    "terminal.integrated.defaultProfile.windows": "Command Prompt",
-    "CodeGPT.apiKey": "CodeGPT Plus Beta"
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "CodeGPT.apiKey": "CodeGPT Plus Beta",
+    "terminal.integrated.automationProfile.osx": {
+
+    }
 }

@@ -4,6 +4,7 @@ namespace Modules\Connector\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
+use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 
 class AuthConnectorServiceProvider extends ServiceProvider
 {

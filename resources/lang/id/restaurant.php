@@ -86,7 +86,7 @@ return [
     'delete_booking' => 'Hapus booking',
     'click_on_any_booking_to_view_or_change_status' => 'Klik pada booking apa saja untuk melihat detail atau mengubah status',
     'double_click_on_any_day_to_add_new_booking' => 'Klik dua kali pada hari apa saja untuk menambahkan booking baru',
-    'todays_bookings' => 'Booking Hari ini',
+    'todays_bookings' => "Booking Hari ini",
     'hello_name' => 'Halo :name!',
     'booking_confirmed' => 'Booking Anda telah dikonfirmasi.',
     'table_info' => 'Meja: :table',

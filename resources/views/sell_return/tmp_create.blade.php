@@ -27,55 +27,63 @@
 	<div class="row">
 		<div class="col-sm-3">
 			<div class="form-group">
-				{!! Form::label('location_id', __('purchase.business_location').':*') !!}
-				{!! Form::select('location_id', $business_locations, $default_location, ['class' => 'form-control', 'placeholder' => __('messages.please_select'), 'required', 
-				'id' => 'select_location_id']); !!}
-			</div>
+				<label for="location_id">{{ __('purchase.business_location') }}:*</label>
+				<select name="location_id" id="select_location_id" class="form-control" required>
+					<option value="">{{ __('messages.please_select') }}</option>
+					@foreach($business_locations as $key => $location)
+						<option value="{{ $key }}" @if($key == $default_location) selected @endif>{{ $location }}</option>
+					@endforeach
+				</select>
+							</div>
 		</div>
 	</div>
 	<input type="hidden" id="product_row_count" value="0">
-	
-	{!! Form::open(['url' => action('SellReturnController@store'), 'method' => 'post', 'id' => 'sell_return_form' ]) !!}
+	<form action="{{ action('SellReturnController@store') }}" method="post" id="sell_return_form">
+		@csrf
 	
 	<div class="box box-solid">
 		<div class="box-body">
 			<div class="row">
-				{!! Form::hidden('location_id', $default_location, ['id' => 'location_id']); !!}
-
+				<input type="hidden" name="location_id" id="location_id" value="{{ $default_location }}">
+	
 				<div class="col-sm-3">
 					<div class="form-group">
-						{!! Form::label('contact_id', __('contact.customer') . ':*') !!}
+						<label for="contact_id">{{ __('contact.customer') }}:*</label>
 						<div class="input-group">
 							<span class="input-group-addon">
 								<i class="fa fa-user"></i>
 							</span>
-							{!! Form::select('contact_id', [], null, ['class' => 'form-control', 'id' => 'customer_id', 'placeholder' => 'Enter Customer name / phone', 'required']); !!}
+							<select name="contact_id" id="customer_id" class="form-control" required>
+								<!-- Options will be dynamically added here -->
+							</select>
 						</div>
 					</div>
 				</div>
+	
 				<div class="col-sm-3">
 					<div class="form-group">
-						{!! Form::label('invoice_no', __('purchase.ref_no').':') !!}
-						{!! Form::text('invoice_no', null, ['class' => 'form-control']); !!}
+						<label for="invoice_no">{{ __('purchase.ref_no') }}:</label>
+						<input type="text" name="invoice_no" class="form-control">
 					</div>
 				</div>
-
+	
 				<div class="col-sm-3">
 					<div class="form-group">
-						{!! Form::label('transaction_date', __('purchase.purchase_date') . ':*') !!}
+						<label for="transaction_date">{{ __('purchase.purchase_date') }}:*</label>
 						<div class="input-group">
 							<span class="input-group-addon">
 								<i class="fa fa-calendar"></i>
 							</span>
-							{!! Form::text('transaction_date', @format_date('now'), ['class' => 'form-control', 'readonly', 'required']); !!}
+							<input type="text" name="transaction_date" value="{{ format_date('now') }}" class="form-control" readonly required>
 						</div>
 					</div>
 				</div>
-				
-				
+	
 			</div>
 		</div>
-	</div> <!--box end-->
+	</div>
+	
+	<!--box end-->
 
 	<div class="box box-solid"><!--box start-->
 		<div class="box-body">
@@ -86,11 +94,11 @@
 							<span class="input-group-addon">
 								<i class="fa fa-search"></i>
 							</span>
-							{!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 
-								'placeholder' => __('lang_v1.search_product_placeholder'),
-								'disabled' => is_null($default_location)? true : false,
-								'autofocus' => is_null($default_location)? false : true,
-								]); !!}
+							<input type="text" name="search_product" id="search_product" class="form-control" 
+       placeholder="{{ __('lang_v1.search_product_placeholder') }}" 
+       @if(is_null($default_location)) disabled @endif
+       @if(!is_null($default_location)) autofocus @endif>
+
 						</div>
 					</div>
 				</div>
@@ -179,16 +187,21 @@
 					<tr>
 						<td class="col-md-3">
 							<div class="form-group">
-								{!! Form::label('discount_type', __( 'purchase.discount_type' ) . ':') !!}
-								{!! Form::select('discount_type', [ '' => __('lang_v1.none'), 'fixed' => __( 'lang_v1.fixed' ), 'percentage' => __( 'lang_v1.percentage' )], '', ['class' => 'form-control']); !!}
+								<label for="discount_type">{{ __('purchase.discount_type') }}:</label>
+								<select name="discount_type" class="form-control">
+									<option value="">{{ __('lang_v1.none') }}</option>
+									<option value="fixed">{{ __('lang_v1.fixed') }}</option>
+									<option value="percentage">{{ __('lang_v1.percentage') }}</option>
+								</select>
 							</div>
 						</td>
 						<td class="col-md-3">
 							<div class="form-group">
-							{!! Form::label('discount_amount', __( 'purchase.discount_amount' ) . ':') !!}
-							{!! Form::text('discount_amount', 0, ['class' => 'form-control input_number', 'required']); !!}
+								<label for="discount_amount">{{ __('purchase.discount_amount') }}:</label>
+								<input type="text" name="discount_amount" value="0" class="form-control input_number" required>
 							</div>
 						</td>
+						
 						<td class="col-md-3">
 							&nbsp;
 						</td>
@@ -202,16 +215,16 @@
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
 						<td>
-							{!! Form::hidden('final_total', 0 , ['id' => 'final_total_input']); !!}
+							<input type="hidden" name="final_total" value="0" id="final_total_input">
 							<b>@lang('lang_v1.total_credit_amt'): </b><span id="total_payable" class="display_currency" data-currency_symbol='true'>0</span>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="4">
 							<div class="form-group">
-								{!! Form::label('additional_notes',__('purchase.additional_notes')) !!}
-								{!! Form::textarea('additional_notes', null, ['class' => 'form-control', 'rows' => 3]); !!}
-							</div>
+								<label for="additional_notes">{{ __('purchase.additional_notes') }}</label>
+								<textarea name="additional_notes" id="additional_notes" class="form-control" rows="3"></textarea>
+															</div>
 						</td>
 					</tr>
 
@@ -226,7 +239,7 @@
 		</div>
 
 	</div><!--box end-->
-{!! Form::close() !!}
+</from>
 </section>
 <!-- /.content -->
 @endsection

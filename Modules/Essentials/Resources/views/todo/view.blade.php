@@ -19,8 +19,8 @@
 				<div class="box-body">
 					<div class="row">
 						<div class="col-md-4">
-							<strong>{{ __('business.start_date') }}:</strong> {{ format_date($todo->date) }}<br>
-							<strong>{{ __('essentials::lang.end_date') }}:</strong> {{ $todo->end_date ? format_date($todo->end_date) : '' }}<br>
+							<strong>{{ __('business.start_date') }}:</strong> {{ @format_date($todo->date) }}<br>
+							<strong>{{ __('essentials::lang.end_date') }}:</strong> {{ $todo->end_date ? @format_date($todo->end_date) : '' }}<br>
 							<strong>{{ __('essentials::lang.estimated_hours') }}:</strong> {{ $todo->estimated_hours }}
 						</div>
 						<div class="col-md-4">
